@@ -5,11 +5,11 @@ public abstract class MovingObjects implements GeneralRules{
     public double getObjectSpeed(){
 
     }
-    public void setObjectSpeed(objectSpeed:double){
+    public void setObjectSpeed(objectSpeed double){
 
     }
     public double getObjectDimension(){}
-    public void setObjectDimension(objectDimension:double){}
+    public void setObjectDimension(objectDimension double){}
     public void move(){}
     public void stop(){}
     
