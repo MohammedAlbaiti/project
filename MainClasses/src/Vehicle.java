@@ -1,5 +1,5 @@
 public class Vehicle extends MovingObjects{
-    String driverStyle;
+    private String driverStyle;
 
     public Vehicle(Road road, String driverStyle){
         this.driverStyle = driverStyle
