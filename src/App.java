@@ -1,5 +1,4 @@
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,33 +8,45 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
-        // Load images
-        Image image1 = new Image("file:src/resources/map_part1.png");
-        Image image2 = new Image("file:src/resources/map_part2.png");
-        Image image3 = new Image("file:src/resources/map_part3.png");
+        Image image1 = new Image("file:src/resources/Group 45.png");
+        Image image2 = new Image("file:src/resources/Group 36.png");
+        Image image3 = new Image("file:src/resources/image 107.png");
+        Image image7 = new Image("file:src/resources/Group 44.png");
 
-        // Create ImageView objects for each image
-        ImageView imageView1 = new ImageView(image1);
-        ImageView imageView2 = new ImageView(image2);
-        ImageView imageView3 = new ImageView(image3);
+        // Define initial widths for each image based on the provided sizes
+        double width1 = 145.63;
+        double width2 = 112.45;
+        double width3 = 26.0;
 
-        // Create an HBox to arrange images horizontally
-        HBox mapContainer = new HBox();
-        mapContainer.getChildren().addAll(imageView1, imageView2, imageView3);
+        double totalWidth = 0;
 
-        // Bind each image’s width to one-third of the window width
-        imageView1.fitWidthProperty().bind(Bindings.divide(primaryStage.widthProperty(), 3));
-        imageView2.fitWidthProperty().bind(Bindings.divide(primaryStage.widthProperty(), 3));
-        imageView3.fitWidthProperty().bind(Bindings.divide(primaryStage.widthProperty(), 3));
+        // Create an HBox to arrange images horizontally with zero spacing and padding
+        HBox mapContainer = new HBox(0); // Set spacing to zero
+        mapContainer.setStyle("-fx-padding: 0;"); // Ensure padding is zero
 
-        // Preserve the aspect ratio for each image
-        imageView1.setPreserveRatio(true);
-        imageView2.setPreserveRatio(true);
-        imageView3.setPreserveRatio(true);
+        int numberOfRoads = 2;
+        int numberOfLanes = 1;
+
+        for (int i = numberOfRoads; i > 0; i--) {
+            totalWidth += width1;
+            mapContainer.getChildren().add(new ImageView(image1)); // Add a new instance
+            totalWidth += width2;
+            mapContainer.getChildren().add(new ImageView(image2)); // Add a new instance
+
+            for (int j = numberOfLanes - 1; j > 0; j--) {
+                totalWidth += width3;
+                mapContainer.getChildren().add(new ImageView(image3)); // Add a new instance
+                totalWidth += width2;
+                mapContainer.getChildren().add(new ImageView(image2)); // Add a new instance
+            }
+
+            totalWidth += width1;
+            mapContainer.getChildren().add(new ImageView(image7)); // Add a new instance
+        }
 
         // Set the Scene and add the HBox to it
-        Scene scene = new Scene(mapContainer, 800, 400); // Adjust initial size as desired
-        primaryStage.setTitle("Dynamic Resizing Map");
+        Scene scene = new Scene(mapContainer, totalWidth, 464); // Adjust initial size as desired
+        primaryStage.setTitle("Concatenated Image Map without Gaps");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
