@@ -1,12 +1,14 @@
 public class Truck extends Vehicle{
-    private int truckID;
+    private String truckID;
     private String truckType;
-
-    public Truck(road:Road, driverStyle:String, truckType:String){
-
+    private static int counter=1;
+    public Truck(Road road, String driverStyle, String truckType){
+        super(road,driverStyle);
+        this.truckID = "T" + (++counter);
+        this.truckType=truckType;
     }
 
-    public int getTruckID(){
+    public String getTruckID(){
         return this.truckID;
     }
 

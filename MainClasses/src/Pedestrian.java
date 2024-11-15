@@ -1,11 +1,14 @@
 public class Pedestrian extends MovingObjects {
     // Attributes
-    private int pedestrianID;
+    private String pedestrianID;
     private boolean crossingStatus;
     private String pedestrianStyle;
-    
+    private static int counter=1;
+    Road road;
     // Constructor
     public Pedestrian(Road road, String pedestrianStyle) {
+        this.road=road;
+        this.pedestrianID = "P" + (++counter);
         this.pedestrianStyle = pedestrianStyle;
         this.crossingStatus = false; // Default to not crossing
         this.objectSpeed = 0.0;      // Default speed
@@ -13,7 +16,7 @@ public class Pedestrian extends MovingObjects {
     }
     
     // Getters and Setters
-    public int getPedestrianID() {
+    public String getPedestrianID() {
         return pedestrianID;
     }
     

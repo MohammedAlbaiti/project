@@ -1,12 +1,15 @@
 public class Car extends Vehicle{
-    private int carID;
+    private String carID;
     private String carType;
-
-    public Car(road:Road, driverStyle:String, carType:String){
-
+    private static int counter = 1;
+    public Car(Road road, String driverStyle, String carType){
+        super(road,driverStyle);
+        this.carID = "C" + (++counter);
+        this.road=road;
+        this.carType=carType;
     }
 
-    public int getCarID(){
+    public String getCarID(){
         return this.carID;
     }
 

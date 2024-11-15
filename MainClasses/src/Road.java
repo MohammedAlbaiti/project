@@ -1,5 +1,3 @@
-
-
 class Road implements GeneralRules {
     private int numberOfPassedCars;
     private int numberOfPassedPedestrians;
