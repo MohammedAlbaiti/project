@@ -1,37 +1,47 @@
-public class Vehicle extends MovingObjects{
+public class Vehicle extends MovingObjects {
     private String driverStyle;
     private Road road;
-    public Vehicle(Road road, String driverStyle){
-        this.driverStyle = driverStyle
-        this.road=road;
+
+    public Vehicle(Road road, String driverStyle) {
+        this.driverStyle = driverStyle;
+        this.road = road;
     }
 
-    public String getDriverStyle(){
+    public String getDriverStyle() {
         return this.driverStyle;
     }
 
-    public void setDriverStyle(String driverStyle){
+    public void setDriverStyle(String driverStyle) {
         this.driverStyle = driverStyle;
     }
 
-    public double getObjectSpeed(){
-        return super.objectSpeed;
+    @Override
+    public double getObjectSpeed() {
+        return this.objectSpeed;
     }
 
-    public void setObjectSpeed(double objectSpeed){
-        super.objectSpeed = objectSpeed;
+    @Override
+    public void setObjectSpeed(double objectSpeed) {
+        this.objectSpeed = objectSpeed;
     }
 
-    public double getObjectDimension(){
-        return super.objectDimension;
+    @Override
+    public double getObjectDimension() {
+        return this.objectDimension;
     }
 
-    public void setObjectDimension(double objectDimension){
-        super.objectDimension = objectDimension;
+    @Override
+    public void setObjectDimension(double objectDimension) {
+        this.objectDimension = objectDimension;
     }
 
-    public void move(){}
+    @Override
+    public void move() {
+        System.out.println("Vehicle is moving.");
+    }
 
-    public void stop(){}
-
+    @Override
+    public void stop() {
+        System.out.println("Vehicle has stopped.");
+    }
 }

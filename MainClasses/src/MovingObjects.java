@@ -1,16 +1,15 @@
-public abstract class MovingObjects implements GeneralRules{
+public abstract class MovingObjects implements GeneralRules {
     protected double objectSpeed;
     protected double objectDimension;
 
-    public double getObjectSpeed(){
+    public abstract double getObjectSpeed();
+    public abstract void setObjectSpeed(double objectSpeed);
+    public abstract void move();
+    public abstract void stop();
 
-    }
-    public void setObjectSpeed(objectSpeed double){
+    @Override
+    public abstract double getObjectDimension();
 
-    }
-    public double getObjectDimension(){}
-    public void setObjectDimension(objectDimension double){}
-    public void move(){}
-    public void stop(){}
-    
+    @Override
+    public abstract void setObjectDimension(double objectDimension);
 }

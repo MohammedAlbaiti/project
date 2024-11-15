@@ -65,10 +65,6 @@ class Road implements GeneralRules {
         
     }
 
-    public void updateTrafficState(String trafficState) {
-        this.trafficState = trafficState;
-    }
-
     public double getObjectDimension() {
         return objectDimension;
     }

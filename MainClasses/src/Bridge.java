@@ -1,30 +1,34 @@
-public class Bridge implements GenerRules{
+public class Bridge implements GeneralRules {
     private boolean bridgeStatus;
     private double objectDimension;
 
-    public Bridge(boolean bridgeStatus){}
-    
-    public boolean isBridgeStatus(){
-        return this.bridgeStatus;
-    }
-    // you can reomve it
-    public void setBridgeStatus(boolean bridgeStatus){
+    public Bridge(boolean bridgeStatus) {
         this.bridgeStatus = bridgeStatus;
     }
 
-    public void enableBridge(){
+    public boolean isBridgeStatus() {
+        return this.bridgeStatus;
+    }
+
+    public void setBridgeStatus(boolean bridgeStatus) {
+        this.bridgeStatus = bridgeStatus;
+    }
+
+    public void enableBridge() {
         this.bridgeStatus = true;
     }
 
-    public void disableBridge(){
+    public void disableBridge() {
         this.bridgeStatus = false;
     }
 
-    public double getObjectDimension(){
-        return this.objectDimension
+    @Override
+    public double getObjectDimension() {
+        return this.objectDimension;
     }
 
-    public void setObjectDimension(double objectDimension){
+    @Override
+    public void setObjectDimension(double objectDimension) {
         this.objectDimension = objectDimension;
     }
 }
