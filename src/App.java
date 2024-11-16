@@ -105,7 +105,7 @@ public class App extends Application {
                     
                     // Handle vehicle reaching the top
                     if (car.getYCOO() < -vehicleHeight) {
-                        mapContainer.getChildren().remove(car);
+                        mapContainer.getChildren().remove(car.getVehicleView());
                         cars.remove(i);
                         i--;
                         
