@@ -4,7 +4,7 @@ import javafx.scene.layout.Pane;
 
 public class Road implements GeneralRules {
     private int numberOfPassedCars = 0;
-    private int numberOfPassedPedestrians;
+    private int numberOfPassedPedestrians=0;
     private int numberOfAccidents;
     private String trafficState;
     private int numberOfLanes;

@@ -18,7 +18,7 @@ public class Pedestrian extends MovingObjects {
     private Road road;
     // Constructor
     public Pedestrian(Road road, String pedestrianStyle) {
-        super(1,30,50);
+        super(random.nextInt(3) + 1,30,50);
         // System.out.println("pedestrian");
         this.road=road;
         this.pedestrianID = "P" + (++counter);
@@ -50,14 +50,13 @@ public class Pedestrian extends MovingObjects {
 
     @Override
     public void move() {
-        System.out.println("Pedestrian is moving.");
-
+        setXCOO(getXCOO()+getObjectSpeed());
+        pedestrianView.setX(getXCOO());
     }
 
     @Override
     public void stop() {
-        System.out.println("Pedestrian has stopped.");
-
+        pedestrianView.setX(getXCOO());
     }
     @Override
     public void setObjectHeight(double objectHeight){
@@ -86,8 +85,9 @@ public class Pedestrian extends MovingObjects {
     }
 
         public void createPedestrian() {
-        xCoo = random.nextBoolean() ? 0 : road.getTotalWidth() - 145.63;
-        yCoo = random.nextInt(100) + 350;
+        // xCoo = random.nextBoolean() ? 0 : road.getTotalWidth() - 145.63;
+        xCoo = 0;
+        yCoo = random.nextInt(400);
         // System.out.println("pedestrian");
         String pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
         Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");
