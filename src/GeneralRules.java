@@ -1,4 +1,6 @@
 public interface GeneralRules {
-    double getObjectDimension();
-    void setObjectDimension(double objectDimension);
+    double getObjectWidth();
+    double getObjectHeight();
+    void setObjectHeight(double objectHeight);
+    void setObjectWidth(double objectWidth);
 }

@@ -9,15 +9,16 @@ import javafx.stage.Stage;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-// import Road;
+
 public class App extends Application {
-    Road road = new Road(4 , "normal", 5);
-    private double totalWidth = 0;
+    private Road road = new Road(1, 4, "normal", 5);
+    private double totalWidth;
     private List<ImageView> cars = new ArrayList<>();
     private List<ImageView> pedestrians = new ArrayList<>();
     private SecureRandom random = new SecureRandom();
-    private int passedCarsCount = 0;
-    private List<String> vehicleTypes = List.of("car", "car2", "car3", "car4", "truck", "truck2");
+    // private int passedCarsCount = 0;
+    // private List<String> carTypes = List.of("car", "car2", "car3", "car4");
+    // private List<String> truckTypes = List.of("truck", "truck2");
     private List<String> pedestrianTypes = List.of("pedestrian", "pedestrian2", "pedestrian3", "pedestrian4", "pedestrian5");
     private static final int RIGHTMOST_LANE_X = 600;
     private Text passedCarsText;
@@ -25,10 +26,11 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Create the map
-        Pane mapContainer = createMap();
+        Pane mapContainer = road.createMap();
+        totalWidth = road.getTotalWidth();
         
         // Generate initial vehicles and pedestrians
-        generateCars(mapContainer, 15);
+        generateVehicles(mapContainer, 15);
         generatePedestrians(mapContainer, 15);
         
         // Create the counter text
@@ -45,7 +47,7 @@ public class App extends Application {
                     double carX = car.getX();
                     double carY = car.getY();
                     boolean carStopped = false;
-                    //fe
+                    
                     // Get the current vehicle type
                     String vehicleType = (String) car.getUserData();
                     double vehicleHeight = vehicleType.startsWith("truck") ? 130 : 110;
@@ -99,10 +101,11 @@ public class App extends Application {
                         cars.remove(i);
                         i--;
                         
-                        passedCarsCount++;
-                        passedCarsText.setText("Passed Cars: " + passedCarsCount);
+                        // passedCarsCount++;
+                        road.increaseNumberOfPassedCars(1);
+                        passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
                         
-                        generateCars(mapContainer, 1);
+                        generateVehicles(mapContainer, 1);
                     }
                 }
                 
@@ -154,102 +157,25 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private Pane createMap() {
-        Pane mapContainer = new Pane();
-        mapContainer.setStyle("-fx-padding: 0; -fx-background-color: #232329;");
-        
-        Image walkingsideLeft = new Image("file:src/resources/walkingsideLeft.png");
-        Image movingStreet = new Image("file:src/resources/moving_street.png");
-        Image separatorLines = new Image("file:src/resources/speratorLines.png");
-        Image walkingsideRight = new Image("file:src/resources/walkingsideRight.png");
-
-        double width1 = 146;
-        double width2 = 113;
-        double width3 = 26;
-
-        int numberOfRoads = 1;
-        int numberOfLanes = 4;
-        double currentX = 0;
-
-        for (int i = numberOfRoads; i > 0; i--) {
-            // Add left walking side
-            ImageView leftWalk = new ImageView(walkingsideLeft);
-            leftWalk.setLayoutX(currentX);
-            leftWalk.setFitWidth(width1);
-            mapContainer.getChildren().add(leftWalk);
-            currentX += width1;
-
-            // Add lanes
-            for (int j = 0; j < numberOfLanes; j++) {
-                ImageView street = new ImageView(movingStreet);
-                street.setLayoutX(currentX);
-                street.setFitWidth(width2);
-                mapContainer.getChildren().add(street);
-                currentX += width2;
-
-                if (j < numberOfLanes - 1) {
-                    ImageView separator = new ImageView(separatorLines);
-                    separator.setLayoutX(currentX);
-                    separator.setFitWidth(width3);
-                    mapContainer.getChildren().add(separator);
-                    currentX += width3;
-                }
-            }
-
-            // Add right walking side
-            ImageView rightWalk = new ImageView(walkingsideRight);
-            rightWalk.setLayoutX(currentX);
-            rightWalk.setFitWidth(width1);
-            mapContainer.getChildren().add(rightWalk);
-            currentX += width1;
-        }
-
-        totalWidth = currentX;
-        return mapContainer;
-    }
     private ImageView createCar(double x, double y) {
-        String vehicleType;
-        
-        // If it's the rightmost lane, 40% chance for trucks, otherwise only cars
-        if (x == RIGHTMOST_LANE_X) {
-            if (random.nextDouble() < 0.4) {
-                // Choose between truck types
-                vehicleType = random.nextBoolean() ? "truck" : "truck2";
-            } else {
-                // Choose between car types
-                vehicleType = "car" + (random.nextInt(4) + 1);
-            }
-        } else {
-            // Choose between car types for other lanes
-            vehicleType = "car" + (random.nextInt(4) + 1);
+        // Determine if we should create a truck (only in rightmost lane)
+        if (x == RIGHTMOST_LANE_X && random.nextDouble() < 0.4) {
+            Truck truck = new Truck(road,"normal");
+            return truck.createTruck(x, y);
         }
-        
-        Image vehicleImage = new Image("file:src/resources/" + vehicleType + ".png");
-        ImageView vehicleView = new ImageView(vehicleImage);
-        
-        if (vehicleType.startsWith("truck")) {
-            vehicleView.setFitWidth(60);
-            vehicleView.setFitHeight(130);
-        } else {
-            vehicleView.setFitWidth(50);
-            vehicleView.setFitHeight(110);
-        }
-        
-        vehicleView.setX(x);
-        vehicleView.setY(y);
-        vehicleView.setUserData(vehicleType);
-        
-        return vehicleView;
+        Car car = new Car(road,"normal");
+        return car.createCarVehicle(x, y);
     }
-    private void generateCars(Pane mapContainer, int numberOfCars) {
+
+    private void generateVehicles(Pane mapContainer, int numberOfVehicles) {
         double startingY = 320;
         double ySpacing = 130;
         
-        int[] carXPositions = {180, 340, 460, 600};
+        int[] lanePositions = {180, 340, 460, 600};
         
-        for (int i = 0; i < numberOfCars; i++) {
-            int laneIndex = random.nextInt(carXPositions.length);
-            int x = carXPositions[laneIndex];
+        for (int i = 0; i < numberOfVehicles; i++) {
+            int laneIndex = random.nextInt(lanePositions.length);
+            int x = lanePositions[laneIndex];
             double y = startingY + (cars.size() * ySpacing);
             
             ImageView vehicle = createCar(x, y);
@@ -262,23 +188,11 @@ public class App extends Application {
         for (int i = 0; i < numberOfPedestrians; i++) {
             double x = random.nextBoolean() ? 0 : totalWidth - 145.63;
             double y = random.nextInt(100) + 350;
-            
-            ImageView pedestrian = createPedestrian(x, y);
-            pedestrians.add(pedestrian);
-            mapContainer.getChildren().add(pedestrian);
+            Pedestrian pedestrian = new Pedestrian(road, "normal");
+            ImageView pedestrianView = pedestrian.createPedestrian(x, y);
+            pedestrians.add(pedestrianView);
+            mapContainer.getChildren().add(pedestrianView);
         }
-    }
-
-    private ImageView createPedestrian(double x, double y) {
-        String pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
-        Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");
-        ImageView pedestrianView = new ImageView(pedestrianImage);
-        pedestrianView.setFitWidth(30);
-        pedestrianView.setFitHeight(50);
-        pedestrianView.setX(x);
-        pedestrianView.setY(y);
-        pedestrianView.setUserData(pedestrianType);
-        return pedestrianView;
     }
 
     public static void main(String[] args) {
