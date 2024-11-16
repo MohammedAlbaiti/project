@@ -1,34 +1,19 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+	"version": "0.2.0",
+	"configurations": [
 		{
+			"vmArgs": "--module-path \"c:/Users/t1234/Downloads/openjfx-22.0.2_windows-x64_bin-sdk/javafx-sdk-22.0.2/lib\" --add-modules javafx.controls,javafx.fxml",
 			"type": "java",
-			"name": "MovingObjects",
+			"name": "Launch Current File",
 			"request": "launch",
-			"mainClass": "MovingObjects",
-			"projectName": "project_c6ea400e"
+			"mainClass": "src.App"
 		},
 		{
+			"vmArgs": "--module-path \"c:/Users/t1234/Downloads/openjfx-22.0.2_windows-x64_bin-sdk/javafx-sdk-22.0.2/lib\" --add-modules javafx.controls,javafx.fxml",
 			"type": "java",
-			"name": "Bridge",
+			"name": "Launch App",
 			"request": "launch",
-			"mainClass": "Bridge",
-			"projectName": "project_c6ea400e"
-		},
-		{
-			"type": "java",
-			"name": "Run Specific Java File",
-			"request": "launch",
-			"mainClass": "${fileBasenameNoExtension}",
-			"vmArgs": ""
-		},
-		{
-			"type": "java",
-			"name": "Launch JavaFX App",
-			"request": "launch",
-			"mainClass": "App",
-			"vmArgs": "--module-path \"c:/Users/t1234/Downloads/openjfx-22.0.2_windows-x64_bin-sdk/javafx-sdk-22.0.2/lib\" --add-modules javafx.controls,javafx.fxml" 
-			// "vmArgs": "--module-path \"D:/Libraries/openjfx-23.0.1_windows-x64_bin-sdk/javafx-sdk-23.0.1/lib\" --add-modules javafx.controls,javafx.fxml" //for Saud Asiri dir
+			"mainClass": "App"
 		}
 	]
 }
