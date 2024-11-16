@@ -1,19 +1,26 @@
 {
-	"version": "0.2.0",
-	"configurations": [
+    "version": "0.2.0",
+    "configurations": [
 		{
-			"vmArgs": "--module-path \"c:/Users/t1234/Downloads/openjfx-22.0.2_windows-x64_bin-sdk/javafx-sdk-22.0.2/lib\" --add-modules javafx.controls,javafx.fxml",
 			"type": "java",
-			"name": "Launch Current File",
+			"name": "Bridge",
 			"request": "launch",
-			"mainClass": "src.App"
+			"mainClass": "Bridge",
+			"projectName": "project_c6ea400e"
 		},
 		{
-			"vmArgs": "--module-path \"c:/Users/t1234/Downloads/openjfx-22.0.2_windows-x64_bin-sdk/javafx-sdk-22.0.2/lib\" --add-modules javafx.controls,javafx.fxml",
 			"type": "java",
-			"name": "Launch App",
+			"name": "Run Specific Java File",
 			"request": "launch",
-			"mainClass": "App"
+			"mainClass": "${fileBasenameNoExtension}",
+			"vmArgs": ""
+		},
+		{
+			"type": "java",
+			"name": "Launch JavaFX App",
+			"request": "launch",
+			"mainClass": "App",
+			"vmArgs": "--module-path \"c:/Users/t1234/Downloads/openjfx-22.0.2_windows-x64_bin-sdk/javafx-sdk-22.0.2/lib\" --add-modules javafx.controls,javafx.fxml"
 		}
 	]
 }

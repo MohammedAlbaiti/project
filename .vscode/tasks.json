@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-d", "out",
+                "-sourcepath", "MainClasses/src;src",
+                "MainClasses/src/mainclasses/*.java",
+                "MainClasses/src/mainclasses/models/*.java",
+                "src/frontend/*.java",
+                "src/frontend/controllers/*.java"
+            ],
+            "group": "build",
+            "problemMatcher": ["$javac"],
+            "detail": "Compiles the project"
+        }
+    ]
+}

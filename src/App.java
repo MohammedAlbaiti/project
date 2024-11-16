@@ -6,12 +6,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-
+// import Road;
 public class App extends Application {
+    Road road = new Road(4 , "normal", 5);
     private double totalWidth = 0;
     private List<ImageView> cars = new ArrayList<>();
     private List<ImageView> pedestrians = new ArrayList<>();
