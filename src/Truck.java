@@ -9,7 +9,7 @@ public class Truck extends Vehicle {
     private static int counter = 1;
     private static final List<String> TRUCK_TYPES = List.of("truck", "truck2");
     private static final SecureRandom random = new SecureRandom();
-    
+    // private ImageView truckView;
     // private static final double DEFAULT_TRUCK_SPEED = 2;
     // private static final double DEFAULT_TRUCK_DIMENSION = 130.0;
 
@@ -36,22 +36,25 @@ public class Truck extends Vehicle {
         }
     }
 
-    public ImageView createTruck(double x, double y) {
-        System.out.println("truck");
+    public void createTruck(double x, double y) {
+        xCoo=x;
+        yCoo=y;
+        // System.out.println("truck");
         Image truckImage = new Image("file:src/resources/" + truckType + ".png");
-        ImageView truckView = new ImageView(truckImage);
+        vehicleView = new ImageView(truckImage);
         
-        truckView.setFitWidth((int)getObjectWidth());
-        truckView.setFitHeight((int)getObjectHeight());
-        truckView.setX(x);
-        truckView.setY(y);
-        truckView.setUserData(this.truckType);
+        vehicleView.setFitWidth((int)getObjectWidth());
+        vehicleView.setFitHeight((int)getObjectHeight());
+        vehicleView.setX(xCoo);
+        vehicleView.setY(yCoo);
+        vehicleView.setUserData(this.truckType);
         
-        return truckView;
     }
-
-    @Override
-    public void move() {
-        System.out.println("Truck " + truckID + " is moving at speed: " + getObjectSpeed());
-    }
+    // public ImageView getTruckView(){
+    //     return truckView;
+    // }
+    // @Override
+    // public void move() {
+    //     System.out.println("Truck " + truckID + " is moving at speed: " + getObjectSpeed());
+    // }
 }

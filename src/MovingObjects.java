@@ -2,7 +2,8 @@ public abstract class MovingObjects implements GeneralRules {
     protected double objectSpeed;
     protected double objectWidth;
     protected double objectHeight;
-
+    protected double xCoo;
+    protected double yCoo;
     public MovingObjects(double objectSpeed, double objectWidth, double objectHeight) {
         this.objectSpeed = objectSpeed;
         this.objectWidth = objectWidth;
@@ -18,4 +19,22 @@ public abstract class MovingObjects implements GeneralRules {
     public abstract void setObjectWidth(double objectWidth);
     public abstract double getObjectWidth();
     public abstract double getObjectHeight();
+    public double getXCOO(){
+        return xCoo;
+    }
+    public void increaseXCOO(double increment){
+        xCoo+=increment;
+    }
+    public void setXCOO(double xCoo){
+        this.xCoo=xCoo;
+    }
+    public double getYCOO(){
+        return yCoo;
+    }
+    public void increaseYCOO(double increment){
+        yCoo+=increment;
+    }
+    public void setYCOO(double yCoo){
+        this.yCoo=yCoo;
+    }
 }

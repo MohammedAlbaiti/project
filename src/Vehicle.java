@@ -1,8 +1,9 @@
+import javafx.scene.image.ImageView;
 
 public class Vehicle extends MovingObjects {
     private String driverStyle;
     private Road road;
-
+    protected  ImageView vehicleView;
     public Vehicle(Road road, String driverStyle, double objectSpeed, double objectWidth, double objectHeight) {
         super(objectSpeed, objectWidth,objectHeight);
         this.driverStyle = driverStyle;
@@ -49,12 +50,17 @@ public class Vehicle extends MovingObjects {
     }
     @Override
     public void move() {
-        System.out.println("Vehicle is moving at speed: " + objectSpeed);
+        setYCOO(getYCOO()-getObjectSpeed());
+        vehicleView.setY(getYCOO());
     }
 
     @Override
     public void stop() {
-        System.out.println("Vehicle has stopped.");
-        this.objectSpeed = 0;
+        vehicleView.setY(getYCOO());
     }
+
+    public ImageView getVehicleView() {
+        return vehicleView;
+    }
+    
 }

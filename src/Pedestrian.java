@@ -13,6 +13,7 @@ public class Pedestrian extends MovingObjects {
     private static int counter=1;
     private static final SecureRandom random = new SecureRandom();
     private final List<String> pedestrianTypes = new ArrayList<>(List.of("pedestrian", "pedestrian2", "pedestrian3", "pedestrian4", "pedestrian5"));
+    private ImageView pedestrianView;
 
     private Road road;
     // Constructor
@@ -23,8 +24,7 @@ public class Pedestrian extends MovingObjects {
         this.pedestrianID = "P" + (++counter);
         this.pedestrianStyle = pedestrianStyle;
         this.crossingStatus = false; // Default to not crossing
-
- 
+        
     }
     
     // Getters and Setters
@@ -85,16 +85,21 @@ public class Pedestrian extends MovingObjects {
         this.objectSpeed = objectSpeed;
     }
 
-        public ImageView createPedestrian(double x, double y) {
-        System.out.println("pedestrian");
+        public void createPedestrian() {
+        xCoo = random.nextBoolean() ? 0 : road.getTotalWidth() - 145.63;
+        yCoo = random.nextInt(100) + 350;
+        // System.out.println("pedestrian");
         String pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
         Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");
-        ImageView pedestrianView = new ImageView(pedestrianImage);
+        pedestrianView = new ImageView(pedestrianImage);
         pedestrianView.setFitWidth((int)getObjectWidth());
         pedestrianView.setFitHeight((int)getObjectHeight());
-        pedestrianView.setX(x);
-        pedestrianView.setY(y);
+        pedestrianView.setX(xCoo);
+        pedestrianView.setY(yCoo);
         pedestrianView.setUserData(pedestrianType);
+        
+    }
+    public ImageView getImageView(){
         return pedestrianView;
     }
 }

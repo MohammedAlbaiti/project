@@ -9,9 +9,18 @@ public class Car extends Vehicle {
     private static int counter = 1;
     private static final SecureRandom random = new SecureRandom();
     private List<String> carTypes = List.of("car", "car2", "car3", "car4");
+    private static Image carImage = new Image("file:src/resources/car.png");
+    private static Image carImage2 = new Image("file:src/resources/car2.png");
+    private static Image carImag3 = new Image("file:src/resources/car3.png");
+    private static Image carImage4 = new Image("file:src/resources/car4.png");
+    private Image objectImage;
+
+
+
+    // private ImageView carView;
 
     public Car(Road road, String driverStyle) {
-        super(road, driverStyle, 4, 50,110);
+        super(road, driverStyle, random.nextInt(4) + 2, 50,110);
         // System.out.println("car");
         this.carID = "C" + (counter++);
     }
@@ -28,23 +37,40 @@ public class Car extends Vehicle {
         this.carType = carType;
     }
 
-    @Override
-    public void move() {
-        System.out.println("Car " + carID + " is moving at speed: " + getObjectSpeed());
-    }
+    // @Override
+    // public void move() {
+    //     System.out.println("Car " + carID + " is moving at speed: " + getObjectSpeed());
+    // }
     
-    public ImageView createCarVehicle(double x, double y) {
-        System.out.println("car");
+    public void createCarVehicle(double x, double y) {
+        xCoo=x;
+        yCoo=y;
+        // System.out.println("car");
         String carType = carTypes.get(random.nextInt(carTypes.size()));
-        Image carImage = new Image("file:src/resources/" + carType + ".png");
-        ImageView carView = new ImageView(carImage);
+        if (carType.equals("car")){
+            objectImage=carImage;
+        }
+        else if (carType.equals("car2")){
+            objectImage=carImage2;
+        }
+        else if (carType.equals("car3")){
+            objectImage=carImag3;
+        }
+        else{
+            objectImage=carImage4;
+        }
+        // Image carImage = new Image("file:src/resources/" + carType + ".png");
+        vehicleView = new ImageView(objectImage);
         
-        carView.setFitWidth((int)getObjectWidth());
-        carView.setFitHeight((int)getObjectHeight());
-        carView.setX(x);
-        carView.setY(y);
-        carView.setUserData(carType);
+        vehicleView.setFitWidth((int)getObjectWidth());
+        vehicleView.setFitHeight((int)getObjectHeight());
+        vehicleView.setX(xCoo);
+        vehicleView.setY(yCoo);
+        vehicleView.setUserData(carType);
         
-        return carView;
-    }
-}
+        
+    // }
+    // public ImageView getCarView() {
+    //     return carView;
+    // }
+}}

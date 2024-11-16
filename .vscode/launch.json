@@ -3,6 +3,13 @@
     "configurations": [
 		{
 			"type": "java",
+			"name": "MovingObjects",
+			"request": "launch",
+			"mainClass": "MovingObjects",
+			"projectName": "project_c6ea400e"
+		},
+		{
+			"type": "java",
 			"name": "Bridge",
 			"request": "launch",
 			"mainClass": "Bridge",

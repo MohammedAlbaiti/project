@@ -143,7 +143,7 @@ public class Road implements GeneralRules {
         return mapContainer;
     }
     public double getTotalWidth(){
-        System.out.println(totalWidth);
+        // System.out.println(totalWidth);
         return totalWidth;
     }
 }
