@@ -4,6 +4,7 @@ public abstract class MovingObjects implements GeneralRules {
     protected double objectHeight;
     protected double xCoo;
     protected double yCoo;
+    protected String direciton;
     public MovingObjects(double objectSpeed, double objectWidth, double objectHeight) {
         this.objectSpeed = objectSpeed;
         this.objectWidth = objectWidth;
@@ -36,5 +37,11 @@ public abstract class MovingObjects implements GeneralRules {
     }
     public void setYCOO(double yCoo){
         this.yCoo=yCoo;
+    }
+    public void setObjectDireciton(String direction){
+        this.direciton = direction;
+    }
+    public String getObjectDirection(){
+        return this.direciton;
     }
 }

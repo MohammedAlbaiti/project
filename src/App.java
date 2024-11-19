@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -206,7 +207,7 @@ class TrafficSimulation {
     private List<Vehicle> cars = new ArrayList<>();
     private List<Pedestrian> pedestrians = new ArrayList<>();
     private SecureRandom random = new SecureRandom();
-    private static final int RIGHTMOST_LANE_X = 600;
+    // private static final ArrayList<Double> RIGHTMOST_LANE_X= new ArrayList<>();
     private Text passedCarsText;
     private Text passedPedestrianText;
     private Text timeRemainingText;
@@ -214,6 +215,7 @@ class TrafficSimulation {
     private long startTime;
     private int simulationDuration;
     private boolean isSimulationComplete = false;
+    private ArrayList<Double> lanePositions;
     
     public TrafficSimulation(Road road, int numberOfCars, int simulationDuration) {
         this.road = road;
@@ -265,6 +267,8 @@ class TrafficSimulation {
     }
     
     private void updateVehicles(Pane mapContainer) {
+
+
         for (int i = 0; i < cars.size(); i++) {
             Vehicle car = cars.get(i);
             double carX = car.getXCOO();
@@ -272,7 +276,7 @@ class TrafficSimulation {
             boolean carStopped = false;
             
             double vehicleHeight = (car instanceof Car) ? 110 : 130;
-            
+
             // Check for vehicle collision
             for (int j = 0; j < cars.size(); j++) {
                 if (i == j) continue;
@@ -367,30 +371,69 @@ class TrafficSimulation {
         }
     }
     
-    private Vehicle createCar(double x, double y) {
-        if (x == RIGHTMOST_LANE_X && random.nextDouble() < 0.4) {
+    private Vehicle createCar(double x, double y, String direciton) {
+        double RIGHTMOST_LANE_X = road.getRightMostLane().get(0);
+        double RIGHTMOST_LANE_X1 = 0;
+        if(road.getRightMostLane().size()==2){
+            RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1);
+            // double RIGHTMOST_LANE_X = road.getRightMostLane().get(0);
+        }
+
+        // double RIGHTMOST_LANE_X = 
+        if ((x == RIGHTMOST_LANE_X || x==RIGHTMOST_LANE_X1) && random.nextDouble() < 0.4) {
             Truck truck = new Truck(road, "normal");
+            truck.setObjectDireciton(direciton);
             truck.createTruck(x, y);
             return truck;
         }
         Car car = new Car(road, "normal");
+        car.setObjectDireciton(direciton);
         car.createCarVehicle(x, y);
         return car;
     }
     
     private void generateVehicles(Pane mapContainer, int numberOfVehicles) {
-        double startingY = 320;
+        double startingY = 0;
         double ySpacing = 130;
         
-        int[] lanePositions = {180, 340, 460, 600};
-        
+        // Get lane positions and adjust for vehicle positioning
+        lanePositions = road.getXCooForLanes();
+        for (int i = 0; i < lanePositions.size(); i++) {
+            lanePositions.set(i, lanePositions.get(i) + 10);
+        }
+    
+        // For two roads, vehicles in the first half of lanes should go down, others go up
+        int halfSizeLanePositions = lanePositions.size() / 2;
+    
         for (int i = 0; i < numberOfVehicles; i++) {
-            int laneIndex = random.nextInt(lanePositions.length);
-            int x = lanePositions[laneIndex];
-            double y = startingY + (cars.size() * ySpacing);
+            int laneIndex = random.nextInt(lanePositions.size());
+            Double x = lanePositions.get(laneIndex);
             
-            Vehicle vehicle = createCar(x, y);
+            // Adjust Y position based on direction
+            String direction;
+            double y;
+            
+            if (road.getNumberOfRoads() == 2) {
+                if (laneIndex < halfSizeLanePositions) {
+                    direction = "down";
+                    y = -startingY - (cars.size() * ySpacing); // Start from top for downward vehicles
+                } else {
+                    direction = "up";
+                    y = road.getObjectHeight() + startingY + (cars.size() * ySpacing); // Start from bottom for upward vehicles
+                }
+            } else {
+                // Single road - all vehicles go up
+                direction = "up";
+                y = road.getObjectHeight() + startingY + (cars.size() * ySpacing);
+            }
+            
+            Vehicle vehicle = createCar(x, y, direction);
             ImageView vehicleImageView = vehicle.getVehicleView();
+            
+            // Rotate vehicle based on direction
+            if (direction.equals("down")) {
+                vehicleImageView.setRotate(180);
+            }
             
             cars.add(vehicle);
             mapContainer.getChildren().add(vehicleImageView);
@@ -400,6 +443,7 @@ class TrafficSimulation {
     private void generatePedestrians(Pane mapContainer, int numberOfPedestrians) {
         for (int i = 0; i < numberOfPedestrians; i++) {
             Pedestrian pedestrian = new Pedestrian(road, "normal");
+            pedestrian.setObjectDireciton("right");
             pedestrian.createPedestrian();
             pedestrians.add(pedestrian);
             mapContainer.getChildren().add(pedestrian.getImageView());

@@ -50,8 +50,15 @@ public class Pedestrian extends MovingObjects {
 
     @Override
     public void move() {
-        setXCOO(getXCOO()+getObjectSpeed());
-        pedestrianView.setX(getXCOO());
+        if(getObjectDirection().equals("right")){
+            setXCOO(getXCOO()+getObjectSpeed());
+            pedestrianView.setX(getXCOO());
+        }
+        else{
+            setXCOO(getXCOO()-getObjectSpeed());
+            pedestrianView.setX(getXCOO());
+        }
+
     }
 
     @Override
