@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-// import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -17,18 +16,16 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-
-// Update the main App class's comparison method
 public class App extends Application {
-        // Configuration variables
     private int simulationTime;
     private int numberOfCars;
     private int numberOfLanes;
     private int numberOfRoads;
     
-    // Keep track of simulation windows
     private Stage phase1Window;
     private Stage phase2Window;
+    private TrafficSimulation phase1Simulation;
+    private TrafficSimulation phase2Simulation;
     
     @Override
     public void start(Stage primaryStage) {
@@ -40,13 +37,11 @@ public class App extends Application {
         inputForm.setPadding(new Insets(20));
         inputForm.setAlignment(Pos.CENTER);
         
-        // Create input fields
         TextField timeField = new TextField();
         TextField carsField = new TextField();
         TextField lanesField = new TextField();
         TextField roadsField = new TextField();
         
-        // Add labels and fields
         inputForm.getChildren().addAll(
             new Label("Simulation Time (seconds):"),
             timeField,
@@ -58,7 +53,6 @@ public class App extends Application {
             roadsField
         );
         
-        // Submit button
         Button submitButton = new Button("Submit");
         submitButton.setOnAction(e -> {
             try {
@@ -67,18 +61,22 @@ public class App extends Application {
                 numberOfLanes = Integer.parseInt(lanesField.getText());
                 numberOfRoads = Integer.parseInt(roadsField.getText());
                 
+                if (simulationTime <= 0 || numberOfCars <= 0 || 
+                    numberOfLanes <= 0 || numberOfRoads <= 0) {
+                    throw new NumberFormatException();
+                }
+                
                 showControlPanel();
                 primaryStage.close();
             } catch (NumberFormatException ex) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Input");
-                alert.setContentText("Please enter valid numbers for all fields.");
+                alert.setContentText("Please enter valid positive numbers for all fields.");
                 alert.showAndWait();
             }
         });
         
         inputForm.getChildren().add(submitButton);
-        
         Scene scene = new Scene(inputForm, 300, 400);
         primaryStage.setTitle("Simulation Configuration");
         primaryStage.setScene(scene);
@@ -113,13 +111,16 @@ public class App extends Application {
     
     private void startPhase1Simulation() {
         if (phase1Window != null) {
+            if (phase1Simulation != null) {
+                phase1Simulation.stopSimulation();
+            }
             phase1Window.close();
         }
         
         phase1Window = new Stage();
         Road road = new Road(numberOfRoads, numberOfLanes, "normal", simulationTime);
-        TrafficSimulation simulation = new TrafficSimulation(road, numberOfCars);
-        Scene simulationScene = simulation.createSimulationScene();
+        phase1Simulation = new TrafficSimulation(road, numberOfCars, simulationTime);
+        Scene simulationScene = phase1Simulation.createSimulationScene();
         
         phase1Window.setTitle("Phase 1 Simulation");
         phase1Window.setScene(simulationScene);
@@ -128,13 +129,16 @@ public class App extends Application {
     
     private void startPhase2Simulation() {
         if (phase2Window != null) {
+            if (phase2Simulation != null) {
+                phase2Simulation.stopSimulation();
+            }
             phase2Window.close();
         }
         
         phase2Window = new Stage();
         Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", simulationTime);
-        TrafficSimulation simulation = new TrafficSimulation(road, numberOfCars);
-        Scene simulationScene = simulation.createSimulationScene();
+        phase2Simulation = new TrafficSimulation(road, numberOfCars, simulationTime);
+        Scene simulationScene = phase2Simulation.createSimulationScene();
         
         phase2Window.setTitle("Phase 2 Simulation");
         phase2Window.setScene(simulationScene);
@@ -142,6 +146,14 @@ public class App extends Application {
     }
     
     private void compareResults() {
+        if (phase1Simulation == null || phase2Simulation == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Incomplete Simulation");
+            alert.setContentText("Please run both phases before comparing results.");
+            alert.showAndWait();
+            return;
+        }
+        
         Stage compareStage = new Stage();
         VBox comparePanel = new VBox(10);
         comparePanel.setPadding(new Insets(20));
@@ -150,36 +162,29 @@ public class App extends Application {
         StringBuilder comparison = new StringBuilder();
         comparison.append("Simulation Results\n\n");
         
-        // Get results from both simulations
-        TrafficSimulation phase1Sim = (TrafficSimulation) phase1Window.getScene().getUserData();
-        TrafficSimulation phase2Sim = (TrafficSimulation) phase2Window.getScene().getUserData();
-        
-        if (phase1Sim != null && phase2Sim != null) {
-            comparison.append(String.format("Phase 1:\n" +
-                "Passed Cars: %d\n" +
-                "Passed Pedestrians: %d\n\n", 
-                phase1Sim.getPassedCars(),
-                phase1Sim.getPassedPedestrians()));
-                
-            comparison.append(String.format("Phase 2:\n" +
-                "Passed Cars: %d\n" +
-                "Passed Pedestrians: %d\n\n",
-                phase2Sim.getPassedCars(),
-                phase2Sim.getPassedPedestrians()));
-                
-            // Calculate improvement percentages
-            double carImprovement = ((double)(phase2Sim.getPassedCars() - phase1Sim.getPassedCars()) / 
-                                   phase1Sim.getPassedCars()) * 100;
-            double pedImprovement = ((double)(phase2Sim.getPassedPedestrians() - phase1Sim.getPassedPedestrians()) / 
-                                   phase1Sim.getPassedPedestrians()) * 100;
-                                   
+        comparison.append(String.format("Phase 1:\n" +
+            "Passed Cars: %d\n" +
+            "Passed Pedestrians: %d\n\n", 
+            phase1Simulation.getPassedCars(),
+            phase1Simulation.getPassedPedestrians()));
+            
+        comparison.append(String.format("Phase 2:\n" +
+            "Passed Cars: %d\n" +
+            "Passed Pedestrians: %d\n\n",
+            phase2Simulation.getPassedCars(),
+            phase2Simulation.getPassedPedestrians()));
+            
+        if (phase1Simulation.getPassedCars() > 0 && phase1Simulation.getPassedPedestrians() > 0) {
+            double carImprovement = ((double)(phase2Simulation.getPassedCars() - phase1Simulation.getPassedCars()) / 
+                               phase1Simulation.getPassedCars()) * 100;
+            double pedImprovement = ((double)(phase2Simulation.getPassedPedestrians() - phase1Simulation.getPassedPedestrians()) / 
+                               phase1Simulation.getPassedPedestrians()) * 100;
+                               
             comparison.append(String.format("Improvements:\n" +
                 "Cars: %.1f%%\n" +
                 "Pedestrians: %.1f%%",
                 carImprovement,
                 pedImprovement));
-        } else {
-            comparison.append("Please run both phases before comparing results.");
         }
         
         Text comparisonText = new Text(comparison.toString());
@@ -191,44 +196,8 @@ public class App extends Application {
         compareStage.show();
     }
     
-    private void startPhase1Simulation() {
-        if (phase1Window != null) {
-            TrafficSimulation oldSim = (TrafficSimulation) phase1Window.getScene().getUserData();
-            if (oldSim != null) {
-                oldSim.stopSimulation();
-            }
-            phase1Window.close();
-        }
-        
-        phase1Window = new Stage();
-        Road road = new Road(numberOfRoads, numberOfLanes, "normal", simulationTime);
-        TrafficSimulation simulation = new TrafficSimulation(road, numberOfCars);
-        Scene simulationScene = simulation.createSimulationScene();
-        simulationScene.setUserData(simulation);
-        
-        phase1Window.setTitle("Phase 1 Simulation");
-        phase1Window.setScene(simulationScene);
-        phase1Window.show();
-    }
-    
-    private void startPhase2Simulation() {
-        if (phase2Window != null) {
-            TrafficSimulation oldSim = (TrafficSimulation) phase2Window.getScene().getUserData();
-            if (oldSim != null) {
-                oldSim.stopSimulation();
-            }
-            phase2Window.close();
-        }
-        
-        phase2Window = new Stage();
-        Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", simulationTime);
-        TrafficSimulation simulation = new TrafficSimulation(road, numberOfCars);
-        Scene simulationScene = simulation.createSimulationScene();
-        simulationScene.setUserData(simulation);
-        
-        phase2Window.setTitle("Phase 2 Simulation");
-        phase2Window.setScene(simulationScene);
-        phase2Window.show();
+    public static void main(String[] args) {
+        launch(args);
     }
 }
 class TrafficSimulation {
@@ -240,39 +209,56 @@ class TrafficSimulation {
     private static final int RIGHTMOST_LANE_X = 600;
     private Text passedCarsText;
     private Text passedPedestrianText;
+    private Text timeRemainingText;
     private AnimationTimer animationTimer;
+    private long startTime;
+    private int simulationDuration;
+    private boolean isSimulationComplete = false;
     
-    public TrafficSimulation(Road road, int numberOfCars) {
+    public TrafficSimulation(Road road, int numberOfCars, int simulationDuration) {
         this.road = road;
         this.numberOfCars = numberOfCars;
+        this.simulationDuration = simulationDuration;
     }
     
     public Scene createSimulationScene() {
         Pane mapContainer = road.createMap();
         double totalWidth = road.getObjectWidth();
         
-        // Generate initial vehicles and pedestrians
         generateVehicles(mapContainer, numberOfCars);
         generatePedestrians(mapContainer, 15);
         
-        // Create the counter text
         passedCarsText = new Text(20, 30, "Passed Cars: 0");
-        mapContainer.getChildren().add(passedCarsText);
-        passedPedestrianText = new Text(20, 40, "Passed Pedestrian: 0");
-        mapContainer.getChildren().add(passedPedestrianText);
+        passedPedestrianText = new Text(20, 50, "Passed Pedestrians: 0");
+        timeRemainingText = new Text(20, 70, "Time Remaining: " + simulationDuration + "s");
         
-        // Create and start animation timer
+        mapContainer.getChildren().addAll(passedCarsText, passedPedestrianText, timeRemainingText);
+        
         startAnimation(mapContainer);
         
         return new Scene(mapContainer, totalWidth, road.getObjectHeight());
     }
     
     private void startAnimation(Pane mapContainer) {
+        startTime = System.nanoTime();
+        
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                updateVehicles(mapContainer);
-                updatePedestrians(mapContainer);
+                if (!isSimulationComplete) {
+                    int elapsedSeconds = (int)((now - startTime) / 1e9);
+                    int remainingTime = simulationDuration - elapsedSeconds;
+                    
+                    if (remainingTime <= 0) {
+                        stopSimulation();
+                        isSimulationComplete = true;
+                        return;
+                    }
+                    
+                    timeRemainingText.setText("Time Remaining: " + remainingTime + "s");
+                    updateVehicles(mapContainer);
+                    updatePedestrians(mapContainer);
+                }
             }
         };
         animationTimer.start();
