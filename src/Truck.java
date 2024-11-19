@@ -1,4 +1,5 @@
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.security.SecureRandom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -7,7 +8,8 @@ public class Truck extends Vehicle {
     private String truckID;
     private String truckType;
     private static int counter = 1;
-    private static final List<String> TRUCK_TYPES = List.of("truck", "truck2");
+    private static final ArrayList<String> TRUCK_TYPES = new ArrayList<>(Arrays.asList("truck", "truck2"));
+
     private static final SecureRandom random = new SecureRandom();
     // private ImageView truckView;
     // private static final double DEFAULT_TRUCK_SPEED = 2;

@@ -1,6 +1,6 @@
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,7 +12,7 @@ public class Pedestrian extends MovingObjects {
     private String pedestrianStyle;
     private static int counter=1;
     private static final SecureRandom random = new SecureRandom();
-    private final List<String> pedestrianTypes = new ArrayList<>(List.of("pedestrian", "pedestrian2", "pedestrian3", "pedestrian4", "pedestrian5"));
+    private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList("pedestrian", "pedestrian2", "pedestrian3", "pedestrian4", "pedestrian5"));
     private ImageView pedestrianView;
 
     private Road road;

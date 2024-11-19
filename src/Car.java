@@ -1,14 +1,18 @@
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.security.SecureRandom;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+// import java.util.List;
 
 public class Car extends Vehicle {
     private String carID;
     private String carType;
     private static int counter = 1;
     private static final SecureRandom random = new SecureRandom();
-    private List<String> carTypes = List.of("car", "car2", "car3", "car4");
+    private ArrayList<String> carTypes = new ArrayList<>(Arrays.asList("car", "car2", "car3", "car4"));
+            // ArrayList<String> list = new ArrayList<>(Arrays.asList("Apple", "Banana", "Cherry"));
+
     private static Image carImage = new Image("file:src/resources/car.png");
     private static Image carImage2 = new Image("file:src/resources/car2.png");
     private static Image carImag3 = new Image("file:src/resources/car3.png");
