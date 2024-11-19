@@ -249,7 +249,7 @@ class TrafficSimulation {
     
     public Scene createSimulationScene() {
         Pane mapContainer = road.createMap();
-        double totalWidth = road.getTotalWidth();
+        double totalWidth = road.getObjectWidth();
         
         // Generate initial vehicles and pedestrians
         generateVehicles(mapContainer, numberOfCars);
@@ -264,7 +264,7 @@ class TrafficSimulation {
         // Create and start animation timer
         startAnimation(mapContainer);
         
-        return new Scene(mapContainer, totalWidth, 480);
+        return new Scene(mapContainer, totalWidth, road.getObjectHeight());
     }
     
     private void startAnimation(Pane mapContainer) {
@@ -363,14 +363,14 @@ class TrafficSimulation {
             }
             
             if (!carInFront) {
-                if (pedestrianX < road.getTotalWidth() - 30) {
+                if (pedestrianX < road.getObjectWidth() - 30) {
                     pedestrian.move();
                 }
             } else {
                 pedestrian.stop();
             }
             
-            if (pedestrianX >= road.getTotalWidth() - 30) {
+            if (pedestrianX >= road.getObjectWidth() - 30) {
                 mapContainer.getChildren().remove(pedestrian.getImageView());
                 pedestrians.remove(i);
                 i--;

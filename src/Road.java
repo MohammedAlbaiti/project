@@ -11,9 +11,9 @@ public class Road implements GeneralRules {
     private double accidentDelay;
     // private double objectDimension;
     private int numberOfRoads;
-    private double totalWidth;
+    // private double totalWidth;
     private double objectWidth;
-    private double objectHeight;
+    private double objectHeight=480;
 
     public Road(int numberOfRoads,int numberOfLanes, String trafficState, double accidentDelay) {
         this.numberOfLanes = numberOfLanes;
@@ -139,11 +139,7 @@ public class Road implements GeneralRules {
             mapContainer.getChildren().add(rightWalk);
             currentX += width1;
         }
-        this.totalWidth=currentX;
+        setObjectWidth(currentX);
         return mapContainer;
-    }
-    public double getTotalWidth(){
-        // System.out.println(totalWidth);
-        return totalWidth;
     }
 }
