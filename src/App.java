@@ -20,6 +20,7 @@ import java.util.List;
 public class App extends Application {
     private int simulationTime;
     private int numberOfCars;
+    private int numberOfPedestrian;
     private int numberOfLanes;
     private int numberOfRoads;
     
@@ -42,12 +43,15 @@ public class App extends Application {
         TextField carsField = new TextField();
         TextField lanesField = new TextField();
         TextField roadsField = new TextField();
+        TextField pedestrianField = new TextField();
         
         inputForm.getChildren().addAll(
             new Label("Simulation Time (seconds):"),
             timeField,
             new Label("Number of Cars:"),
             carsField,
+            new Label("Number of Pedestrian:"),
+            pedestrianField,
             new Label("Number of Lanes:"),
             lanesField,
             new Label("Number of Roads:"),
@@ -59,10 +63,11 @@ public class App extends Application {
             try {
                 simulationTime = Integer.parseInt(timeField.getText());
                 numberOfCars = Integer.parseInt(carsField.getText());
+                numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
                 numberOfLanes = Integer.parseInt(lanesField.getText());
                 numberOfRoads = Integer.parseInt(roadsField.getText());
                 
-                if (simulationTime <= 0 || numberOfCars <= 0 || 
+                if (simulationTime <= 0 || numberOfCars <= 0 || numberOfPedestrian<=0 || 
                     numberOfLanes <= 0 || numberOfRoads <= 0) {
                     throw new NumberFormatException();
                 }
@@ -120,7 +125,7 @@ public class App extends Application {
         
         phase1Window = new Stage();
         Road road = new Road(numberOfRoads, numberOfLanes, "normal", simulationTime);
-        phase1Simulation = new TrafficSimulation(road, numberOfCars, simulationTime);
+        phase1Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
         Scene simulationScene = phase1Simulation.createSimulationScene();
         
         phase1Window.setTitle("Phase 1 Simulation");
@@ -138,7 +143,7 @@ public class App extends Application {
         
         phase2Window = new Stage();
         Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", simulationTime);
-        phase2Simulation = new TrafficSimulation(road, numberOfCars, simulationTime);
+        phase2Simulation = new TrafficSimulation(road, numberOfCars,numberOfPedestrian, simulationTime);
         Scene simulationScene = phase2Simulation.createSimulationScene();
         
         phase2Window.setTitle("Phase 2 Simulation");
@@ -216,10 +221,12 @@ class TrafficSimulation {
     private int simulationDuration;
     private boolean isSimulationComplete = false;
     private ArrayList<Double> lanePositions;
+    private int numberOfPedestrian;
     
-    public TrafficSimulation(Road road, int numberOfCars, int simulationDuration) {
+    public TrafficSimulation(Road road, int numberOfCars,int numberOfPedestrian, int simulationDuration) {
         this.road = road;
         this.numberOfCars = numberOfCars;
+        this.numberOfPedestrian = numberOfPedestrian;
         this.simulationDuration = simulationDuration;
     }
     
@@ -228,7 +235,7 @@ class TrafficSimulation {
         double totalWidth = road.getObjectWidth();
         
         generateVehicles(mapContainer, numberOfCars);
-        generatePedestrians(mapContainer, 15);
+        generatePedestrians(mapContainer, numberOfPedestrian);
         
         passedCarsText = new Text(20, 30, "Passed Cars: 0");
         passedPedestrianText = new Text(20, 50, "Passed Pedestrians: 0");
@@ -285,7 +292,7 @@ class TrafficSimulation {
                 double otherX = otherCar.getXCOO();
                 double otherY = otherCar.getYCOO();
                 double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
-                
+                if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
                 // Check if vehicles are in the same lane
                 if (Math.abs(carX - otherX) < 20) {
                     double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
@@ -293,6 +300,17 @@ class TrafficSimulation {
                         carStopped = true;
                         break;
                     }
+                }
+                }
+                else{
+                // Check if vehicles are in the same lane
+                if (Math.abs(carX - otherX) < 20) {
+                    double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+                    if (otherY > carY && -carY + otherY < minSafeDistance) {
+                        carStopped = true;
+                        break;
+                    }
+                }
                 }
             }
             
@@ -316,7 +334,7 @@ class TrafficSimulation {
             } else {
                 car.move();
             }
-            
+            if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
             // Handle vehicle reaching the top
             if (car.getYCOO() < -vehicleHeight) {
                 mapContainer.getChildren().remove(car.getVehicleView());
@@ -326,9 +344,22 @@ class TrafficSimulation {
                 road.increaseNumberOfPassedCars(1);
                 passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
                 
-                generateVehicles(mapContainer, 1);
+                generateVehicles(mapContainer, 1);}
+
             }
-        }
+            else{
+                // Handle vehicle reaching the top
+                if (car.getYCOO() > road.getObjectHeight()+vehicleHeight) {
+                    mapContainer.getChildren().remove(car.getVehicleView());
+                    cars.remove(i);
+                    i--;
+                    
+                    road.increaseNumberOfPassedCars(1);
+                    passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
+                    
+                    generateVehicles(mapContainer, 1);
+                }
+        }}
     }
     
     private void updatePedestrians(Pane mapContainer) {
@@ -372,10 +403,11 @@ class TrafficSimulation {
     }
     
     private Vehicle createCar(double x, double y, String direciton) {
-        double RIGHTMOST_LANE_X = road.getRightMostLane().get(0);
+        double RIGHTMOST_LANE_X = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
         double RIGHTMOST_LANE_X1 = 0;
-        if(road.getRightMostLane().size()==2){
-            RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1);
+        if(road.getNumberOfRoads()==2){
+            RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
+            RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
             // double RIGHTMOST_LANE_X = road.getRightMostLane().get(0);
         }
 
