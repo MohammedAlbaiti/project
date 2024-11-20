@@ -155,9 +155,9 @@ public class Road implements GeneralRules {
             currentX += width1;
         }}
         setObjectWidth(currentX);
-        rightMostLane.add(XCooForLanes.get(0));
+        rightMostLane.add(XCooForLanes.get(XCooForLanes.size()-1));
         if(numberOfRoads==2){
-            rightMostLane.add(XCooForLanes.get(XCooForLanes.size()-1));
+            rightMostLane.add(XCooForLanes.get(0));
         }
         return mapContainer;
     }

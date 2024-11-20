@@ -369,48 +369,88 @@ class TrafficSimulation {
             double pedestrianY = pedestrian.getYCOO();
             
             boolean carInFront = false;
-            for (Vehicle car : cars) {
-                double carX = car.getXCOO() - 10;
-                double carY = car.getYCOO() - 20;
-                
-                double vehicleHeight = (car instanceof Car) ? 110 : 130;
-                
-                if (Math.abs(carX - pedestrianX) < 50 && 
-                    pedestrianY <= carY + vehicleHeight && 
-                    pedestrianY >= carY - 50) {
-                    carInFront = true;
-                    break;
+            if(pedestrian.getObjectDirection().equals("right")){
+                for (Vehicle car : cars) {
+                    double carX = car.getXCOO() - 10;
+                    double carY = car.getYCOO() - 20;
+                    
+                    double vehicleHeight = (car instanceof Car) ? 110 : 130;
+                    
+                    if (Math.abs(carX - pedestrianX) < 50 && 
+                        pedestrianY <= carY + vehicleHeight && 
+                        pedestrianY >= carY - 50) {
+                        carInFront = true;
+                        break;
+                    }
+                }
+                if (!carInFront) {
+                    if (pedestrianX < road.getObjectWidth() - 30) {
+                        pedestrian.move();
+                    }
+                } else {
+                    pedestrian.stop();
                 }
             }
-            
-            if (!carInFront) {
-                if (pedestrianX < road.getObjectWidth() - 30) {
-                    pedestrian.move();
+            else{
+                for (Vehicle car : cars) {
+                    double carX = car.getXCOO() + 10;
+                    double carY = car.getYCOO() + 20;
+                    
+                    double vehicleHeight = (car instanceof Car) ? 110 : 130;
+                    
+                    if (Math.abs(carX - pedestrianX) < 50 && 
+                        pedestrianY <= carY + vehicleHeight && 
+                        pedestrianY >= carY - 50) {
+                        carInFront = true;
+                        break;
+                    }
                 }
-            } else {
-                pedestrian.stop();
+                if (!carInFront) {
+                    if (pedestrianX > 0 -pedestrian.getObjectWidth()) {
+                        pedestrian.move();
+                    }
+                } else {
+                    pedestrian.stop();
+                }
             }
-            
-            if (pedestrianX >= road.getObjectWidth() - 30) {
-                mapContainer.getChildren().remove(pedestrian.getImageView());
-                pedestrians.remove(i);
-                i--;
-                road.increaseNumberOfPassedPedestrians(1);
-                passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
-                generatePedestrians(mapContainer, 1);
+
+
+            if(pedestrian.getObjectDirection().equals("right")){
+                if (pedestrianX >= road.getObjectWidth() - 30) {
+                    mapContainer.getChildren().remove(pedestrian.getImageView());
+                    pedestrians.remove(i);
+                    i--;
+                    road.increaseNumberOfPassedPedestrians(1);
+                    passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
+                    generatePedestrians(mapContainer, 1);
+                }
             }
+            else{
+                if (pedestrianX <= - pedestrian.getObjectWidth()) {
+                    mapContainer.getChildren().remove(pedestrian.getImageView());
+                    pedestrians.remove(i);
+                    i--;
+                    road.increaseNumberOfPassedPedestrians(1);
+                    passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
+                    generatePedestrians(mapContainer, 1);
+                }
+            }
+
         }
     }
     
     private Vehicle createCar(double x, double y, String direciton) {
-        double RIGHTMOST_LANE_X = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
+        double RIGHTMOST_LANE_X = 0;
         double RIGHTMOST_LANE_X1 = 0;
         if(road.getNumberOfRoads()==2){
             RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
             RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
             // double RIGHTMOST_LANE_X = road.getRightMostLane().get(0);
         }
+        else{
+            RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
 
+        }
         // double RIGHTMOST_LANE_X = 
         if ((x == RIGHTMOST_LANE_X || x==RIGHTMOST_LANE_X1) && random.nextDouble() < 0.4) {
             Truck truck = new Truck(road, "normal");
@@ -475,8 +515,17 @@ class TrafficSimulation {
     private void generatePedestrians(Pane mapContainer, int numberOfPedestrians) {
         for (int i = 0; i < numberOfPedestrians; i++) {
             Pedestrian pedestrian = new Pedestrian(road, "normal");
-            pedestrian.setObjectDireciton("right");
-            pedestrian.createPedestrian();
+            boolean right = random.nextBoolean();
+            if(right){
+                pedestrian.setObjectDireciton("right");
+                pedestrian.createPedestrian();
+            }
+            else{
+                pedestrian.setObjectDireciton("left");
+                pedestrian.createPedestrian();
+                pedestrian.getImageView().setRotate(180);
+            }
+           
             pedestrians.add(pedestrian);
             mapContainer.getChildren().add(pedestrian.getImageView());
         }

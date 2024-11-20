@@ -19,6 +19,7 @@ public class Pedestrian extends MovingObjects {
     // Constructor
     public Pedestrian(Road road, String pedestrianStyle) {
         super(random.nextInt(3) + 1,30,50);
+        setObjectDireciton("right");
         // System.out.println("pedestrian");
         this.road=road;
         this.pedestrianID = "P" + (++counter);
@@ -93,14 +94,20 @@ public class Pedestrian extends MovingObjects {
 
         public void createPedestrian() {
         // xCoo = random.nextBoolean() ? 0 : road.getTotalWidth() - 145.63;
-        xCoo = 0;
+        if(getObjectDirection().equals("right")){
+            xCoo = 0;
+        }
+        else{
+            xCoo = road.getObjectWidth();
+        }
+        
         yCoo = random.nextInt(400);
         // System.out.println("pedestrian");
         String pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
         Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");
         pedestrianView = new ImageView(pedestrianImage);
-        pedestrianView.setFitWidth((int)getObjectWidth());
-        pedestrianView.setFitHeight((int)getObjectHeight());
+        pedestrianView.setFitWidth(getObjectWidth());
+        pedestrianView.setFitHeight(getObjectHeight());
         pedestrianView.setX(xCoo);
         pedestrianView.setY(yCoo);
         pedestrianView.setUserData(pedestrianType);
