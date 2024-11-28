@@ -9,7 +9,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -35,16 +41,24 @@ public class App extends Application {
     }
     
     private void showInputForm(Stage primaryStage) {
-        VBox inputForm = new VBox(10);
-        inputForm.setPadding(new Insets(20));
-        inputForm.setAlignment(Pos.CENTER);
+        // Creates a form for the user to input simulation parameters
+
+        // A VBox is a layout container that arranges its child nodes (UI elements)
+        // in a single column. The parameter (10) specifies the vertical spacing
+        // between elements in pixels
+        VBox inputForm = new VBox(10); 
+
+        inputForm.setPadding(new Insets(20)); // Creates an empty border (Insets) between the layout and the edges of the window
+        inputForm.setAlignment(Pos.CENTER); // Centers the elements within the form
         
+        // Text fields for user input
         TextField timeField = new TextField();
         TextField carsField = new TextField();
         TextField lanesField = new TextField();
         TextField roadsField = new TextField();
         TextField pedestrianField = new TextField();
         
+        // Add labels and text fields to the form
         inputForm.getChildren().addAll(
             new Label("Simulation Time (seconds):"),
             timeField,
@@ -57,32 +71,41 @@ public class App extends Application {
             new Label("Number of Roads:"),
             roadsField
         );
-        
+
+        // Button to submit the form
         Button submitButton = new Button("Submit");
         submitButton.setOnAction(e -> {
             try {
+                // Parse user input from the text fields
                 simulationTime = Integer.parseInt(timeField.getText());
                 numberOfCars = Integer.parseInt(carsField.getText());
                 numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
                 numberOfLanes = Integer.parseInt(lanesField.getText());
                 numberOfRoads = Integer.parseInt(roadsField.getText());
                 
+                // Validate that all inputs are positive numbers
                 if (simulationTime <= 0 || numberOfCars <= 0 || numberOfPedestrian<=0 || 
                     numberOfLanes <= 0 || numberOfRoads <= 0) {
                     throw new NumberFormatException();
                 }
                 
-                showControlPanel();
-                primaryStage.close();
+                // If validation is successful, proceed to the next stage
+                showControlPanel(); // Transition to the control panel for the simulation
+                primaryStage.close(); // Close the current input form stage
             } catch (NumberFormatException ex) {
+                // Display an error alert if the input is invalid
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Input");
                 alert.setContentText("Please enter valid positive numbers for all fields.");
-                alert.showAndWait();
+                alert.showAndWait(); // Wait for the user to acknowledge the error #### why was .show() not used???
             }
         });
         
+        // Add the submit button to the form. This appends the button to the
+        // end of the VBox's children list, placing it below the text fields
         inputForm.getChildren().add(submitButton);
+        
+        // Set up the scene for the input form and show it
         Scene scene = new Scene(inputForm, 300, 400);
         primaryStage.setTitle("Simulation Configuration");
         primaryStage.setScene(scene);
@@ -237,15 +260,27 @@ class TrafficSimulation {
         generateVehicles(mapContainer, numberOfCars);
         generatePedestrians(mapContainer, numberOfPedestrian);
         
-        passedCarsText = new Text(20, 30, "Passed Cars: 0");
-        passedPedestrianText = new Text(20, 50, "Passed Pedestrians: 0");
-        timeRemainingText = new Text(20, 70, "Time Remaining: " + simulationDuration + "s");
+        passedCarsText = new Text(15, 25, "Passed Cars: 0");
+        passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
+        timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
+
+        passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+        passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+        timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+
+        Pane dataContaioner = new Pane();
+        Rectangle bottomRect = new Rectangle(146, 80, Color.rgb(120, 126, 186));
+        Rectangle topRect = new Rectangle(136, 70, Color.rgb(180, 188, 217));
+        topRect.setX(5);
+        topRect.setY(5);
+        dataContaioner.getChildren().addAll(bottomRect , topRect, passedCarsText, passedPedestrianText, timeRemainingText);
         
-        mapContainer.getChildren().addAll(passedCarsText, passedPedestrianText, timeRemainingText);
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(mapContainer, dataContaioner);
         
         startAnimation(mapContainer);
         
-        return new Scene(mapContainer, totalWidth, road.getObjectHeight());
+        return new Scene(stackPane, totalWidth, road.getObjectHeight());
     }
     
     private void startAnimation(Pane mapContainer) {
@@ -361,83 +396,84 @@ class TrafficSimulation {
                 }
         }}
     }
-    
+
     private void updatePedestrians(Pane mapContainer) {
         for (int i = 0; i < pedestrians.size(); i++) {
             Pedestrian pedestrian = pedestrians.get(i);
-            double pedestrianX = pedestrian.getXCOO();
-            double pedestrianY = pedestrian.getYCOO();
-            
+            double pedestrianX = pedestrian.getXCOO(); // x-coordinate of left edge of the pedestrian pic. Becareful, for a pedestrian moving right, the x-coordinate points to his back, and for a pedestrian moving left, it points to his face.
+            double pedestrianY = pedestrian.getYCOO(); // y-coordinate of top edge of the pedestrian pic. Becareful, for a pedestrian moving right, the y-coordinate points to his right hand, and for a pedestrian moving left, it points to his left hand.
             boolean carInFront = false;
-            if(pedestrian.getObjectDirection().equals("right")){
-                for (Vehicle car : cars) {
-                    double carX = car.getXCOO() - 10;
-                    double carY = car.getYCOO() - 20;
-                    
-                    double vehicleHeight = (car instanceof Car) ? 110 : 130;
-                    
-                    if (Math.abs(carX - pedestrianX) < 50 && 
-                        pedestrianY <= carY + vehicleHeight && 
-                        pedestrianY >= carY - 50) {
-                        carInFront = true;
-                        break;
-                    }
-                }
-                if (!carInFront) {
-                    if (pedestrianX < road.getObjectWidth() - 30) {
-                        pedestrian.move();
-                    }
-                } else {
-                    pedestrian.stop();
-                }
-            }
-            else{
-                for (Vehicle car : cars) {
-                    double carX = car.getXCOO() + 10;
-                    double carY = car.getYCOO() + 20;
-                    
-                    double vehicleHeight = (car instanceof Car) ? 110 : 130;
-                    
-                    if (Math.abs(carX - pedestrianX) < 50 && 
-                        pedestrianY <= carY + vehicleHeight && 
-                        pedestrianY >= carY - 50) {
-                        carInFront = true;
-                        break;
-                    }
-                }
-                if (!carInFront) {
-                    if (pedestrianX > 0 -pedestrian.getObjectWidth()) {
-                        pedestrian.move();
-                    }
-                } else {
-                    pedestrian.stop();
-                }
-            }
+    
+            // Check if there's a car in front of the pedestrian
+            for (Vehicle car : cars) {
+                double carX = car.getXCOO(); // x-coordinate of left edge of the car pic. Becareful, for a car moving up, the x-coordinate points to the driver's left hand, and for a car moving down, it points to its driver's right hand.
+                double carY = car.getYCOO(); // y-coordinate of top edge of the car pic. Becareful, for a car moving up, the y-coordinate points to its front bumper, and for a car moving down, it points to its rear bumper.
+                double vehicleHeight = (car instanceof Car) ? 110 : 130;
+    
+                if (pedestrian.getObjectDirection().equals("right")) {
+                    if (pedestrianX + pedestrian.getObjectWidth() > carX - 20 && // subtract 20 from carX for a safe distance 
+                        pedestrianX + pedestrian.getObjectWidth() < carX) {      // if you want to move left in x-axis you should subtract, and add to move right
 
+                        if (car.getObjectDirection().equals("up")) {
+                            if (pedestrianY + pedestrian.getObjectHeight() >= carY - 50 && // subtract 50 from carY for a safe distance 
+                                pedestrianY <= carY + vehicleHeight) {                     // if you want to move up in y-axis you should subtract, and add to move down
 
-            if(pedestrian.getObjectDirection().equals("right")){
-                if (pedestrianX >= road.getObjectWidth() - 30) {
-                    mapContainer.getChildren().remove(pedestrian.getImageView());
-                    pedestrians.remove(i);
-                    i--;
-                    road.increaseNumberOfPassedPedestrians(1);
-                    passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
-                    generatePedestrians(mapContainer, 1);
+                                carInFront = true;
+                                break;
+                            }
+                        } else {
+                            if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                pedestrianY <= carY + vehicleHeight + 50) {
+                                carInFront = true;
+                                break;
+                            }
+                        }
+                    }
+                } 
+                else { // Moving left
+                    if (pedestrianX > carX + car.getObjectWidth() &&
+                        pedestrianX < carX + car.getObjectWidth() + 20) {
+    
+                        if (car.getObjectDirection().equals("up")) {
+                            if (pedestrianY + pedestrian.getObjectHeight() >= carY - 50 &&
+                                pedestrianY <= carY + vehicleHeight) {
+                                carInFront = true;
+                                break;
+                            }
+                        } else {
+                            if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                pedestrianY <= carY + vehicleHeight + 50) {
+                                carInFront = true;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-            else{
-                if (pedestrianX <= - pedestrian.getObjectWidth()) {
-                    mapContainer.getChildren().remove(pedestrian.getImageView());
-                    pedestrians.remove(i);
-                    i--;
-                    road.increaseNumberOfPassedPedestrians(1);
-                    passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
-                    generatePedestrians(mapContainer, 1);
+    
+            // Move or stop the pedestrian based on car detection
+            if (!carInFront) {
+                if (pedestrian.getObjectDirection().equals("right") && pedestrianX < road.getObjectWidth() || 
+                    pedestrian.getObjectDirection().equals("left") && pedestrianX > -pedestrian.getObjectWidth()) {
+                    pedestrian.move();
                 }
+            } else {
+                pedestrian.stop();
             }
-
+    
+            // Check if the pedestrian has passed the road bounds
+            if ((pedestrian.getObjectDirection().equals("right") && pedestrianX >= road.getObjectWidth()) || 
+                (pedestrian.getObjectDirection().equals("left") && pedestrianX <= -pedestrian.getObjectWidth())) {
+                mapContainer.getChildren().remove(pedestrian.getImageView());
+                pedestrians.remove(i);
+                i--;
+                road.increaseNumberOfPassedPedestrians(1);
+                passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
+                generatePedestrians(mapContainer, 1);
+            }
         }
     }
+    
     
     private Vehicle createCar(double x, double y, String direciton) {
         double RIGHTMOST_LANE_X = 0;
@@ -496,7 +532,7 @@ class TrafficSimulation {
             } else {
                 // Single road - all vehicles go up
                 direction = "up";
-                y = road.getObjectHeight() + startingY + (cars.size() * ySpacing);
+                y = road.getObjectHeight() + startingY + (cars.size() * ySpacing); /////////////////// what is the purpose of multiplyig ySpacing with car.size()? you can use ySpacig only
             }
             
             Vehicle vehicle = createCar(x, y, direction);
@@ -504,7 +540,7 @@ class TrafficSimulation {
             
             // Rotate vehicle based on direction
             if (direction.equals("down")) {
-                vehicleImageView.setRotate(180);
+                vehicleImageView.setRotate(180); // the rotation won't change the coordinates (x, y)
             }
             
             cars.add(vehicle);
@@ -523,7 +559,7 @@ class TrafficSimulation {
             else{
                 pedestrian.setObjectDireciton("left");
                 pedestrian.createPedestrian();
-                pedestrian.getImageView().setRotate(180);
+                pedestrian.getImageView().setRotate(180); // the rotation won't change the coordinates (x, y)
             }
            
             pedestrians.add(pedestrian);
