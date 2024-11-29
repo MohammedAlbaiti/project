@@ -9,7 +9,7 @@ public class Truck extends Vehicle {
     private String truckType;
     private static int counter = 1;
     private static final ArrayList<String> TRUCK_TYPES = new ArrayList<>(Arrays.asList("truck", "truck2","truck3","truck4","truck5","truck6"));
-    private static ArrayList<Image> truckImages = new ArrayList<>(Arrays.asList(new Image("file:src/resources/truck.png"),new Image("file:src/resources/truck2.png"),new Image("file:src/resources/truck3.png"),new Image("file:src/resources/truck4.png"),new Image("file:src/resources/truck5.png"),new Image("file:src/resources/truck6.png")));
+    private static final ArrayList<Image> truckImages = new ArrayList<>(Arrays.asList(new Image("file:src/resources/truck.png"),new Image("file:src/resources/truck2.png"),new Image("file:src/resources/truck3.png"),new Image("file:src/resources/truck4.png"),new Image("file:src/resources/truck5.png"),new Image("file:src/resources/truck6.png")));
     private static final SecureRandom random = new SecureRandom();
     // private ImageView truckView;
     // private static final double DEFAULT_TRUCK_SPEED = 2;
