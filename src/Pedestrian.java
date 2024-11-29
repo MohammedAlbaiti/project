@@ -116,4 +116,12 @@ public class Pedestrian extends MovingObjects {
     public ImageView getImageView(){
         return pedestrianView;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "Pedestrian{ID='%s', Style='%s', CrossingStatus=%b, Speed=%.2f, Width=%.2f, Height=%.2f, X=%.2f, Y=%.2f}",
+            pedestrianID, pedestrianStyle, crossingStatus, getObjectSpeed(), getObjectWidth(), getObjectHeight(), xCoo, yCoo
+        );
+    }
 }

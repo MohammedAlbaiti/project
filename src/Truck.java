@@ -61,4 +61,18 @@ public class Truck extends Vehicle {
     // public void move() {
     //     System.out.println("Truck " + truckID + " is moving at speed: " + getObjectSpeed());
     // }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "Truck{ID='%s', Type='%s', Speed=%.2f, Width=%.2f, Height=%.2f, X=%.2f, Y=%.2f}",
+            truckID, 
+            truckType, 
+            getObjectSpeed(), 
+            getObjectWidth(), 
+            getObjectHeight(), 
+            xCoo, 
+            yCoo
+        );
+    }
 }
