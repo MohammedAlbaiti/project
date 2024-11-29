@@ -58,8 +58,24 @@ public class Car extends Vehicle {
         vehicleView.setUserData(carType);
         
         
-    // }
+    }
+
     // public ImageView getCarView() {
     //     return carView;
     // }
-}}
+
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "carID='" + carID + '\'' +
+                ", carType='" + carType + '\'' +
+                ", speed=" + getObjectSpeed() +
+                ", width=" + getObjectWidth() +
+                ", height=" + getObjectHeight() +
+                ", xCoo=" + xCoo +
+                ", yCoo=" + yCoo +
+                '}';
+    }
+
+}
