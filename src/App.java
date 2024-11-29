@@ -327,11 +327,13 @@ public class App extends Application {
                 carImprovement,
                 pedImprovement));
         }
-        
-        Text comparisonText = new Text(comparison.toString());
-        comparePanel.getChildren().add(comparisonText);
+        // createLabelWithDynamicFont(comparison.toString(), compareStage);
+        comparePanel.getChildren().add(createLabelWithDynamicFont(comparison.toString(), compareStage)
+        );
         
         Scene scene = new Scene(comparePanel, 300, 400);
+        scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
+
         compareStage.setTitle("Comparison Results");
         compareStage.setScene(scene);
         compareStage.show();
