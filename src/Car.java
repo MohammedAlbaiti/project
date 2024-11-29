@@ -67,15 +67,11 @@ public class Car extends Vehicle {
 
     @Override
     public String toString() {
-        return "Car{" +
-                "carID='" + carID + '\'' +
-                ", carType='" + carType + '\'' +
-                ", speed=" + getObjectSpeed() +
-                ", width=" + getObjectWidth() +
-                ", height=" + getObjectHeight() +
-                ", xCoo=" + xCoo +
-                ", yCoo=" + yCoo +
-                '}';
+        return String.format(
+            "%-10s %-10s %-10d %-10.2f %-10.2f",
+            carID, carType, getObjectSpeed(), xCoo, yCoo
+        );
     }
+
 
 }
