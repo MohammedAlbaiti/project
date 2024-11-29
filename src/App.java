@@ -1,5 +1,8 @@
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,7 +21,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+import javafx.scene.control.ComboBox;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,39 +42,41 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         showInputForm(primaryStage);
     }
-    
     private void showInputForm(Stage primaryStage) {
-        // Creates a form for the user to input simulation parameters
-
-        // A VBox is a layout container that arranges its child nodes (UI elements)
-        // in a single column. The parameter (10) specifies the vertical spacing
-        // between elements in pixels
-        VBox inputForm = new VBox(10); 
-
-        inputForm.setPadding(new Insets(20)); // Creates an empty border (Insets) between the layout and the edges of the window
-        inputForm.setAlignment(Pos.CENTER); // Centers the elements within the form
+        // Create the input form layout (VBox)
+        VBox inputForm = new VBox(10);
+        inputForm.setPadding(new Insets(20)); // Padding between edges
+        inputForm.setAlignment(Pos.CENTER); // Center the elements within the form
         
         // Text fields for user input
         TextField timeField = new TextField();
         TextField carsField = new TextField();
         TextField lanesField = new TextField();
-        TextField roadsField = new TextField();
+        ObservableList<String> inputNumberOfRoads = FXCollections.observableArrayList("1", "2");
+        ComboBox<String> comboBox = new ComboBox<>(inputNumberOfRoads);
+        comboBox.setPromptText("Select the number of roads");
         TextField pedestrianField = new TextField();
-        
+    
         // Add labels and text fields to the form
         inputForm.getChildren().addAll(
-            new Label("Simulation Time (seconds):"),
+            createLabelWithDynamicFont("Simulation Time (seconds):", primaryStage),
             timeField,
-            new Label("Number of Cars:"),
+            createLabelWithDynamicFont("Number of Cars:", primaryStage),
             carsField,
-            new Label("Number of Pedestrian:"),
+            createLabelWithDynamicFont("Number of Pedestrian:", primaryStage),
             pedestrianField,
-            new Label("Number of Lanes:"),
+            createLabelWithDynamicFont("Number of Lanes:", primaryStage),
             lanesField,
-            new Label("Number of Roads:"),
-            roadsField
+            createLabelWithDynamicFont("Number of Roads:", primaryStage),
+            comboBox
         );
-
+    
+        // Bind the font size of the TextFields to the window size
+        bindFontSizeToTextField(timeField, primaryStage);
+        bindFontSizeToTextField(carsField, primaryStage);
+        bindFontSizeToTextField(lanesField, primaryStage);
+        bindFontSizeToTextField(pedestrianField, primaryStage);
+    
         // Button to submit the form
         Button submitButton = new Button("Submit");
         submitButton.setOnAction(e -> {
@@ -81,14 +86,14 @@ public class App extends Application {
                 numberOfCars = Integer.parseInt(carsField.getText());
                 numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
                 numberOfLanes = Integer.parseInt(lanesField.getText());
-                numberOfRoads = Integer.parseInt(roadsField.getText());
-                
+                numberOfRoads = Integer.parseInt(comboBox.getValue());
+    
                 // Validate that all inputs are positive numbers
-                if (simulationTime <= 0 || numberOfCars <= 0 || numberOfPedestrian<=0 || 
-                    numberOfLanes <= 0 || numberOfRoads <= 0) {
+                if (simulationTime <= 0 || numberOfCars <= 0 || numberOfPedestrian <= 0 || 
+                    numberOfLanes <= 0) {
                     throw new NumberFormatException();
                 }
-                
+    
                 // If validation is successful, proceed to the next stage
                 showControlPanel(); // Transition to the control panel for the simulation
                 primaryStage.close(); // Close the current input form stage
@@ -97,19 +102,80 @@ public class App extends Application {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Input");
                 alert.setContentText("Please enter valid positive numbers for all fields.");
-                alert.showAndWait(); // Wait for the user to acknowledge the error #### why was .show() not used???
+                alert.showAndWait(); // Wait for the user to acknowledge the error
             }
         });
-        
-        // Add the submit button to the form. This appends the button to the
-        // end of the VBox's children list, placing it below the text fields
+    
+        // Add the submit button to the form
         inputForm.getChildren().add(submitButton);
-        
+    
+        // Make the VBox responsive by binding the width and height
+        inputForm.prefWidthProperty().bind(primaryStage.widthProperty().multiply(0.8)); // 80% of window width
+        inputForm.prefHeightProperty().bind(primaryStage.heightProperty().multiply(0.8)); // 80% of window height
+    
         // Set up the scene for the input form and show it
-        Scene scene = new Scene(inputForm, 300, 400);
+        Scene scene = new Scene(inputForm, 500, 600);
+        scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
+    
+        // Set the window title and scene
         primaryStage.setTitle("Simulation Configuration");
         primaryStage.setScene(scene);
+    
+        // Set the minimum size for the window (prevents shrinking too much)
+        primaryStage.setMinWidth(400);  // Minimum width of the window
+        primaryStage.setMinHeight(600); // Minimum height of the window
+        // primaryStage.setMaxWidth(800);
+        // Set the default size for the window
+        primaryStage.setWidth(600);     // Default width
+        primaryStage.setHeight(800);    // Default height
+        
+        // Set initial position on screen
+        primaryStage.setX(100);         // Set initial X position
+        primaryStage.setY(100);         // Set initial Y position
+        
+        // Show the stage (window)
         primaryStage.show();
+    }
+    
+    private void bindFontSizeToTextField(TextField textField, Stage primaryStage) {
+        double windowHeight = primaryStage.getHeight();
+        double windowWidth = primaryStage.getWidth();
+        if(windowHeight>=windowWidth){
+        // Bind the font size to the width of the stage, with a fallback value to avoid NaN
+        textField.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
+            Bindings.when(primaryStage.widthProperty().greaterThan(0))
+                   .then(primaryStage.widthProperty().multiply(0.02))
+                   .otherwise(16))); // Default size in case the width is 0 or invalid
+        }
+        else{
+                    // Bind the font size to the width of the stage, with a fallback value to avoid NaN
+        textField.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
+        Bindings.when(primaryStage.heightProperty().greaterThan(0))
+               .then(primaryStage.heightProperty().multiply(0.02))
+               .otherwise(16))); // Default size in case the width is 0 or invalid
+        }
+
+    }
+    
+    private Label createLabelWithDynamicFont(String text, Stage primaryStage) {
+        Label label = new Label(text);
+        double windowHeight = primaryStage.getHeight();
+        double windowWidth = primaryStage.getWidth();
+        if(windowHeight>=windowWidth){
+        // Bind the font size to the width of the stage, with a fallback value to avoid NaN
+        label.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
+            Bindings.when(primaryStage.widthProperty().greaterThan(0))
+                   .then(primaryStage.widthProperty().multiply(0.025))
+                   .otherwise(16))); // Default size in case the width is 0 or invalid
+        }
+        else{
+                    // Bind the font size to the width of the stage, with a fallback value to avoid NaN
+        label.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
+        Bindings.when(primaryStage.heightProperty().greaterThan(0))
+               .then(primaryStage.heightProperty().multiply(0.025))
+               .otherwise(16))); // Default size in case the width is 0 or invalid
+        }
+        return label;
     }
     
     private void showControlPanel() {
@@ -117,25 +183,71 @@ public class App extends Application {
         VBox controlPanel = new VBox(20);
         controlPanel.setPadding(new Insets(20));
         controlPanel.setAlignment(Pos.CENTER);
-        
+    
+        // Create buttons for control panel
         Button phase1Button = new Button("Start Phase 1");
         Button phase2Button = new Button("Start Phase 2");
         Button compareButton = new Button("Compare Results");
-        
+    
+        // Bind the font size of each button to the window size (width)
+        bindFontSizeToButton(phase1Button, controlStage);
+        bindFontSizeToButton(phase2Button, controlStage);
+        bindFontSizeToButton(compareButton, controlStage);
+    
+        // Add actions to buttons
         phase1Button.setOnAction(e -> startPhase1Simulation());
         phase2Button.setOnAction(e -> startPhase2Simulation());
         compareButton.setOnAction(e -> compareResults());
-        
+    
+        // Add buttons to the control panel
         controlPanel.getChildren().addAll(
             phase1Button,
             phase2Button,
             compareButton
         );
-        
+    
+        // Create the scene for the control panel
         Scene scene = new Scene(controlPanel, 250, 200);
+        scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
         controlStage.setTitle("Simulation Control Panel");
         controlStage.setScene(scene);
+        
+        // Set the minimum size for the window
+        controlStage.setMinWidth(300);  // Minimum width of the control panel window
+        controlStage.setMinHeight(200); // Minimum height of the control panel window
+        
+        // Set the default size for the window
+        controlStage.setWidth(400);     // Default width
+        controlStage.setHeight(300);    // Default height
+        
+        // Set initial position on screen
+        controlStage.setX(100);         // Set initial X position
+        controlStage.setY(100);         // Set initial Y position
+        
+        // Show the control panel window
         controlStage.show();
+    }
+    
+    /**
+     * Helper method to bind the font size of a Button to the window width.
+     * @param button the Button to apply the font size binding to
+     * @param controlStage the control window Stage to bind the font size to
+     */
+    private void bindFontSizeToButton(Button button, Stage controlStage) {
+        double windowHeight = controlStage.getHeight();
+        double windowWidth = controlStage.getWidth();
+        if(windowHeight>=windowWidth){
+            button.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
+            Bindings.when(controlStage.widthProperty().greaterThan(0))
+                   .then(controlStage.widthProperty().multiply(0.05))
+                   .otherwise(16))); // Default size in case the width is 0 or invalid
+        }
+        else{
+            button.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
+            Bindings.when(controlStage.heightProperty().greaterThan(0))
+                   .then(controlStage.heightProperty().multiply(0.05))
+                   .otherwise(16))); // Default size in case the width is 0 or invalid
+        }
     }
     
     private void startPhase1Simulation() {
