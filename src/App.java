@@ -122,12 +122,12 @@ public class App extends Application {
         primaryStage.setScene(scene);
     
         // Set the minimum size for the window (prevents shrinking too much)
-        primaryStage.setMinWidth(400);  // Minimum width of the window
+        primaryStage.setMinWidth(300);  // Minimum width of the window
         primaryStage.setMinHeight(600); // Minimum height of the window
         // primaryStage.setMaxWidth(800);
         // Set the default size for the window
-        primaryStage.setWidth(600);     // Default width
-        primaryStage.setHeight(800);    // Default height
+        primaryStage.setWidth(400);     // Default width
+        primaryStage.setHeight(600);    // Default height
         
         // Set initial position on screen
         primaryStage.setX(100);         // Set initial X position
