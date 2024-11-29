@@ -10,13 +10,8 @@ public class Car extends Vehicle {
     private String carType;
     private static int counter = 1;
     private static final SecureRandom random = new SecureRandom();
-    private ArrayList<String> carTypes = new ArrayList<>(Arrays.asList("car", "car2", "car3", "car4"));
-            // ArrayList<String> list = new ArrayList<>(Arrays.asList("Apple", "Banana", "Cherry"));
-
-    private static Image carImage = new Image("file:src/resources/car.png");
-    private static Image carImage2 = new Image("file:src/resources/car2.png");
-    private static Image carImag3 = new Image("file:src/resources/car3.png");
-    private static Image carImage4 = new Image("file:src/resources/car4.png");
+    private ArrayList<String> carTypes = new ArrayList<>(Arrays.asList("car", "car2", "car3", "car4", "car5","car6", "car7","car8","car9","car10","car11","car12","car13","car14"));
+    private static ArrayList<Image> carImages = new ArrayList<>(Arrays.asList(new Image("file:src/resources/car.png"),new Image("file:src/resources/car10.png"),new Image("file:src/resources/car2.png"),new Image("file:src/resources/car3.png"),new Image("file:src/resources/car4.png"),new Image("file:src/resources/car5.png"),new Image("file:src/resources/car6.png"),new Image("file:src/resources/car7.png"),new Image("file:src/resources/car8.png"),new Image("file:src/resources/car9.png"),new Image("file:src/resources/car11.png"),new Image("file:src/resources/car12.png"),new Image("file:src/resources/car13.png"),new Image("file:src/resources/car14.png")));
     private Image objectImage;
 
 
@@ -50,19 +45,9 @@ public class Car extends Vehicle {
         xCoo=x;
         yCoo=y;
         // System.out.println("car");
-        String carType = carTypes.get(random.nextInt(carTypes.size()));
-        if (carType.equals("car")){
-            objectImage=carImage;
-        }
-        else if (carType.equals("car2")){
-            objectImage=carImage2;
-        }
-        else if (carType.equals("car3")){
-            objectImage=carImag3;
-        }
-        else{
-            objectImage=carImage4;
-        }
+        int i = random.nextInt(carTypes.size());
+        String carType = carTypes.get(i);
+        objectImage = carImages.get(i);
         // Image carImage = new Image("file:src/resources/" + carType + ".png");
         vehicleView = new ImageView(objectImage);
         
