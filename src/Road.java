@@ -172,4 +172,22 @@ public class Road implements GeneralRules {
         return new ArrayList<>(rightMostLane);
     }
     
+    @Override
+    public String toString() {
+        return String.format(
+            "Road{PassedCars=%d, PassedPedestrians=%d, Accidents=%d, TrafficState='%s', Lanes=%d, Roads=%d, AccidentDelay=%.2f, Width=%.2f, Height=%.2f, LaneCoordinates=%s, RightMostLane=%s}",
+            numberOfPassedCars, 
+            numberOfPassedPedestrians, 
+            numberOfAccidents, 
+            trafficState, 
+            numberOfLanes, 
+            numberOfRoads, 
+            accidentDelay, 
+            getObjectWidth(), 
+            getObjectHeight(), 
+            XCooForLanes.toString(),
+            rightMostLane.toString()
+        );
+    }
+
 }

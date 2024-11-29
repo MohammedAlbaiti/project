@@ -70,5 +70,20 @@ public class Vehicle extends MovingObjects {
     public ImageView getVehicleView() {
         return vehicleView;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "Vehicle{DriverStyle='%s', Speed=%.2f, Width=%.2f, Height=%.2f, X=%.2f, Y=%.2f, Direction='%s'}",
+            driverStyle, 
+            getObjectSpeed(), 
+            getObjectWidth(), 
+            getObjectHeight(), 
+            getXCOO(), 
+            getYCOO(), 
+            getObjectDirection()
+        );
+    }
+
     
 }
