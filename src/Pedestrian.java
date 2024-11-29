@@ -120,8 +120,8 @@ public class Pedestrian extends MovingObjects {
     @Override
     public String toString() {
         return String.format(
-            "Pedestrian{ID='%s', Style='%s', CrossingStatus=%b, Speed=%.2f, Width=%.2f, Height=%.2f, X=%.2f, Y=%.2f}",
-            pedestrianID, pedestrianStyle, crossingStatus, getObjectSpeed(), getObjectWidth(), getObjectHeight(), xCoo, yCoo
+          "%-10s %-15s %-15b %-10.2f %-10.2f %-10.2f",
+            pedestrianID, pedestrianStyle, crossingStatus, getObjectSpeed(), xCoo, yCoo
         );
     }
 }

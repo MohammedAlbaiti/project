@@ -65,14 +65,13 @@ public class Truck extends Vehicle {
     @Override
     public String toString() {
         return String.format(
-            "Truck{ID='%s', Type='%s', Speed=%.2f, Width=%.2f, Height=%.2f, X=%.2f, Y=%.2f}",
+            "%-10s %-10s %-10.2f %-10.2f %-10.2f",
             truckID, 
             truckType, 
             getObjectSpeed(), 
-            getObjectWidth(), 
-            getObjectHeight(), 
             xCoo, 
             yCoo
         );
     }
+
 }

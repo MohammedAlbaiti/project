@@ -175,7 +175,21 @@ public class Road implements GeneralRules {
     @Override
     public String toString() {
         return String.format(
-            "Road{PassedCars=%d, PassedPedestrians=%d, Accidents=%d, TrafficState='%s', Lanes=%d, Roads=%d, AccidentDelay=%.2f, Width=%.2f, Height=%.2f, LaneCoordinates=%s, RightMostLane=%s}",
+            "%-15s %-20s %-10s %-15s %-10s %-10s %-15s %-10s %-10s %-30s %-20s",
+            "PassedCars", 
+            "PassedPedestrians", 
+            "Accidents", 
+            "TrafficState", 
+            "Lanes", 
+            "Roads", 
+            "AccidentDelay", 
+            "Width", 
+            "Height", 
+            "LaneCoordinates", 
+            "RightMostLane"
+        ) + "\n" +
+        String.format(
+            "%-15d %-20d %-10d %-15s %-10d %-10d %-15.2f %-10.2f %-10.2f %-30s %-20s",
             numberOfPassedCars, 
             numberOfPassedPedestrians, 
             numberOfAccidents, 
@@ -185,8 +199,9 @@ public class Road implements GeneralRules {
             accidentDelay, 
             getObjectWidth(), 
             getObjectHeight(), 
-            XCooForLanes.toString(),
+            XCooForLanes.toString(), 
             rightMostLane.toString()
         );
     }
+
 }

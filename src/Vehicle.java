@@ -74,7 +74,7 @@ public class Vehicle extends MovingObjects {
     @Override
     public String toString() {
         return String.format(
-            "Vehicle{DriverStyle='%s', Speed=%.2f, Width=%.2f, Height=%.2f, X=%.2f, Y=%.2f, Direction='%s'}",
+            "%-15s %-10.2f %-10.2f %-10.2f %-10.2f %-10.2f %-10s",
             driverStyle, 
             getObjectSpeed(), 
             getObjectWidth(), 
@@ -84,4 +84,5 @@ public class Vehicle extends MovingObjects {
             getObjectDirection()
         );
     }
+
 }
