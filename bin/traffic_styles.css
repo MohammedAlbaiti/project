@@ -1,6 +1,6 @@
 /* General Application Background */
 .root {
-    -fx-background-image: url("background.jpg"); /* Replace with actual image file */
+    -fx-background-image: url("background.png"); /* Replace with actual image file */
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
