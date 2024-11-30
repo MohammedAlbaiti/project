@@ -1,4 +1,5 @@
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -25,6 +26,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
 import java.security.SecureRandom;
+// import java.time.Duration;
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -196,7 +199,7 @@ public class App extends Application {
         Button phase1Button = new Button("Start Phase 1");
         Button phase2Button = new Button("Start Phase 2");
         Button compareButton = new Button("Compare Results");
-    
+        
         // Bind the font size of each button to the window size (width)
         bindFontSizeToButton(phase1Button, controlStage);
         bindFontSizeToButton(phase2Button, controlStage);
@@ -441,55 +444,185 @@ class TrafficSimulation {
 
         for (int i = 0; i < cars.size(); i++) {
             Vehicle car = cars.get(i);
-            double carX = car.getXCOO();
-            double carY = car.getYCOO();
+            if(car.getAccidentHappen()){
+                continue;
+            }
+            String driverStyle = car.getDriverStyle();
             boolean carStopped = false;
-            
             double vehicleHeight = (car instanceof Car) ? 110 : 130;
+            boolean pedestrianInPath = false;
 
-            // Check for vehicle collision
-            for (int j = 0; j < cars.size(); j++) {
-                if (i == j) continue;
+            if(driverStyle.equals("normal")){
+                double carX = car.getXCOO();
+                double carY = car.getYCOO();
                 
-                Vehicle otherCar = cars.get(j);
-                double otherX = otherCar.getXCOO();
-                double otherY = otherCar.getYCOO();
-                double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
-                if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
-                // Check if vehicles are in the same lane
-                if (Math.abs(carX - otherX) < 20) {
-                    double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
-                    if (otherY < carY && carY - otherY < minSafeDistance) {
-                        carStopped = true;
-                        break;
+                
+                
+    
+                // Check for vehicle collision
+                for (int j = 0; j < cars.size(); j++) {
+                    if (i == j) continue;
+                    
+                    Vehicle otherCar = cars.get(j);
+                    double otherX = otherCar.getXCOO();
+                    double otherY = otherCar.getYCOO();
+                    double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
+                    if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
+                    // Check if vehicles are in the same lane
+                    if (Math.abs(carX - otherX) < 20) {
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+                        if (otherY < carY && carY - otherY < minSafeDistance) {
+                            carStopped = true;
+                            break;
+                        }
+                    }
+                    }
+                    else{
+                    // Check if vehicles are in the same lane
+                    if (Math.abs(carX - otherX) < 20) {
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+                        if (otherY > carY && -carY + otherY < minSafeDistance) {
+                            carStopped = true;
+                            break;
+                        }
+                    }
                     }
                 }
-                }
-                else{
-                // Check if vehicles are in the same lane
-                if (Math.abs(carX - otherX) < 20) {
-                    double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
-                    if (otherY > carY && -carY + otherY < minSafeDistance) {
-                        carStopped = true;
+                
+                // Check for pedestrians
+                
+                for (Pedestrian pedestrian : pedestrians) {
+                    double pedestrianX = pedestrian.getXCOO() - 10;
+                    double pedestrianY = pedestrian.getYCOO() + 10;
+                    
+                    if (Math.abs(carX - pedestrianX) < 30 && 
+                        pedestrianY <= carY + vehicleHeight && 
+                        pedestrianY >= carY - vehicleHeight) {
+                        pedestrianInPath = true;
                         break;
                     }
-                }
                 }
             }
             
-            // Check for pedestrians
-            boolean pedestrianInPath = false;
-            for (Pedestrian pedestrian : pedestrians) {
-                double pedestrianX = pedestrian.getXCOO() - 10;
-                double pedestrianY = pedestrian.getYCOO() + 10;
+            else if(driverStyle.equals("careful")){
+                double carX = car.getXCOO();
+                double carY = car.getYCOO();
                 
-                if (Math.abs(carX - pedestrianX) < 30 && 
-                    pedestrianY <= carY + vehicleHeight && 
-                    pedestrianY >= carY - vehicleHeight) {
-                    pedestrianInPath = true;
-                    break;
+                
+                
+    
+                // Check for vehicle collision
+                for (int j = 0; j < cars.size(); j++) {
+                    if (i == j) continue;
+                    
+                    Vehicle otherCar = cars.get(j);
+                    double otherX = otherCar.getXCOO();
+                    double otherY = otherCar.getYCOO();
+                    double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
+                    if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
+                    // Check if vehicles are in the same lane
+                    if (Math.abs(carX - otherX) < 20) {
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
+                        if (otherY < carY && carY - otherY < minSafeDistance) {
+                            carStopped = true;
+                            break;
+                        }
+                    }
+                    }
+                    else{
+                    // Check if vehicles are in the same lane
+                    if (Math.abs(carX - otherX) < 20) {
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
+                        if (otherY > carY && -carY + otherY < minSafeDistance) {
+                            carStopped = true;
+                            break;
+                        }
+                    }
+                    }
+                }
+                
+                // Check for pedestrians
+                
+                for (Pedestrian pedestrian : pedestrians) {
+                    double pedestrianX = pedestrian.getXCOO() - 10;
+                    double pedestrianY = pedestrian.getYCOO() + 10;
+                    
+                    if (Math.abs(carX - pedestrianX) < 40 && 
+                        pedestrianY <= carY + vehicleHeight && 
+                        pedestrianY >= carY - vehicleHeight) {
+                        pedestrianInPath = true;
+                        break;
+                    }
                 }
             }
+            
+            else{
+                double carX = car.getXCOO();
+                double carY = car.getYCOO();
+                // Check for vehicle collision
+                for (int j = 0; j < cars.size(); j++) {
+                    if (i == j) continue;
+                    
+                    Vehicle otherCar = cars.get(j);
+                    double otherX = otherCar.getXCOO();
+                    double otherY = otherCar.getYCOO();
+                    double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
+                    if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
+                    // Check if vehicles are in the same lane
+                    if (Math.abs(carX - otherX) < 20) {
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
+                        if (otherY < carY && carY - otherY < minSafeDistance) {
+                            carStopped = true;
+                            break;
+                        }
+                    }
+                    }
+                    else{
+                    // Check if vehicles are in the same lane
+                    if (Math.abs(carX - otherX) < 20) {
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
+                        if (otherY > carY && -carY + otherY < minSafeDistance) {
+                            carStopped = true;
+                            break;
+                        }
+                    }
+                    }
+                }
+                
+                // Check for pedestrians
+                
+                for (Pedestrian pedestrian : pedestrians) {
+                    double pedestrianX = pedestrian.getXCOO() - 10;
+                    double pedestrianY = pedestrian.getYCOO() + 10;
+                    
+                    if (Math.abs(carX - pedestrianX) < 10 && 
+                        pedestrianY <= carY + vehicleHeight && 
+                        pedestrianY >= carY - vehicleHeight) {
+                            System.out.println(2);
+                        if(pedestrian.getPedestrianStyle().equals("carless")){
+                            System.out.println(1);
+                            pedestrian.setAccidentHappen(true);
+                            car.setAccidentHappen(true);
+                                    // Create a PauseTransition that will last for the specified delay
+                            PauseTransition pause = new PauseTransition(Duration.millis(10000));
+
+                            // Set the action to remove the ImageView after the pause
+                            pause.setOnFinished(event -> {
+                                mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
+                                mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                                cars.remove(car);
+                                pedestrians.remove(pedestrian);
+                            });
+
+                            // Start the pause (it runs asynchronously)
+                            pause.play();
+                        }
+                        pedestrianInPath = true;
+                        break;
+                    }
+                }
+            }
+            
             
             // Move vehicle
             if (carStopped || pedestrianInPath) {
@@ -528,57 +661,149 @@ class TrafficSimulation {
     private void updatePedestrians(Pane mapContainer) {
         for (int i = 0; i < pedestrians.size(); i++) {
             Pedestrian pedestrian = pedestrians.get(i);
+            boolean carInFront = false;
             double pedestrianX = pedestrian.getXCOO(); // x-coordinate of left edge of the pedestrian pic. Becareful, for a pedestrian moving right, the x-coordinate points to his back, and for a pedestrian moving left, it points to his face.
             double pedestrianY = pedestrian.getYCOO(); // y-coordinate of top edge of the pedestrian pic. Becareful, for a pedestrian moving right, the y-coordinate points to his right hand, and for a pedestrian moving left, it points to his left hand.
-            boolean carInFront = false;
-    
-            // Check if there's a car in front of the pedestrian
+                            // Check if there's a car in front of the pedestrian
             for (Vehicle car : cars) {
                 double carX = car.getXCOO(); // x-coordinate of left edge of the car pic. Becareful, for a car moving up, the x-coordinate points to the driver's left hand, and for a car moving down, it points to its driver's right hand.
                 double carY = car.getYCOO(); // y-coordinate of top edge of the car pic. Becareful, for a car moving up, the y-coordinate points to its front bumper, and for a car moving down, it points to its rear bumper.
                 double vehicleHeight = (car instanceof Car) ? 110 : 130;
     
-                if (pedestrian.getObjectDirection().equals("right")) {
-                    if (pedestrianX + pedestrian.getObjectWidth() > carX - 20 && // subtract 20 from carX for a safe distance 
-                        pedestrianX + pedestrian.getObjectWidth() < carX) {      // if you want to move left in x-axis you should subtract, and add to move right
+                if(pedestrian.getPedestrianStyle().equals("normal")){
 
-                        if (car.getObjectDirection().equals("up")) {
-                            if (pedestrianY + pedestrian.getObjectHeight() >= carY - 50 && // subtract 50 from carY for a safe distance 
-                                pedestrianY <= carY + vehicleHeight) {                     // if you want to move up in y-axis you should subtract, and add to move down
+        
 
-                                carInFront = true;
-                                break;
+                    if (pedestrian.getObjectDirection().equals("right")) {
+                        if (pedestrianX + pedestrian.getObjectWidth() > carX - 20 && // subtract 20 from carX for a safe distance 
+                            pedestrianX + pedestrian.getObjectWidth() < carX) {      // if you want to move left in x-axis you should subtract, and add to move right
+    
+                            if (car.getObjectDirection().equals("up")) {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY - 50 && // subtract 50 from carY for a safe distance 
+                                    pedestrianY <= carY + vehicleHeight) {                     // if you want to move up in y-axis you should subtract, and add to move down
+    
+                                    carInFront = true;
+                                    break;
+                                }
+                            } else {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                    pedestrianY <= carY + vehicleHeight + 50) {
+                                    carInFront = true;
+                                    break;
+                                }
                             }
-                        } else {
-                            if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
-                                pedestrianY <= carY + vehicleHeight + 50) {
-                                carInFront = true;
-                                break;
+                        }
+                    } 
+                    else { // Moving left
+                        if (pedestrianX > carX + car.getObjectWidth() &&
+                            pedestrianX < carX + car.getObjectWidth() + 20) {
+        
+                            if (car.getObjectDirection().equals("up")) {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY - 50 &&
+                                    pedestrianY <= carY + vehicleHeight) {
+                                    carInFront = true;
+                                    break;
+                                }
+                            } else {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                    pedestrianY <= carY + vehicleHeight + 50) {
+                                    carInFront = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                } 
-                else { // Moving left
-                    if (pedestrianX > carX + car.getObjectWidth() &&
-                        pedestrianX < carX + car.getObjectWidth() + 20) {
+                }
+                else if(pedestrian.getPedestrianStyle().equals("careful")){
+
+        
+
+                    if (pedestrian.getObjectDirection().equals("right")) {
+                        if (pedestrianX + pedestrian.getObjectWidth() > carX - 30 && // subtract 20 from carX for a safe distance 
+                            pedestrianX + pedestrian.getObjectWidth() < carX) {      // if you want to move left in x-axis you should subtract, and add to move right
     
-                        if (car.getObjectDirection().equals("up")) {
-                            if (pedestrianY + pedestrian.getObjectHeight() >= carY - 50 &&
-                                pedestrianY <= carY + vehicleHeight) {
-                                carInFront = true;
-                                break;
+                            if (car.getObjectDirection().equals("up")) {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY - 70 && // subtract 50 from carY for a safe distance 
+                                    pedestrianY <= carY + vehicleHeight) {                     // if you want to move up in y-axis you should subtract, and add to move down
+    
+                                    carInFront = true;
+                                    break;
+                                }
+                            } else {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                    pedestrianY <= carY + vehicleHeight + 70) {
+                                    carInFront = true;
+                                    break;
+                                }
                             }
-                        } else {
-                            if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
-                                pedestrianY <= carY + vehicleHeight + 50) {
-                                carInFront = true;
-                                break;
+                        }
+                    } 
+                    else { // Moving left
+                        if (pedestrianX > carX + car.getObjectWidth() &&
+                            pedestrianX < carX + car.getObjectWidth() + 30) {
+        
+                            if (car.getObjectDirection().equals("up")) {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY - 70 &&
+                                    pedestrianY <= carY + vehicleHeight) {
+                                    carInFront = true;
+                                    break;
+                                }
+                            } else {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                    pedestrianY <= carY + vehicleHeight + 50) {
+                                    carInFront = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else{
+
+        
+
+                    if (pedestrian.getObjectDirection().equals("right")) {
+                        if (pedestrianX + pedestrian.getObjectWidth() > carX - 10 && // subtract 20 from carX for a safe distance 
+                            pedestrianX + pedestrian.getObjectWidth() < carX) {      // if you want to move left in x-axis you should subtract, and add to move right
+    
+                            if (car.getObjectDirection().equals("up")) {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY - 30 && // subtract 50 from carY for a safe distance 
+                                    pedestrianY <= carY + vehicleHeight) {                     // if you want to move up in y-axis you should subtract, and add to move down
+    
+                                    carInFront = true;
+                                    break;
+                                }
+                            } else {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                    pedestrianY <= carY + vehicleHeight + 30) {
+                                    carInFront = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } 
+                    else { // Moving left
+                        if (pedestrianX > carX + car.getObjectWidth() &&
+                            pedestrianX < carX + car.getObjectWidth() + 10) {
+        
+                            if (car.getObjectDirection().equals("up")) {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY - 30 &&
+                                    pedestrianY <= carY + vehicleHeight) {
+                                    carInFront = true;
+                                    break;
+                                }
+                            } else {
+                                if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
+                                    pedestrianY <= carY + vehicleHeight + 30) {
+                                    carInFront = true;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
-    
+            
             // Move or stop the pedestrian based on car detection
             if (!carInFront) {
                 if (pedestrian.getObjectDirection().equals("right") && pedestrianX < road.getObjectWidth() || 
@@ -606,6 +831,17 @@ class TrafficSimulation {
     private Vehicle createCar(double x, double y, String direciton) {
         double RIGHTMOST_LANE_X = 0;
         double RIGHTMOST_LANE_X1 = 0;
+        String driverStyle;
+        int value = random.nextInt(100)+1;
+        if(value<=50){
+            driverStyle="normal";
+        }
+        else if(value<=90){
+            driverStyle="careful";
+        }
+        else{
+            driverStyle="carless";
+        }
         if(road.getNumberOfRoads()==2){
             RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
             RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
@@ -617,12 +853,12 @@ class TrafficSimulation {
         }
         // double RIGHTMOST_LANE_X = 
         if ((x == RIGHTMOST_LANE_X || x==RIGHTMOST_LANE_X1) && random.nextDouble() < 0.4) {
-            Truck truck = new Truck(road, "normal");
+            Truck truck = new Truck(road, driverStyle);
             truck.setObjectDireciton(direciton);
             truck.createTruck(x, y);
             return truck;
         }
-        Car car = new Car(road, "normal");
+        Car car = new Car(road, driverStyle);
         car.setObjectDireciton(direciton);
         car.createCarVehicle(x, y);
         return car;
@@ -677,8 +913,21 @@ class TrafficSimulation {
     }
     
     private void generatePedestrians(Pane mapContainer, int numberOfPedestrians) {
+        String pedestrianStyle;
         for (int i = 0; i < numberOfPedestrians; i++) {
-            Pedestrian pedestrian = new Pedestrian(road, "normal");
+            int value = random.nextInt(100)+1;
+
+            if(value<=50){
+                pedestrianStyle="normal";
+            }
+            else if(value<=90){
+                pedestrianStyle="careful";
+            }
+            else{
+                pedestrianStyle="carless";
+            }
+            // System.out.println(pedestrianStyle);
+            Pedestrian pedestrian = new Pedestrian(road, pedestrianStyle);
             boolean right = random.nextBoolean();
             if(right){
                 pedestrian.setObjectDireciton("right");

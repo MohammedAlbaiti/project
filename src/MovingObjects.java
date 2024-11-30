@@ -5,6 +5,7 @@ public abstract class MovingObjects implements GeneralRules {
     protected double xCoo;
     protected double yCoo;
     protected String direciton;
+    private boolean accidentHappen = false;
     public MovingObjects(double objectSpeed, double objectWidth, double objectHeight) {
         this.objectSpeed = objectSpeed;
         this.objectWidth = objectWidth;
@@ -20,6 +21,12 @@ public abstract class MovingObjects implements GeneralRules {
     public abstract void setObjectWidth(double objectWidth);
     public abstract double getObjectWidth();
     public abstract double getObjectHeight();
+    public void setAccidentHappen(boolean accidentHappen){
+        this.accidentHappen=accidentHappen;
+    }
+    public boolean getAccidentHappen(){
+        return accidentHappen;
+    }
     public double getXCOO(){
         return xCoo;
     }

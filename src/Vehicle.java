@@ -4,7 +4,6 @@ public class Vehicle extends MovingObjects {
     private String driverStyle;
     private Road road;
     protected  ImageView vehicleView;
-    
     public Vehicle(Road road, String driverStyle, double objectSpeed, double objectWidth, double objectHeight) {
         super(objectSpeed, objectWidth,objectHeight);
         this.driverStyle = driverStyle;
@@ -51,6 +50,9 @@ public class Vehicle extends MovingObjects {
     }
     @Override
     public void move() {
+        if(!getAccidentHappen()){
+
+      
         if(getObjectDirection().equals("up")){
             setYCOO(getYCOO()-getObjectSpeed());
             vehicleView.setY(getYCOO());
@@ -61,7 +63,7 @@ public class Vehicle extends MovingObjects {
         }
 
     }
-
+    }
     @Override
     public void stop() {
         vehicleView.setY(getYCOO());

@@ -129,3 +129,8 @@
 .combo-box-popup:shown {
     -fx-opacity: 1;
 }
+.tooltip {
+    -fx-background-color: lightyellow;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+}
