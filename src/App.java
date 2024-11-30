@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
 import java.security.SecureRandom;
@@ -128,10 +130,16 @@ public class App extends Application {
         // Set the default size for the window
         primaryStage.setWidth(400);     // Default width
         primaryStage.setHeight(600);    // Default height
-        
+        // Get the primary screen
+        Screen screen = Screen.getPrimary();
+
+        // Get the screen bounds
+        Rectangle2D screenBounds = screen.getBounds();
+        double screenWidth = screenBounds.getWidth();
+        // double screenHeight = screenBounds.getHeight();
         // Set initial position on screen
-        primaryStage.setX(100);         // Set initial X position
-        primaryStage.setY(100);         // Set initial Y position
+        primaryStage.setX((screenWidth/2)-200);         // Set initial X position
+        primaryStage.setY(50);         // Set initial Y position
         
         // Show the stage (window)
         primaryStage.show();
@@ -219,9 +227,15 @@ public class App extends Application {
         // Set the default size for the window
         controlStage.setWidth(400);     // Default width
         controlStage.setHeight(300);    // Default height
-        
+                // Get the primary screen
+        Screen screen = Screen.getPrimary();
+
+        // Get the screen bounds
+        Rectangle2D screenBounds = screen.getBounds();
+        double screenWidth = screenBounds.getWidth();
+        // double screenHeight = screenBounds.getHeight();
         // Set initial position on screen
-        controlStage.setX(100);         // Set initial X position
+        controlStage.setX((screenWidth/2)-200);         // Set initial X position
         controlStage.setY(100);         // Set initial Y position
         
         // Show the control panel window
