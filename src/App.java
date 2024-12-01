@@ -595,30 +595,65 @@ class TrafficSimulation {
                     double pedestrianX = pedestrian.getXCOO() - 10;
                     double pedestrianY = pedestrian.getYCOO() + 10;
                     
-                    if (Math.abs(carX - pedestrianX) < 10 && 
+                    if (Math.abs(carX - pedestrianX) < 20 && 
                         pedestrianY <= carY + vehicleHeight && 
                         pedestrianY >= carY - vehicleHeight) {
-                            System.out.println(2);
+                            if(car.getObjectDirection().equals("down")){
+                                System.out.println(2);
+                            }
+                            
                         if(pedestrian.getPedestrianStyle().equals("carless")){
-                            System.out.println(1);
-                            pedestrian.setAccidentHappen(true);
-                            car.setAccidentHappen(true);
-                                    // Create a PauseTransition that will last for the specified delay
-                            PauseTransition pause = new PauseTransition(Duration.millis(10000));
-
-                            // Set the action to remove the ImageView after the pause
-                            pause.setOnFinished(event -> {
-                                mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
-                                mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
-                                cars.remove(car);
-                                pedestrians.remove(pedestrian);
-                            });
-
-                            // Start the pause (it runs asynchronously)
-                            pause.play();
+                            if(car.getObjectDirection().equals("up") && pedestrianY-carY>0 && pedestrianY-carY<=20){
+                                System.out.println(1);
+                                pedestrian.setAccidentHappen(true);
+                                car.setAccidentHappen(true);
+                                        // Create a PauseTransition that will last for the specified delay
+                                PauseTransition pause = new PauseTransition(Duration.millis(10000));
+    
+                                // Set the action to remove the ImageView after the pause
+                                pause.setOnFinished(event -> {
+                                    mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
+                                    mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                                    cars.remove(car);
+                                    pedestrians.remove(pedestrian);
+                                });
+    
+                                // Start the pause (it runs asynchronously)
+                                pause.play();
+                                pedestrianInPath=true;
+                                break;
+                            }
+                            
+                            else if(car.getObjectDirection().equals("down") && 
+                            Math.abs(carX - pedestrianX) < 20 && 
+                            Math.abs(carY - pedestrianY) <= vehicleHeight && 
+                            pedestrianY - carY >= 10){
+                                System.out.println(1);
+                                pedestrian.setAccidentHappen(true);
+                                car.setAccidentHappen(true);
+                                pedestrianInPath = true;
+                                
+                                        // Create a PauseTransition that will last for the specified delay
+                                PauseTransition pause = new PauseTransition(Duration.millis(10000));
+    
+                                // Set the action to remove the ImageView after the pause
+                                pause.setOnFinished(event -> {
+                                    mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
+                                    mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                                    cars.remove(car);
+                                    pedestrians.remove(pedestrian);
+                                });
+    
+                                // Start the pause (it runs asynchronously)
+                                pause.play();
+                                break;
+                            }
+  
                         }
-                        pedestrianInPath = true;
-                        break;
+                        else{
+                            pedestrianInPath=true;
+                            break;
+                        }
                     }
                 }
             }
@@ -775,7 +810,7 @@ class TrafficSimulation {
                                 }
                             } else {
                                 if (pedestrianY + pedestrian.getObjectHeight() >= carY &&
-                                    pedestrianY <= carY + vehicleHeight + 30) {
+                                    pedestrianY <= carY + vehicleHeight + 10) {
                                     carInFront = true;
                                     break;
                                 }
@@ -836,7 +871,7 @@ class TrafficSimulation {
         if(value<=50){
             driverStyle="normal";
         }
-        else if(value<=90){
+        else if(value<=51){
             driverStyle="careful";
         }
         else{
@@ -920,7 +955,7 @@ class TrafficSimulation {
             if(value<=50){
                 pedestrianStyle="normal";
             }
-            else if(value<=90){
+            else if(value<=51){
                 pedestrianStyle="careful";
             }
             else{
