@@ -370,6 +370,7 @@ class TrafficSimulation {
     private Text passedCarsText;
     private Text passedPedestrianText;
     private Text timeRemainingText;
+    private Text numberOfAccidents;
     private AnimationTimer animationTimer;
     private long startTime;
     private int simulationDuration;
@@ -394,17 +395,17 @@ class TrafficSimulation {
         passedCarsText = new Text(15, 25, "Passed Cars: 0");
         passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
         timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
-
+        numberOfAccidents = new Text(15,85,"Accidents: 0");
         passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-
+        numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         Pane dataContaioner = new Pane();
-        Rectangle bottomRect = new Rectangle(146, 80, Color.rgb(120, 126, 186));
-        Rectangle topRect = new Rectangle(136, 70, Color.rgb(180, 188, 217));
+        Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
+        Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
         topRect.setX(5);
         topRect.setY(5);
-        dataContaioner.getChildren().addAll(bottomRect , topRect, passedCarsText, passedPedestrianText, timeRemainingText);
+        dataContaioner.getChildren().addAll(bottomRect , topRect, passedCarsText, passedPedestrianText,numberOfAccidents, timeRemainingText);
         
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(mapContainer, dataContaioner);
@@ -598,15 +599,17 @@ class TrafficSimulation {
                     if (Math.abs(carX - pedestrianX) < 20 && 
                         pedestrianY <= carY + vehicleHeight && 
                         pedestrianY >= carY - vehicleHeight) {
-                            if(car.getObjectDirection().equals("down")){
-                                System.out.println(2);
-                            }
+                            // if(car.getObjectDirection().equals("down")){
+                            //     System.out.println(2);
+                            // }
                             
                         if(pedestrian.getPedestrianStyle().equals("carless")){
                             if(car.getObjectDirection().equals("up") && pedestrianY-carY>0 && pedestrianY-carY<=20){
                                 System.out.println(1);
                                 pedestrian.setAccidentHappen(true);
                                 car.setAccidentHappen(true);
+                                road.increaseNumberOfAccidents(1);
+                                numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
                                         // Create a PauseTransition that will last for the specified delay
                                 PauseTransition pause = new PauseTransition(Duration.millis(10000));
     
@@ -632,7 +635,9 @@ class TrafficSimulation {
                                 pedestrian.setAccidentHappen(true);
                                 car.setAccidentHappen(true);
                                 pedestrianInPath = true;
-                                
+                                road.increaseNumberOfAccidents(1);
+                                numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
+
                                         // Create a PauseTransition that will last for the specified delay
                                 PauseTransition pause = new PauseTransition(Duration.millis(10000));
     
@@ -871,7 +876,7 @@ class TrafficSimulation {
         if(value<=50){
             driverStyle="normal";
         }
-        else if(value<=51){
+        else if(value<=90){
             driverStyle="careful";
         }
         else{
@@ -955,7 +960,7 @@ class TrafficSimulation {
             if(value<=50){
                 pedestrianStyle="normal";
             }
-            else if(value<=51){
+            else if(value<=90){
                 pedestrianStyle="careful";
             }
             else{
