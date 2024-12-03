@@ -30,6 +30,7 @@ import java.security.SecureRandom;
 import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.media.AudioClip;
 
 public class App extends Application {
     private int simulationTime;
@@ -52,7 +53,7 @@ public class App extends Application {
         VBox inputForm = new VBox(10);
         inputForm.setPadding(new Insets(20)); // Padding between edges
         inputForm.setAlignment(Pos.CENTER); // Center the elements within the form
-        
+
         // Text fields for user input
         TextField timeField = new TextField();
         TextField carsField = new TextField();
@@ -357,9 +358,19 @@ public class App extends Application {
     }
     
     public static void main(String[] args) {
+        playSound("S:\\Voices/Augh.mp3");
         launch(args);
     }
+
+    public static void playSound(String soundFilePath) {
+        // Create an AudioClip object from the sound file
+        AudioClip sound = new AudioClip("file:///" + soundFilePath);
+
+        // Play the sound
+        sound.play();
+    }
 }
+
 class TrafficSimulation {
     private Road road;
     private int numberOfCars;
