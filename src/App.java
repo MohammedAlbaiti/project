@@ -1,5 +1,3 @@
-import javafx.animation.AnimationTimer;
-import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -12,24 +10,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
-import java.security.SecureRandom;
 // import java.time.Duration;
-import javafx.util.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 // imports for sounds:
 // import javafx.util.Duration;
