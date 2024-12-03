@@ -27,10 +27,11 @@ import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
 import java.security.SecureRandom;
 // import java.time.Duration;
-import javafx.util.Duration;
-import java.util.ArrayList;
-import java.util.List;
-// import javafx.scene.media.AudioClip;
+
+// imports for sounds:
+// import javafx.util.Duration;
+// import java.util.ArrayList;
+// import java.util.List;
 
 public class App extends Application {
     private int simulationTime;
@@ -46,8 +47,10 @@ public class App extends Application {
     
     @Override
     public void start(Stage primaryStage) {
+        // SoundPlayer.playGeneralSounds();
         showInputForm(primaryStage);
     }
+
     private void showInputForm(Stage primaryStage) {
         // Create the input form layout (VBox)
         VBox inputForm = new VBox(10);
@@ -358,17 +361,8 @@ public class App extends Application {
     }
     
     public static void main(String[] args) {
-        // playSound("S:\\Voices/Augh.mp3");
         launch(args);
     }
-
-    // public static void playSound(String soundFilePath) {
-    //     // Create an AudioClip object from the sound file
-    //     AudioClip sound = new AudioClip("file:///" + soundFilePath);
-
-    //     // Play the sound
-    //     sound.play();
-    // }
 }
 
 class TrafficSimulation {
