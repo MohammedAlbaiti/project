@@ -27,6 +27,9 @@ import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
 import java.security.SecureRandom;
 // import java.time.Duration;
+import javafx.util.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 // imports for sounds:
 // import javafx.util.Duration;
