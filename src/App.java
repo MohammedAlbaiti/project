@@ -521,24 +521,24 @@ class TrafficSimulation {
                     double otherY = otherCar.getYCOO();
                     double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
                     if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
-                    // Check if vehicles are in the same lane
-                    if (Math.abs(carX - otherX) < 20) {
-                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
-                        if (otherY < carY && carY - otherY < minSafeDistance) {
-                            carStopped = true;
-                            break;
+                        // Check if vehicles are in the same lane
+                        if (Math.abs(carX - otherX) < 20) {
+                            double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
+                            if (otherY < carY && carY - otherY < minSafeDistance) {
+                                carStopped = true;
+                                break;
+                            }
                         }
-                    }
                     }
                     else{
-                    // Check if vehicles are in the same lane
-                    if (Math.abs(carX - otherX) < 20) {
-                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
-                        if (otherY > carY && -carY + otherY < minSafeDistance) {
-                            carStopped = true;
-                            break;
+                        // Check if vehicles are in the same lane
+                        if (Math.abs(carX - otherX) < 20) {
+                            double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
+                            if (otherY > carY && -carY + otherY < minSafeDistance) {
+                                carStopped = true;
+                                break;
+                            }
                         }
-                    }
                     }
                 }
                 
@@ -569,24 +569,24 @@ class TrafficSimulation {
                     double otherY = otherCar.getYCOO();
                     double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
                     if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
-                    // Check if vehicles are in the same lane
-                    if (Math.abs(carX - otherX) < 20) {
-                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
-                        if (otherY < carY && carY - otherY < minSafeDistance) {
-                            carStopped = true;
-                            break;
+                        // Check if vehicles are in the same lane
+                        if (Math.abs(carX - otherX) < 20) {
+                            double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
+                            if (otherY < carY && carY - otherY < minSafeDistance) {
+                                carStopped = true;
+                                break;
+                            }
                         }
-                    }
                     }
                     else{
-                    // Check if vehicles are in the same lane
-                    if (Math.abs(carX - otherX) < 20) {
-                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
-                        if (otherY > carY && -carY + otherY < minSafeDistance) {
-                            carStopped = true;
-                            break;
+                        // Check if vehicles are in the same lane
+                        if (Math.abs(carX - otherX) < 20) {
+                            double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
+                            if (otherY > carY && -carY + otherY < minSafeDistance) {
+                                carStopped = true;
+                                break;
+                            }
                         }
-                    }
                     }
                 }
                 
@@ -653,7 +653,6 @@ class TrafficSimulation {
                                 pause.play();
                                 break;
                             }
-  
                         }
                         else{
                             pedestrianInPath=true;
