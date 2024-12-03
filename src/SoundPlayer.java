@@ -16,6 +16,6 @@ public class SoundPlayer {
 
     public static void main(String[] args) {
         // Example usage
-        playSound("Augh.mp3"); // Replace with the path to your sound file
+        playSound(""); // Replace with the path to your sound file
     }
 }

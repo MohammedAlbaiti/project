@@ -30,7 +30,7 @@ import java.security.SecureRandom;
 import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.media.AudioClip;
+// import javafx.scene.media.AudioClip;
 
 public class App extends Application {
     private int simulationTime;
@@ -358,17 +358,17 @@ public class App extends Application {
     }
     
     public static void main(String[] args) {
-        playSound("S:\\Voices/Augh.mp3");
+        // playSound("S:\\Voices/Augh.mp3");
         launch(args);
     }
 
-    public static void playSound(String soundFilePath) {
-        // Create an AudioClip object from the sound file
-        AudioClip sound = new AudioClip("file:///" + soundFilePath);
+    // public static void playSound(String soundFilePath) {
+    //     // Create an AudioClip object from the sound file
+    //     AudioClip sound = new AudioClip("file:///" + soundFilePath);
 
-        // Play the sound
-        sound.play();
-    }
+    //     // Play the sound
+    //     sound.play();
+    // }
 }
 
 class TrafficSimulation {
