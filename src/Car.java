@@ -10,7 +10,7 @@ public class Car extends Vehicle {
     private String carType;
     private static int counter = 1;
     private static final SecureRandom random = new SecureRandom();
-    private static final ArrayList<String> carTypes = new ArrayList<>(Arrays.asList("car", "car2", "car3", "car4", "car5","car6", "car7","car8","car9","car10","car11","car12","car13","car14"));
+    private static final ArrayList<String> carTypes = new ArrayList<>(Arrays.asList("Classic Sedan", "Sporty Red", "Midnight Black", "Crimson Racer", "Ocean Blue","Pearl White", "Sunset Orange","Steel Grey","Desert Gold","Neon Green","Royal Purple","Yellow Taxi","Police Cruiser","Charcoal Sedan"));
     private static final ArrayList<Image> carImages = new ArrayList<>(Arrays.asList(
         new Image("file:src/resources/car.png"),
         new Image("file:src/resources/car10.png"),
@@ -72,7 +72,7 @@ public class Car extends Vehicle {
     @Override
     public String toString() {
         return String.format(
-            "%-10s %-10s %-10s %-10.2f %-10.2f %-10.2f %-10.2f %-10.2f",  // Added timeTaken to the format
+            "%-10s %-20s %-10s %-10.2f %-10.2f %-10.2f %-10.2f %-10.2f",  // Added timeTaken to the format
             carID, carType, getDriverStyle(), getObjectSpeed(), xCoo, yCoo, getTimeTaken()/1000.0, getIdealTime()   // Added timeTaken here
         );
     }

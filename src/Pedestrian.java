@@ -12,7 +12,9 @@ public class Pedestrian extends MovingObjects {
     private String pedestrianStyle;
     private static int counter=1;
     private static final SecureRandom random = new SecureRandom();
-    private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList("pedestrian", "pedestrian2", "pedestrian3", "pedestrian4", "pedestrian5"));
+private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
+    "Dark Dressed Walker", "Purple Shirted Woman", "Casual Dressed Person", "Pink Shirt Walker", "Light Grey Dressed Walker"
+));
     private ImageView pedestrianView;
 
     private Road road;

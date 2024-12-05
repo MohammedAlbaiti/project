@@ -271,7 +271,7 @@ public class App extends Application {
         Road road = new Road(numberOfRoads, numberOfLanes, "normal", simulationTime);
         phase1Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
         Scene simulationScene = phase1Simulation.createSimulationScene();
-        SoundPlayer.playGeneralSounds(simulationTime);
+        
         phase1Window.setTitle("Phase 1 Simulation");
         phase1Window.setScene(simulationScene);
         phase1Window.show();

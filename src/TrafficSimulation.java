@@ -45,62 +45,69 @@ public class TrafficSimulation {
         this.simulationDuration = simulationDuration;
     }
 
-    public Scene createSimulationScene() {
-        Pane mapContainer = road.createMap();
-        double totalWidth = road.getObjectWidth();
+public Scene createSimulationScene() {
+    Pane mapContainer = road.createMap();
+    double totalWidth = road.getObjectWidth();
 
-        generateVehicles(mapContainer, numberOfCars);
-        generatePedestrians(mapContainer, numberOfPedestrian);
+    generateVehicles(mapContainer, numberOfCars);
+    generatePedestrians(mapContainer, numberOfPedestrian);
 
-        passedCarsText = new Text(15, 25, "Passed Cars: 0");
-        passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
-        timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
-        numberOfAccidents = new Text(15, 85, "Accidents: 0");
-        passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-        passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-        timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-        numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+    passedCarsText = new Text(15, 25, "Passed Cars: 0");
+    passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
+    timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
+    numberOfAccidents = new Text(15, 85, "Accidents: 0");
+    passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+    passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+    timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+    numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
 
-        Pane dataContainer = new Pane();
-        Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
-        Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
-        topRect.setX(5);
-        topRect.setY(5);
-        dataContainer.getChildren().addAll(bottomRect, topRect, passedCarsText, passedPedestrianText, numberOfAccidents, timeRemainingText);
+    Pane dataContainer = new Pane();
+    Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
+    Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
+    topRect.setX(5);
+    topRect.setY(5);
+    dataContainer.getChildren().addAll(bottomRect, topRect, passedCarsText, passedPedestrianText, numberOfAccidents, timeRemainingText);
 
-        // Pause Button
-        Button pauseButton = new Button("Pause");
-        pauseButton.setLayoutX(15);
-        pauseButton.setLayoutY(110);
-        pauseButton.setOnAction(e -> togglePause(pauseButton));
-        dataContainer.getChildren().add(pauseButton);
+    // Pause Button
+    Button pauseButton = new Button("Pause");
+    pauseButton.setLayoutX(15);
+    pauseButton.setLayoutY(110);
+    pauseButton.setOnAction(e -> togglePause(pauseButton));
+    dataContainer.getChildren().add(pauseButton);
 
-        // Mute Button
-        Button muteButton = new Button("Mute");
-        muteButton.setLayoutX(15);
-        muteButton.setLayoutY(140);
-        muteButton.setOnAction(e -> toggleMute(muteButton));
-        dataContainer.getChildren().add(muteButton);
+    // Mute Button
+    Button muteButton = new Button("Mute");
+    muteButton.setLayoutX(15);
+    muteButton.setLayoutY(140);
+    muteButton.setOnAction(e -> toggleMute(muteButton));
+    dataContainer.getChildren().add(muteButton);
 
-        // Create Lane Buttons
-        List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
-        for (int i = 0; i < laneXCoordinates.size(); i++) {
-            double laneX = laneXCoordinates.get(i);
-            Button laneButton = new Button("Add Car Lane " + (i + 1));
-            laneButton.setLayoutX(15);
-            laneButton.setLayoutY(180 + i * 30); // Adjust Y position dynamically for each button
-            int laneIndex = i; // To capture the index for the lambda expression
-            laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
-            dataContainer.getChildren().add(laneButton);
-        }
-
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(mapContainer, dataContainer);
-
-        startAnimation(mapContainer);
-
-        return new Scene(stackPane, totalWidth, road.getObjectHeight());
+    // Create Lane Buttons
+    List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
+    for (int i = 0; i < laneXCoordinates.size(); i++) {
+        double laneX = laneXCoordinates.get(i);
+        Button laneButton = new Button("Add Car Lane " + (i + 1));
+        laneButton.setLayoutX(15);
+        laneButton.setLayoutY(180 + i * 30); // Adjust Y position dynamically for each button
+        int laneIndex = i; // To capture the index for the lambda expression
+        laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
+        dataContainer.getChildren().add(laneButton);
     }
+
+    // Create Pedestrian Button
+    Button createPedestrianButton = new Button("Create Pedestrian");
+    createPedestrianButton.setLayoutX(15);
+    createPedestrianButton.setLayoutY(180 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
+    createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
+    dataContainer.getChildren().add(createPedestrianButton);
+
+    StackPane stackPane = new StackPane();
+    stackPane.getChildren().addAll(mapContainer, dataContainer);
+
+    startAnimation(mapContainer);
+
+    return new Scene(stackPane, totalWidth, road.getObjectHeight());
+}
     private void toggleMute(Button muteButton) {
         isMuted = !isMuted;
         if(isMuted){
@@ -195,12 +202,9 @@ private void startAnimation(Pane mapContainer) {
             double vehicleHeight = (car instanceof Car) ? 110 : 130;
             boolean pedestrianInPath = false;
 
-            if(driverStyle.equals("normal")){
+            if(driverStyle.equals("normal") || driverStyle.equals("careful")){
                 double carX = car.getXCOO();
                 double carY = car.getYCOO();
-                
-                
-                
     
                 // Check for vehicle collision
                 for (int j = 0; j < cars.size(); j++) {
@@ -213,7 +217,7 @@ private void startAnimation(Pane mapContainer) {
                     if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
                     // Check if vehicles are in the same lane
                     if (Math.abs(carX - otherX) < 20) {
-                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + (driverStyle.equals("normal") ? 30 : 80);
                         if (otherY < carY && carY - otherY < minSafeDistance) {
                             carStopped = true;
                             break;
@@ -223,7 +227,7 @@ private void startAnimation(Pane mapContainer) {
                     else{
                     // Check if vehicles are in the same lane
                     if (Math.abs(carX - otherX) < 20) {
-                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+                        double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + (driverStyle.equals("normal") ? 30 : 80);
                         if (otherY > carY && -carY + otherY < minSafeDistance) {
                             carStopped = true;
                             break;
@@ -260,119 +264,58 @@ private void startAnimation(Pane mapContainer) {
                     }
                 }
             }
-        // for (int i = 0; i < cars.size(); i++) {
-        //     Vehicle car = cars.get(i);
-        //     if(car.getAccidentHappen()){
-        //         continue;
-        //     }
-        //     String driverStyle = car.getDriverStyle();
-        //     boolean carStopped = false;
-        //     double vehicleHeight = (car instanceof Car) ? 110 : 130;
-        //     boolean pedestrianInPath = false;
-
-        //     if(driverStyle.equals("normal")){
-        //         double carX = car.getXCOO();
-        //         double carY = car.getYCOO();
-                
-                
-                
-    
-        //         // Check for vehicle collision
-        //         for (int j = 0; j < cars.size(); j++) {
-        //             if (i == j) continue;
-                    
-        //             Vehicle otherCar = cars.get(j);
-        //             double otherX = otherCar.getXCOO();
-        //             double otherY = otherCar.getYCOO();
-        //             double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
-        //             if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
-        //             // Check if vehicles are in the same lane
-        //             if (Math.abs(carX - otherX) < 20) {
-        //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
-        //                 if (otherY < carY && carY - otherY < minSafeDistance) {
-        //                     carStopped = true;
-        //                     break;
-        //                 }
-        //             }
-        //             }
-        //             else{
-        //             // Check if vehicles are in the same lane
-        //             if (Math.abs(carX - otherX) < 20) {
-        //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
-        //                 if (otherY > carY && -carY + otherY < minSafeDistance) {
-        //                     carStopped = true;
-        //                     break;
-        //                 }
-        //             }
-        //             }
-        //         }
-                
-        //         // Check for pedestrians
-                
-        //         for (Pedestrian pedestrian : pedestrians) {
-        //             double pedestrianX = pedestrian.getXCOO() - 10;
-        //             double pedestrianY = pedestrian.getYCOO() + 10;
-                    
-        //             if (Math.abs(carX - pedestrianX) < 30 && 
-        //                 pedestrianY <= carY + vehicleHeight && 
-        //                 pedestrianY >= carY - vehicleHeight) {
-        //                 pedestrianInPath = true;
-        //                 break;
-        //             }
-        //         }
-        //     }
             
-            else if(driverStyle.equals("careful")){
-                double carX = car.getXCOO();
-                double carY = car.getYCOO();
+            // else if(driverStyle.equals("careful")){
+            //     double carX = car.getXCOO();
+            //     double carY = car.getYCOO();
                 
                 
                 
     
-                // Check for vehicle collision
-                for (int j = 0; j < cars.size(); j++) {
-                    if (i == j) continue;
+            //     // Check for vehicle collision
+            //     for (int j = 0; j < cars.size(); j++) {
+            //         if (i == j) continue;
                     
-                    Vehicle otherCar = cars.get(j);
-                    double otherX = otherCar.getXCOO();
-                    double otherY = otherCar.getYCOO();
-                    double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
-                    if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
-                        // Check if vehicles are in the same lane
-                        if (Math.abs(carX - otherX) < 20) {
-                            double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
-                            if (otherY < carY && carY - otherY < minSafeDistance) {
-                                carStopped = true;
-                                break;
-                            }
-                        }
-                    }
-                    else{
-                        // Check if vehicles are in the same lane
-                        if (Math.abs(carX - otherX) < 20) {
-                            double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
-                            if (otherY > carY && -carY + otherY < minSafeDistance) {
-                                carStopped = true;
-                                break;
-                            }
-                        }
-                    }
-                }
+            //         Vehicle otherCar = cars.get(j);
+            //         double otherX = otherCar.getXCOO();
+            //         double otherY = otherCar.getYCOO();
+            //         double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
+            //         if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
+            //             // Check if vehicles are in the same lane
+            //             if (Math.abs(carX - otherX) < 20) {
+            //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
+            //                 if (otherY < carY && carY - otherY < minSafeDistance) {
+            //                     carStopped = true;
+            //                     break;
+            //                 }
+            //             }
+            //         }
+            //         else{
+            //             // Check if vehicles are in the same lane
+            //             if (Math.abs(carX - otherX) < 20) {
+            //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
+            //                 if (otherY > carY && -carY + otherY < minSafeDistance) {
+            //                     carStopped = true;
+            //                     break;
+            //                 }
+            //             }
+            //         }
+            //     }
                 
-                // Check for pedestrians
+            //     // Check for pedestrians
                 
-                for (Pedestrian pedestrian : pedestrians) {
-                    double pedestrianX = pedestrian.getXCOO() - 10;
-                    double pedestrianY = pedestrian.getYCOO() + 10;
+            //     for (Pedestrian pedestrian : pedestrians) {
+            //         double pedestrianX = pedestrian.getXCOO() - 10;
+            //         double pedestrianY = pedestrian.getYCOO() + 10;
                     
-                    if (Math.abs(carX - pedestrianX) < 40 && 
-                        pedestrianY <= carY + vehicleHeight && 
-                        pedestrianY >= carY - vehicleHeight) {
-                        pedestrianInPath = true;
-                        break;
-                    }
-                }
-            }
+            //         if (Math.abs(carX - pedestrianX) < 40 && 
+            //             pedestrianY <= carY + vehicleHeight && 
+            //             pedestrianY >= carY - vehicleHeight) {
+            //             pedestrianInPath = true;
+            //             break;
+            //         }
+            //     }
+            // }
             
             else{
                 double carX = car.getXCOO();
@@ -715,10 +658,10 @@ private void startAnimation(Pane mapContainer) {
         double RIGHTMOST_LANE_X1 = 0;
         String driverStyle;
         int value = random.nextInt(100)+1;
-        if(value<=100){  //50 %
+        if(value<=0){  //50 %
             driverStyle="normal";
         }
-        else if(value<=80){ // 30 %
+        else if(value<=100){ // 30 %
             driverStyle="careful";
         }
         else{// 20 %
