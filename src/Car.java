@@ -29,10 +29,15 @@ public class Car extends Vehicle {
     ));
     private Image objectImage;
 
+
+
     public Car(Road road, String driverStyle) {
         super(road, driverStyle, random.nextInt(4) + 2, 50, 110);
         this.carID = "C" + (counter++);
+        
     }
+
+
 
     public String getCarID() {
         return this.carID;
@@ -62,15 +67,14 @@ public class Car extends Vehicle {
         vehicleView.setX(xCoo);
         vehicleView.setY(yCoo);
         vehicleView.setUserData(carType);
-
-
     }
 
     @Override
     public String toString() {
         return String.format(
-            "%-10s %-10s %-10d %-10.2f %-10.2f",
-            carID, carType, getObjectSpeed(), xCoo, yCoo
+            "%-10s %-10s %-10s %-10.2f %-10.2f %-10.2f %-10.2f %-10.2f",  // Added timeTaken to the format
+            carID, carType, getDriverStyle(), getObjectSpeed(), xCoo, yCoo, getTimeTaken()/1000.0, getIdealTime()   // Added timeTaken here
         );
     }
+    
 }

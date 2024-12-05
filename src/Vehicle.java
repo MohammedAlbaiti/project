@@ -3,13 +3,42 @@ import javafx.scene.image.ImageView;
 public class Vehicle extends MovingObjects {
     private String driverStyle;
     private Road road;
+    // New attribute to track time
+    private long startTime;
+    private long endTime;
+    private long timeTaken;
+    private double idealTime;
     protected  ImageView vehicleView;
     public Vehicle(Road road, String driverStyle, double objectSpeed, double objectWidth, double objectHeight) {
         super(objectSpeed, objectWidth,objectHeight);
         this.driverStyle = driverStyle;
         this.road = road;
+        startTimer();  // Start the timer when the object is created
+        caluclateIdealTime();
+    }
+    protected double getIdealTime(){
+        return this.idealTime;
+    }
+    private void caluclateIdealTime(){
+        double d =road.getObjectHeight();
+        double speed = getObjectSpeed()*42;
+        idealTime = d/speed;
+    }
+    // Method to start the timer
+    private void startTimer() {
+        this.startTime = System.currentTimeMillis();  // Capture the start time in nanoseconds
     }
 
+    // Method to stop the timer and calculate the elapsed time
+    public void stopTimer() {
+        this.endTime = System.currentTimeMillis();  // Capture the end time
+        this.timeTaken = endTime - startTime;  // Calculate the time taken in nanoseconds
+    }
+
+    // Getter for timeTaken
+    public long getTimeTaken() {
+        return this.timeTaken;  // Return the time taken in nanoseconds
+    }
     public String getDriverStyle() {
         return this.driverStyle;
     }

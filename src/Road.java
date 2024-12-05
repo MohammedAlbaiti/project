@@ -135,7 +135,7 @@ public class Road implements GeneralRules {
                 street.setLayoutX(currentX);
                 street.setFitWidth(width2);
                 mapContainer.getChildren().add(street);
-                XCooForLanes.add(currentX);
+                XCooForLanes.add(currentX+28);
                 currentX += width2;
 
                 if (j < numberOfLanes - 1) {

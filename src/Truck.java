@@ -65,12 +65,15 @@ public class Truck extends Vehicle {
     @Override
     public String toString() {
         return String.format(
-            "%-10s %-10s %-10.2f %-10.2f %-10.2f",
+            "%-10s %-10s %-10s %-10.2f %-10.2f %-10.2f %-10.2f %-10.2f",
             truckID, 
-            truckType, 
+            truckType,
+            getDriverStyle(), 
             getObjectSpeed(), 
             xCoo, 
-            yCoo
+            yCoo,
+            getTimeTaken()/1000.0,
+            getIdealTime()
         );
     }
 

@@ -1,6 +1,7 @@
 import javafx.animation.AnimationTimer;
 import javafx.animation.PauseTransition;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -34,69 +35,153 @@ public class TrafficSimulation {
     private boolean isSimulationComplete = false;
     private ArrayList<Double> lanePositions;
     private int numberOfPedestrian;
-    
-    public TrafficSimulation(Road road, int numberOfCars,int numberOfPedestrian, int simulationDuration) {
+    public static boolean isMuted = false; // Track whether sounds are muted
+    private boolean isPaused = false; // Track whether the simulation is paused
+
+    public TrafficSimulation(Road road, int numberOfCars, int numberOfPedestrian, int simulationDuration) {
         this.road = road;
         this.numberOfCars = numberOfCars;
         this.numberOfPedestrian = numberOfPedestrian;
         this.simulationDuration = simulationDuration;
     }
-    
+
     public Scene createSimulationScene() {
         Pane mapContainer = road.createMap();
         double totalWidth = road.getObjectWidth();
-        
+
         generateVehicles(mapContainer, numberOfCars);
         generatePedestrians(mapContainer, numberOfPedestrian);
-        
+
         passedCarsText = new Text(15, 25, "Passed Cars: 0");
         passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
         timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
-        numberOfAccidents = new Text(15,85,"Accidents: 0");
+        numberOfAccidents = new Text(15, 85, "Accidents: 0");
         passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-        Pane dataContaioner = new Pane();
+
+        Pane dataContainer = new Pane();
         Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
         Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
         topRect.setX(5);
         topRect.setY(5);
-        dataContaioner.getChildren().addAll(bottomRect , topRect, passedCarsText, passedPedestrianText,numberOfAccidents, timeRemainingText);
-        
+        dataContainer.getChildren().addAll(bottomRect, topRect, passedCarsText, passedPedestrianText, numberOfAccidents, timeRemainingText);
+
+        // Pause Button
+        Button pauseButton = new Button("Pause");
+        pauseButton.setLayoutX(15);
+        pauseButton.setLayoutY(110);
+        pauseButton.setOnAction(e -> togglePause(pauseButton));
+        dataContainer.getChildren().add(pauseButton);
+
+        // Mute Button
+        Button muteButton = new Button("Mute");
+        muteButton.setLayoutX(15);
+        muteButton.setLayoutY(140);
+        muteButton.setOnAction(e -> toggleMute(muteButton));
+        dataContainer.getChildren().add(muteButton);
+
+        // Create Lane Buttons
+        List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
+        for (int i = 0; i < laneXCoordinates.size(); i++) {
+            double laneX = laneXCoordinates.get(i);
+            Button laneButton = new Button("Add Car Lane " + (i + 1));
+            laneButton.setLayoutX(15);
+            laneButton.setLayoutY(180 + i * 30); // Adjust Y position dynamically for each button
+            int laneIndex = i; // To capture the index for the lambda expression
+            laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
+            dataContainer.getChildren().add(laneButton);
+        }
+
         StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(mapContainer, dataContaioner);
-        
+        stackPane.getChildren().addAll(mapContainer, dataContainer);
+
         startAnimation(mapContainer);
-        
+
         return new Scene(stackPane, totalWidth, road.getObjectHeight());
     }
-    
-    private void startAnimation(Pane mapContainer) {
-        startTime = System.nanoTime();
-        
-        animationTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (!isSimulationComplete) {
-                    int elapsedSeconds = (int)((now - startTime) / 1e9);
-                    int remainingTime = simulationDuration - elapsedSeconds;
-                    
-                    if (remainingTime <= 0) {
-                        stopSimulation();
-                        isSimulationComplete = true;
-                        return;
-                    }
-                    
-                    timeRemainingText.setText("Time Remaining: " + remainingTime + "s");
-                    updateVehicles(mapContainer);
-                    updatePedestrians(mapContainer);
+    private void toggleMute(Button muteButton) {
+        isMuted = !isMuted;
+        if(isMuted){
+            SoundPlayer.stopGeneralSounds();
+        }
+        else{
+            SoundPlayer.playGeneralSounds(simulationDuration);
+        }
+        muteButton.setText(isMuted ? "Unmute" : "Mute");
+        // System.out.println("Sound " + (isMuted ? "muted" : "unmuted"));
+    }
+    private void createVehicleInLane(int laneIndex, double laneX, Pane mapContainer) {
+
+            // Adjust Y position based on direction
+            String direction;
+            double y;
+            int halfSizeLanePositions = lanePositions.size() / 2;
+            if (road.getNumberOfRoads() == 2) {
+                if (laneIndex < halfSizeLanePositions) {
+                    direction = "down";
+                    y = -130; // Start from top for downward vehicles
+                    // y = -ySpacing;
+                } else {
+                    direction = "up";
+                    y = road.getObjectHeight(); // Start from bottom for upward vehicles
+                    // y = road.getObjectHeight() + 20;
                 }
+            } 
+            else {
+                // Single road - all vehicles go up
+                direction = "up";
+                y = road.getObjectHeight(); /////////////////// what is the purpose of multiplyig ySpacing with car.size()? you can use ySpacig only
             }
-        };
-        animationTimer.start();
+            
+        Vehicle newVehicle = createCar(laneX+10, y, direction); // Adjust the Y position to fit the road
+        // Rotate vehicle based on direction
+        if (direction.equals("down")) {
+            newVehicle.getVehicleView().setRotate(180); // the rotation won't change the coordinates (x, y)
+        }
+        cars.add(newVehicle);
+        mapContainer.getChildren().add(newVehicle.getVehicleView());
+        
     }
     
+private void togglePause(Button pauseButton) {
+    if (isPaused) {
+        animationTimer.start();
+        pauseButton.setText("Pause");
+    } else {
+        animationTimer.stop();
+        pauseButton.setText("Resume");
+    }
+    isPaused = !isPaused;
+}
+
+private void startAnimation(Pane mapContainer) {
+    startTime = System.nanoTime();
+
+    animationTimer = new AnimationTimer() {
+        @Override
+        public void handle(long now) {
+            if (!isPaused && !isSimulationComplete) {
+                int elapsedSeconds = (int) ((now - startTime) / 1e9);
+                int remainingTime = simulationDuration - elapsedSeconds;
+
+                if (remainingTime <= 0) {
+                    SoundPlayer.stopGeneralSounds();
+                    stopSimulation();
+                    isSimulationComplete = true;
+                    return;
+                }
+
+                timeRemainingText.setText("Time Remaining: " + remainingTime + "s");
+                updateVehicles(mapContainer);
+                updatePedestrians(mapContainer);
+            }
+        }
+    };
+    animationTimer.start();
+}
+
     private void updateVehicles(Pane mapContainer) {
 
 
@@ -404,6 +489,18 @@ public class TrafficSimulation {
             if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
             // Handle vehicle reaching the top
             if (car.getYCOO() < -vehicleHeight) {
+                car.stopTimer();
+                // System.out.println("Car null: " + (car == null));
+                if (car != null) {
+                    try {
+                        // System.out.println("Driver Style: " + car.getDriverStyle());
+                        // System.out.println("Speed: " + car.getObjectSpeed());
+                        System.out.println("Full toString: " + car.toString());
+                    } catch (Exception e) {
+                        System.err.println("Error accessing car properties: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
                 mapContainer.getChildren().remove(car.getVehicleView());
                 cars.remove(i);
                 i--;
@@ -411,12 +508,26 @@ public class TrafficSimulation {
                 road.increaseNumberOfPassedCars(1);
                 passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
                 
-                generateVehicles(mapContainer, 1);}
+                // generateVehicles(mapContainer, 1);
+            }
 
             }
             else{
                 // Handle vehicle reaching the top
                 if (car.getYCOO() > road.getObjectHeight()+vehicleHeight) {
+                    car.stopTimer();
+                    // System.out.println("Car null: " + (car == null));
+                    if (car != null) {
+                        try {
+                            // System.out.println("Driver Style: " + car.getDriverStyle());
+                            // System.out.println("Speed: " + car.getObjectSpeed());
+
+                            System.out.println("Full toString: " + car.toString());
+                        } catch (Exception e) {
+                            System.err.println("Error accessing car properties: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                     mapContainer.getChildren().remove(car.getVehicleView());
                     cars.remove(i);
                     i--;
@@ -424,7 +535,7 @@ public class TrafficSimulation {
                     road.increaseNumberOfPassedCars(1);
                     passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
                     
-                    generateVehicles(mapContainer, 1);
+                    // generateVehicles(mapContainer, 1);
                 }
         }}
     }
@@ -636,9 +747,7 @@ public class TrafficSimulation {
     }
     
     private void generateVehicles(Pane mapContainer, int numberOfVehicles) {
-        double startingY = 0;
-        double ySpacing = 130;
-        
+
         // Get lane positions and adjust for vehicle positioning
         lanePositions = road.getXCooForLanes();
         for (int i = 0; i < lanePositions.size(); i++) {
@@ -659,17 +768,17 @@ public class TrafficSimulation {
             if (road.getNumberOfRoads() == 2) {
                 if (laneIndex < halfSizeLanePositions) {
                     direction = "down";
-                    y = -startingY - (cars.size() * ySpacing); // Start from top for downward vehicles
+                    y = -130; // Start from top for downward vehicles
                     // y = -ySpacing;
                 } else {
                     direction = "up";
-                    y = road.getObjectHeight() + startingY + (cars.size() * ySpacing); // Start from bottom for upward vehicles
+                    y = road.getObjectHeight(); // Start from bottom for upward vehicles
                     // y = road.getObjectHeight() + 20;
                 }
             } else {
                 // Single road - all vehicles go up
                 direction = "up";
-                y = road.getObjectHeight() + startingY + (cars.size() * ySpacing); /////////////////// what is the purpose of multiplyig ySpacing with car.size()? you can use ySpacig only
+                y = road.getObjectHeight(); /////////////////// what is the purpose of multiplyig ySpacing with car.size()? you can use ySpacig only
             }
             
             Vehicle vehicle = createCar(x, y, direction);
