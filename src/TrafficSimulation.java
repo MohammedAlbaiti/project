@@ -150,17 +150,92 @@ public class TrafficSimulation {
                 // Check for pedestrians
                 
                 for (Pedestrian pedestrian : pedestrians) {
-                    double pedestrianX = pedestrian.getXCOO() - 10;
-                    double pedestrianY = pedestrian.getYCOO() + 10;
+                    double pedestrianX = pedestrian.getXCOO();
+                    double pedestrianY = pedestrian.getYCOO();
                     
-                    if (Math.abs(carX - pedestrianX) < 30 && 
-                        pedestrianY <= carY + vehicleHeight && 
-                        pedestrianY >= carY - vehicleHeight) {
-                        pedestrianInPath = true;
-                        break;
+                    if (car.getObjectDirection() == "down"){
+                        if (carX + car.getObjectWidth() > pedestrianX && 
+                            pedestrianX + pedestrian.getObjectWidth() > carX &&
+                            pedestrianY > carY + car.getObjectHeight() &&
+                            pedestrianY + pedestrian.getObjectHeight() < carY + car.getObjectHeight() + pedestrian.getObjectHeight() + 30){
+                                pedestrianInPath = true;
+                                break;
+                            }
+
+                    }
+                    if (car.getObjectDirection() == "up"){
+                        if (pedestrianX + pedestrian.getObjectWidth() > carX &&
+                            pedestrianX < carX + car.getObjectWidth() && 
+                            pedestrianY > carY - pedestrian.getObjectHeight() - 30 &&
+                            pedestrianY + pedestrian.getObjectHeight() < carY){
+                                pedestrianInPath = true;
+                                break;
+                            }
+
                     }
                 }
             }
+        // for (int i = 0; i < cars.size(); i++) {
+        //     Vehicle car = cars.get(i);
+        //     if(car.getAccidentHappen()){
+        //         continue;
+        //     }
+        //     String driverStyle = car.getDriverStyle();
+        //     boolean carStopped = false;
+        //     double vehicleHeight = (car instanceof Car) ? 110 : 130;
+        //     boolean pedestrianInPath = false;
+
+        //     if(driverStyle.equals("normal")){
+        //         double carX = car.getXCOO();
+        //         double carY = car.getYCOO();
+                
+                
+                
+    
+        //         // Check for vehicle collision
+        //         for (int j = 0; j < cars.size(); j++) {
+        //             if (i == j) continue;
+                    
+        //             Vehicle otherCar = cars.get(j);
+        //             double otherX = otherCar.getXCOO();
+        //             double otherY = otherCar.getYCOO();
+        //             double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
+        //             if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
+        //             // Check if vehicles are in the same lane
+        //             if (Math.abs(carX - otherX) < 20) {
+        //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+        //                 if (otherY < carY && carY - otherY < minSafeDistance) {
+        //                     carStopped = true;
+        //                     break;
+        //                 }
+        //             }
+        //             }
+        //             else{
+        //             // Check if vehicles are in the same lane
+        //             if (Math.abs(carX - otherX) < 20) {
+        //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 20;
+        //                 if (otherY > carY && -carY + otherY < minSafeDistance) {
+        //                     carStopped = true;
+        //                     break;
+        //                 }
+        //             }
+        //             }
+        //         }
+                
+        //         // Check for pedestrians
+                
+        //         for (Pedestrian pedestrian : pedestrians) {
+        //             double pedestrianX = pedestrian.getXCOO() - 10;
+        //             double pedestrianY = pedestrian.getYCOO() + 10;
+                    
+        //             if (Math.abs(carX - pedestrianX) < 30 && 
+        //                 pedestrianY <= carY + vehicleHeight && 
+        //                 pedestrianY >= carY - vehicleHeight) {
+        //                 pedestrianInPath = true;
+        //                 break;
+        //             }
+        //         }
+        //     }
             
             else if(driverStyle.equals("careful")){
                 double carX = car.getXCOO();
@@ -529,13 +604,13 @@ public class TrafficSimulation {
         double RIGHTMOST_LANE_X1 = 0;
         String driverStyle;
         int value = random.nextInt(100)+1;
-        if(value<=50){
+        if(value<=100){  //50 %
             driverStyle="normal";
         }
-        else if(value<=90){
+        else if(value<=80){ // 30 %
             driverStyle="careful";
         }
-        else{
+        else{// 20 %
             driverStyle="carless";
         }
         if(road.getNumberOfRoads()==2){
@@ -585,9 +660,11 @@ public class TrafficSimulation {
                 if (laneIndex < halfSizeLanePositions) {
                     direction = "down";
                     y = -startingY - (cars.size() * ySpacing); // Start from top for downward vehicles
+                    // y = -ySpacing;
                 } else {
                     direction = "up";
                     y = road.getObjectHeight() + startingY + (cars.size() * ySpacing); // Start from bottom for upward vehicles
+                    // y = road.getObjectHeight() + 20;
                 }
             } else {
                 // Single road - all vehicles go up
