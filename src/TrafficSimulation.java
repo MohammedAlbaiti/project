@@ -292,9 +292,9 @@ public class TrafficSimulation {
     timeTakenColumn.setCellValueFactory(cellData -> {
         GeneralRules value = cellData.getValue();
         if (value instanceof Vehicle) 
-            return new SimpleStringProperty(String.valueOf(((Vehicle) value).getTimeTaken()));
+            return new SimpleStringProperty(String.format("%-10.2f",((Vehicle) value).getTimeTaken()));
         if (value instanceof Pedestrian) 
-            return new SimpleStringProperty(String.valueOf(((Pedestrian) value).getTimeTaken()));
+            return new SimpleStringProperty(String.format("%-10.2f",((Pedestrian) value).getTimeTaken()));
         return new SimpleStringProperty("Unknown");
     });
 
@@ -472,14 +472,6 @@ public class TrafficSimulation {
                         accidentFlagView.setY(carY + (car.getObjectWidth() == 110  ? 40 : 50));
                         mapContainer.getChildren().add(accidentFlagView);
                         
-                        // FadeTransition carFadeOut = new FadeTransition(Duration.seconds(5), car.getVehicleView());
-                        // carFadeOut.setFromValue(1.0); 
-                        // carFadeOut.setToValue(0.0);   
-                        
-                        // FadeTransition pedestrianFadeOut = new FadeTransition(Duration.seconds(5), pedestrian.getImageView());
-                        // pedestrianFadeOut.setFromValue(1.0);
-                        // pedestrianFadeOut.setToValue(0.0);   
-                        
                         Timeline timeline = new Timeline();
 
                         // Calculate the duration of each cycle (5 seconds / 10 cycles)
@@ -517,76 +509,11 @@ public class TrafficSimulation {
                         });
 
                         timeline.play();
-                        pedestrianInPath=true;
+                        // pedestrianInPath=true;
                         break;
-                        
-                        // carStopped = true;
-                        // mapContainer.getChildren().remove(car.getVehicleView());
-                        // // cars.remove(i);
-                        
-                        // mapContainer.getChildren().remove(pedestrian.getImageView());
-                        // pedestrians.remove(pedestrian);
-                            
-                        // // if(pedestrian.getPedestrianStyle().equals("carless")){
-                        //     if(car.getObjectDirection().equals("up") && pedestrianY-carY>0 && pedestrianY-carY<=20){
-                        //         System.out.println(1);
-                        //         pedestrian.setAccidentHappen(true);
-                        //         car.setAccidentHappen(true);
-                        //         road.increaseNumberOfAccidents(1);
-                        //         numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
-                        //                 // Create a PauseTransition that will last for the specified delay
-                        //         PauseTransition pause = new PauseTransition(Duration.millis(10000));
-    
-                        //         // Set the action to remove the ImageView after the pause
-                        //         pause.setOnFinished(event -> {
-                        //             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
-                        //             mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
-                        //             cars.remove(car);
-                        //             pedestrians.remove(pedestrian);
-                        //         });
-    
-                        //         // Start the pause (it runs asynchronously)
-                        //         pause.play();
-                        //         pedestrianInPath=true;
-                        //         break;
-                        //     }
-                            
-                        //     else if(car.getObjectDirection().equals("down") && 
-                        //     Math.abs(carX - pedestrianX) < 20 && 
-                        //     Math.abs(carY - pedestrianY) <= vehicleHeight && 
-                        //     pedestrianY - carY >= 10){
-                        //         System.out.println(1);
-                        //         pedestrian.setAccidentHappen(true);
-                        //         car.setAccidentHappen(true);
-                        //         pedestrianInPath = true;
-                        //         road.increaseNumberOfAccidents(1);
-                        //         numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
-
-                        //                 // Create a PauseTransition that will last for the specified delay
-                        //         PauseTransition pause = new PauseTransition(Duration.millis(10000));
-    
-                        //         // Set the action to remove the ImageView after the pause
-                        //         pause.setOnFinished(event -> {
-                        //             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
-                        //             mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
-                        //             cars.remove(car);
-                        //             pedestrians.remove(pedestrian);
-                        //         });
-    
-                        //         // Start the pause (it runs asynchronously)
-                        //         pause.play();
-                        //         break;
-                        //     }
-                        // // }
-                        // else{
-                        //     pedestrianInPath=true;
-                        //     break;
-                        // }
-                    // }
                     }
                 }
             }
-            
             
             // Move vehicle
             if (carStopped || pedestrianInPath) {
@@ -663,9 +590,7 @@ public class TrafficSimulation {
                 double vehicleHeight = (car instanceof Car) ? 110 : 130;
     
                 if(pedestrian.getPedestrianStyle().equals("normal")){
-
         
-
                     if (pedestrian.getObjectDirection().equals("right")) {
                         if (pedestrianX + pedestrian.getObjectWidth() > carX - 20 && // subtract 20 from carX for a safe distance 
                             pedestrianX + pedestrian.getObjectWidth() < carX) {      // if you want to move left in x-axis you should subtract, and add to move right
@@ -707,8 +632,6 @@ public class TrafficSimulation {
                     }
                 }
                 else if(pedestrian.getPedestrianStyle().equals("careful")){
-
-        
 
                     if (pedestrian.getObjectDirection().equals("right")) {
                         if (pedestrianX + pedestrian.getObjectWidth() > carX - 30 && // subtract 20 from carX for a safe distance 

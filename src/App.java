@@ -36,6 +36,12 @@ public class App extends Application {
     }
 
     private void showInputForm(Stage primaryStage) {
+        // Get the primary screen
+        Screen screen = Screen.getPrimary();
+
+        // Get the screen bounds
+        Rectangle2D screenBounds = screen.getBounds();
+        double screenWidth = screenBounds.getWidth();
         // Create the input form layout (VBox)
         VBox inputForm = new VBox(10);
         inputForm.setPadding(new Insets(20)); // Padding between edges
@@ -85,16 +91,32 @@ public class App extends Application {
                 if (simulationTime <= 0 || numberOfCars <= 0 || numberOfPedestrian <= 0 || 
                     numberOfLanes <= 0) {
                     throw new NumberFormatException();
+                    
+                    
+                }
+                else{
+                    Road road = new Road(numberOfRoads, numberOfLanes, "normal", 5000);
+                    road.createMap();
+                    if(road.getObjectWidth()>screenWidth){
+                        throw new ArrayIndexOutOfBoundsException();
+                    }
                 }
     
                 // If validation is successful, proceed to the next stage
-                showControlPanel(); // Transition to the control panel for the simulation
+                showControlPanel(primaryStage); // Transition to the control panel for the simulation
                 primaryStage.close(); // Close the current input form stage
             } catch (NumberFormatException ex) {
                 // Display an error alert if the input is invalid
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Input");
                 alert.setContentText("Please enter valid positive numbers for all fields.");
+                alert.showAndWait(); // Wait for the user to acknowledge the error
+            }
+            catch (ArrayIndexOutOfBoundsException ex){
+                // Display an error alert if the input is invalid
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Screen size issue");
+                alert.setContentText("Your screen size cannot show you this road. Please try to create road with less number of lanes or number or roads.");
                 alert.showAndWait(); // Wait for the user to acknowledge the error
             }
         });
@@ -121,12 +143,7 @@ public class App extends Application {
         // Set the default size for the window
         primaryStage.setWidth(400);     // Default width
         primaryStage.setHeight(600);    // Default height
-        // Get the primary screen
-        Screen screen = Screen.getPrimary();
 
-        // Get the screen bounds
-        Rectangle2D screenBounds = screen.getBounds();
-        double screenWidth = screenBounds.getWidth();
         // double screenHeight = screenBounds.getHeight();
         // Set initial position on screen
         primaryStage.setX((screenWidth/2)-200);         // Set initial X position
@@ -178,7 +195,7 @@ public class App extends Application {
     }
     
 
-    private void showControlPanel() {
+    private void showControlPanel(Stage primStage) {
         Stage controlStage = new Stage();
         VBox controlPanel = new VBox(20);
         controlPanel.setPadding(new Insets(20));
@@ -188,22 +205,23 @@ public class App extends Application {
         Button phase1Button = new Button("Start Phase 1");
         Button phase2Button = new Button("Start Phase 2");
         Button compareButton = new Button("Compare Results");
-        
+        Button back = new Button("Back");
         // Bind the font size of each button to the window size (width)
         bindFontSizeToButton(phase1Button, controlStage);
         bindFontSizeToButton(phase2Button, controlStage);
         bindFontSizeToButton(compareButton, controlStage);
-    
+        bindFontSizeToButton(back,controlStage);
         // Add actions to buttons
         phase1Button.setOnAction(e -> startPhase1Simulation());
         phase2Button.setOnAction(e -> startPhase2Simulation());
         compareButton.setOnAction(e -> compareResults());
-    
+        back.setOnAction(e -> showInputForm(primStage));
         // Add buttons to the control panel
         controlPanel.getChildren().addAll(
             phase1Button,
             phase2Button,
-            compareButton
+            compareButton,
+            back
         );
     
         // Create the scene for the control panel

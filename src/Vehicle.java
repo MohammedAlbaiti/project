@@ -22,7 +22,7 @@ public class Vehicle extends MovingObjects {
     private void caluclateIdealTime(){
         double d =road.getObjectHeight();
         double speed = getObjectSpeed()*42;
-        idealTime = d/speed;
+        this.idealTime = Math.round((d / speed) * 100.0) / 100.0;
     }
     // Method to start the timer
     private void startTimer() {
@@ -37,7 +37,7 @@ public class Vehicle extends MovingObjects {
 
     // Getter for timeTaken
     public double getTimeTaken() {
-        return this.timeTaken/1000;  // Return the time taken in nanoseconds
+        return this.timeTaken/1000.0;  // Return the time taken in nanoseconds
     }
     public String getDriverStyle() {
         return this.driverStyle;

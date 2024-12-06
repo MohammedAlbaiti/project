@@ -131,7 +131,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     private void caluclateIdealTime(){
         double d =road.getObjectWidth();
         double speed = getObjectSpeed()*60;
-        idealTime = d/speed;
+        this.idealTime = Math.round((d / speed) * 100.0) / 100.0;
     }
     // Method to start the timer
     private void startTimer() {
@@ -146,7 +146,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
 
     // Getter for timeTaken
     public double getTimeTaken() {
-        return this.timeTaken/1000.0;  // Return the time taken in nanoseconds
+        return Math.round(this.timeTaken/10) / 100.0;  // Return the time taken in nanoseconds
     }
     public String getPedestrianType() {
         return pedestrianType;
