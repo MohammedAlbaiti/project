@@ -302,6 +302,7 @@ public class App extends Application {
 
         // Create a new window for phase 2 simulation
         phase2Window = new Stage();
+        phase1Window.setResizable(false);
         Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", 5000);
         phase2Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
         Scene simulationScene = phase2Simulation.createSimulationScene();

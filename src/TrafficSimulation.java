@@ -119,7 +119,7 @@ public class TrafficSimulation {
         
         startAnimation(mapContainer,simulationDuration);
 
-        return new Scene(stackPane, totalWidth, road.getObjectHeight());
+        return new Scene(stackPane, totalWidth-10, road.getObjectHeight()-10);
     }
     
     private void toggleMute(Button muteButton) {
@@ -675,7 +675,6 @@ public class TrafficSimulation {
             RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
 
         }
-        // double RIGHTMOST_LANE_X = 
         if ((x == RIGHTMOST_LANE_X || x==RIGHTMOST_LANE_X1) && random.nextDouble() < 0.4) {
             Truck truck = new Truck(road, driverStyle);
             truck.setObjectDireciton(direciton);
