@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     // Simulation parameters
     private int simulationTime;
-    private int numberOfCars;
+    private int numberOfVehicles;
     private int numberOfPedestrian;
     private int numberOfLanes;
     private int numberOfRoads;
@@ -49,7 +49,7 @@ public class App extends Application {
 
         // Text fields for user input
         TextField timeField = new TextField();
-        TextField carsField = new TextField();
+        TextField vehiclesField = new TextField();
         TextField lanesField = new TextField();
         ObservableList<String> inputNumberOfRoads = FXCollections.observableArrayList("1", "2");
         ComboBox<String> comboBox = new ComboBox<>(inputNumberOfRoads);
@@ -60,8 +60,8 @@ public class App extends Application {
         inputForm.getChildren().addAll(
             createLabelWithDynamicFont("Simulation Time (seconds):", primaryStage),
             timeField,
-            createLabelWithDynamicFont("Number of Cars:", primaryStage),
-            carsField,
+            createLabelWithDynamicFont("Number of Vehicles:", primaryStage),
+            vehiclesField,
             createLabelWithDynamicFont("Number of Pedestrian:", primaryStage),
             pedestrianField,
             createLabelWithDynamicFont("Number of Lanes:", primaryStage),
@@ -72,7 +72,7 @@ public class App extends Application {
     
         // Bind the font size of the TextFields to the window size
         bindFontSizeToTextField(timeField, primaryStage);
-        bindFontSizeToTextField(carsField, primaryStage);
+        bindFontSizeToTextField(vehiclesField, primaryStage);
         bindFontSizeToTextField(lanesField, primaryStage);
         bindFontSizeToTextField(pedestrianField, primaryStage);
     
@@ -82,13 +82,13 @@ public class App extends Application {
             try {
                 // Parse user input from the text fields
                 simulationTime = Integer.parseInt(timeField.getText());
-                numberOfCars = Integer.parseInt(carsField.getText());
+                numberOfVehicles = Integer.parseInt(vehiclesField.getText());
                 numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
                 numberOfLanes = Integer.parseInt(lanesField.getText());
                 numberOfRoads = Integer.parseInt(comboBox.getValue());
     
                 // Validate that all inputs are positive numbers
-                if (simulationTime <= 0 || numberOfCars <= 0 || numberOfPedestrian <= 0 || 
+                if (simulationTime <= 0 || numberOfVehicles <= 0 || numberOfPedestrian <= 0 || 
                     numberOfLanes <= 0) {
                     throw new NumberFormatException();
                     
@@ -281,7 +281,7 @@ public class App extends Application {
         phase1Window = new Stage();
         phase1Window.setResizable(false);
         Road road = new Road(numberOfRoads, numberOfLanes, "normal", 5000);
-        phase1Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
+        phase1Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime);
         
         // Create and display the simulation scene
         Scene simulationScene = phase1Simulation.createSimulationScene();
@@ -304,7 +304,7 @@ public class App extends Application {
         phase2Window = new Stage();
         phase1Window.setResizable(false);
         Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", 5000);
-        phase2Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
+        phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime);
         Scene simulationScene = phase2Simulation.createSimulationScene();
 
         // Display the simulation scene
@@ -331,19 +331,19 @@ public class App extends Application {
         comparison.append("Simulation Results\n\n");
         
         comparison.append(String.format("Phase 1:\n" +
-            "Passed Cars: %d\n" +
+            "Passed Vejocles: %d\n" +
             "Passed Pedestrians: %d\n\n", 
             phase1Simulation.getPassedVehicles(),
             phase1Simulation.getPassedPedestrians()));
             
         comparison.append(String.format("Phase 2:\n" +
-            "Passed Cars: %d\n" +
+            "Passed Vehicles: %d\n" +
             "Passed Pedestrians: %d\n\n",
             phase2Simulation.getPassedVehicles(),
             phase2Simulation.getPassedPedestrians()));
             
         if (phase1Simulation.getPassedVehicles() > 0 && phase1Simulation.getPassedPedestrians() > 0) {
-            double carImprovement = ((double)(phase2Simulation.getPassedVehicles() - phase1Simulation.getPassedVehicles()) / 
+            double vehicleImprovement = ((double)(phase2Simulation.getPassedVehicles() - phase1Simulation.getPassedVehicles()) / 
                                phase1Simulation.getPassedVehicles()) * 100;
             double pedImprovement = ((double)(phase2Simulation.getPassedPedestrians() - phase1Simulation.getPassedPedestrians()) / 
                                phase1Simulation.getPassedPedestrians()) * 100;
@@ -351,7 +351,7 @@ public class App extends Application {
             comparison.append(String.format("Improvements:\n" +
                 "Vehicles: %.1f%%\n" +
                 "Pedestrians: %.1f%%",
-                carImprovement,
+                vehicleImprovement,
                 pedImprovement));
         }
         comparePanel.getChildren().add(createLabelWithDynamicFont(comparison.toString(), compareStage)
