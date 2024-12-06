@@ -6,6 +6,7 @@ public abstract class MovingObjects implements GeneralRules {
     protected double yCoo;
     protected String direciton;
     private boolean accidentHappen = false;
+    private boolean isPassed = false;
     public MovingObjects(double objectSpeed, double objectWidth, double objectHeight) {
         this.objectSpeed = objectSpeed;
         this.objectWidth = objectWidth;
@@ -51,4 +52,11 @@ public abstract class MovingObjects implements GeneralRules {
     public String getObjectDirection(){
         return this.direciton;
     }
+    public void setObjectPassed(){
+        isPassed=true;
+    }
+    public boolean isObjectPassed(){
+        return isPassed;
+    }
+    
 }

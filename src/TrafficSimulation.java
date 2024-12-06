@@ -2,27 +2,37 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
 import java.security.SecureRandom;
 // import java.time.Duration;
 import javafx.util.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class TrafficSimulation {
     private Road road;
     private int numberOfCars;
+    private List<GeneralRules> objecList = new ArrayList<>();
     private List<Vehicle> cars = new ArrayList<>();
     private List<Pedestrian> pedestrians = new ArrayList<>();
     private SecureRandom random = new SecureRandom();
@@ -50,9 +60,11 @@ public class TrafficSimulation {
         this.numberOfCars = numberOfCars;
         this.numberOfPedestrian = numberOfPedestrian;
         this.simulationDuration = simulationDuration;
+        objecList.add(road);
     }
 
     public Scene createSimulationScene() {
+        SoundPlayer.playGeneralSounds(simulationDuration);
         Pane mapContainer = road.createMap();
         double totalWidth = road.getObjectWidth();
 
@@ -151,6 +163,7 @@ public class TrafficSimulation {
             }
             
         Vehicle newVehicle = createCar(laneX+10, y, direction); // Adjust the Y position to fit the road
+        objecList.add(newVehicle);
         // Rotate vehicle based on direction
         if (direction.equals("down")) {
             newVehicle.getVehicleView().setRotate(180); // the rotation won't change the coordinates (x, y)
@@ -191,6 +204,8 @@ public class TrafficSimulation {
                         SoundPlayer.stopGeneralSounds();
                         stopSimulation();
                         isSimulationComplete = true;
+                        simulationSummary();
+                        simulationSamrary();
                         return;
                     }
 
@@ -205,6 +220,124 @@ public class TrafficSimulation {
         };
         animationTimer.start();
     }
+    private void simulationSamrary(){
+        System.out.println(objecList.get(0));
+        System.out.println(String.format(
+            "%-5s %-25s %-10s %-10s %-10s %-10s %-10s %-10s",
+            "ID", "Type", "Style", "Speed", "Direction", "TimeTaken", "IdealTime", "Passed"
+        )
+        );
+        for (int i=1; i < objecList.size(); i++) {
+            System.out.println(objecList.get(i));
+        }
+        
+    }
+    private void simulationSummary() {
+    Stage primaryStage = new Stage();
+    primaryStage.setTitle("Simulation Summary");
+
+    // Create TableView
+    TableView<GeneralRules> tableView = new TableView<>();
+
+    // Create columns
+    TableColumn<GeneralRules, String> idColumn = new TableColumn<>("ID");
+    idColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof Car) 
+            return new SimpleStringProperty(((Car) value).getCarID());
+        if (value instanceof Pedestrian) 
+            return new SimpleStringProperty(((Pedestrian) value).getPedestrianID());
+        if (value instanceof Truck) 
+            return new SimpleStringProperty(((Truck) value).getTruckID());
+        return new SimpleStringProperty("Unknown");
+    });
+
+    TableColumn<GeneralRules, String> typeColumn = new TableColumn<>("Type");
+    typeColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof Car) 
+            return new SimpleStringProperty(((Car) value).getCarType());
+        if (value instanceof Pedestrian) 
+            return new SimpleStringProperty(((Pedestrian) value).getPedestrianType());
+        if (value instanceof Truck) 
+            return new SimpleStringProperty(((Truck) value).getTruckType());
+        return new SimpleStringProperty("Unknown");
+    });
+
+    TableColumn<GeneralRules, String> styleColumn = new TableColumn<>("Style");
+    styleColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof Vehicle) 
+            return new SimpleStringProperty(((Vehicle) value).getDriverStyle());
+        if (value instanceof Pedestrian) 
+            return new SimpleStringProperty(((Pedestrian) value).getPedestrianType());
+        return new SimpleStringProperty("Unknown");
+    });
+
+    TableColumn<GeneralRules, String> speedColumn = new TableColumn<>("Speed");
+    speedColumn.setCellValueFactory(cellData -> {
+        if (cellData.getValue() instanceof MovingObjects) 
+            return new SimpleStringProperty(String.valueOf(((MovingObjects) cellData.getValue()).getObjectSpeed()));
+        return new SimpleStringProperty("Unknown");
+    });
+
+    TableColumn<GeneralRules, String> directionColumn = new TableColumn<>("Direction");
+    directionColumn.setCellValueFactory(cellData -> {
+        if (cellData.getValue() instanceof MovingObjects) 
+            return new SimpleStringProperty(((MovingObjects) cellData.getValue()).getObjectDirection());
+        return new SimpleStringProperty("Unknown");
+    });
+
+    TableColumn<GeneralRules, String> timeTakenColumn = new TableColumn<>("Time Taken (s)");
+    timeTakenColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof Vehicle) 
+            return new SimpleStringProperty(String.valueOf(((Vehicle) value).getTimeTaken()));
+        if (value instanceof Pedestrian) 
+            return new SimpleStringProperty(String.valueOf(((Pedestrian) value).getTimeTaken()));
+        return new SimpleStringProperty("Unknown");
+    });
+
+    TableColumn<GeneralRules, String> idealTimeColumn = new TableColumn<>("Ideal Time (s)");
+    idealTimeColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof Vehicle) 
+            return new SimpleStringProperty(String.valueOf(((Vehicle) value).getIdealTime()));
+        if (value instanceof Pedestrian) 
+            return new SimpleStringProperty(String.valueOf(((Pedestrian) value).getIdealTime()));
+        return new SimpleStringProperty("Unknown");
+    });
+
+    // Corrected "Passed" column
+    TableColumn<GeneralRules, String> passedColumn = new TableColumn<>("Passed");
+    passedColumn.setCellValueFactory(cellData -> {
+        if (cellData.getValue() instanceof MovingObjects) 
+            return new SimpleStringProperty(String.valueOf(((MovingObjects) cellData.getValue()).isObjectPassed()));
+        return new SimpleStringProperty("Unknown");
+    });
+
+    // Create a list of columns and add them to the TableView
+    List<TableColumn<GeneralRules, ?>> columns = Arrays.asList(
+        idColumn, typeColumn, styleColumn, speedColumn, 
+        directionColumn, timeTakenColumn, idealTimeColumn, passedColumn
+    );
+    tableView.getColumns().addAll(columns);
+
+    // Populate TableView with data
+    // Ensure objectList is correctly defined and populated (observable list of GeneralRules objects)
+    ObservableList<GeneralRules> data = FXCollections.observableArrayList(
+        objecList.subList(1, objecList.size()) // Skipping the first element if needed
+    );
+    tableView.setItems(data);
+
+    // Create scene
+    VBox vbox = new VBox(tableView);
+    Scene scene = new Scene(vbox, 800, 400);
+    // scene.getStylesheets().add(getClass().getResource("table_styles.css").toExternalForm());
+
+    primaryStage.setScene(scene);
+    primaryStage.show();
+}
 
     private void updateVehicles(Pane mapContainer) {
 
@@ -340,7 +473,7 @@ public class TrafficSimulation {
                         
                         // Create a PauseTransition that will last for the specified delay
                         // Set the action to remove the ImageView after the pause
-                        PauseTransition pause = new PauseTransition(Duration.millis(5000));
+                        PauseTransition pause = new PauseTransition(Duration.millis(road.getAccidentDelay()));
                         
                         pause.setOnFinished(event -> {
                             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
@@ -438,7 +571,7 @@ public class TrafficSimulation {
                     try {
                         // System.out.println("Driver Style: " + car.getDriverStyle());
                         // System.out.println("Speed: " + car.getObjectSpeed());
-                        System.out.println("Full toString: " + car.toString());
+                        // System.out.println(car.toString());
                     } catch (Exception e) {
                         System.err.println("Error accessing car properties: " + e.getMessage());
                         e.printStackTrace();
@@ -447,7 +580,7 @@ public class TrafficSimulation {
                 mapContainer.getChildren().remove(car.getVehicleView());
                 cars.remove(i);
                 i--;
-                
+                car.setObjectPassed();
                 road.increaseNumberOfPassedCars(1);
                 passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
                 
@@ -465,7 +598,7 @@ public class TrafficSimulation {
                             // System.out.println("Driver Style: " + car.getDriverStyle());
                             // System.out.println("Speed: " + car.getObjectSpeed());
 
-                            System.out.println("Full toString: " + car.toString());
+                            // System.out.println(car.toString());
                         } catch (Exception e) {
                             System.err.println("Error accessing car properties: " + e.getMessage());
                             e.printStackTrace();
@@ -474,7 +607,7 @@ public class TrafficSimulation {
                     mapContainer.getChildren().remove(car.getVehicleView());
                     cars.remove(i);
                     i--;
-                    
+                    car.setObjectPassed();
                     road.increaseNumberOfPassedCars(1);
                     passedCarsText.setText("Passed Cars: " + road.getNumberOfPassedCars());
                     
@@ -647,6 +780,8 @@ public class TrafficSimulation {
                 mapContainer.getChildren().remove(pedestrian.getImageView());
                 pedestrians.remove(i);
                 i--;
+                pedestrian.stopTimer();
+                pedestrian.setObjectPassed();
                 road.increaseNumberOfPassedPedestrians(1);
                 passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
                 generatePedestrians(mapContainer, 1);
@@ -728,7 +863,7 @@ public class TrafficSimulation {
             
             Vehicle vehicle = createCar(x, y, direction);
             ImageView vehicleImageView = vehicle.getVehicleView();
-            
+            objecList.add(vehicle);
             // Rotate vehicle based on direction
             if (direction.equals("down")) {
                 vehicleImageView.setRotate(180); // the rotation won't change the coordinates (x, y)
@@ -765,7 +900,7 @@ public class TrafficSimulation {
                 pedestrian.createPedestrian();
                 pedestrian.getImageView().setRotate(180); // the rotation won't change the coordinates (x, y)
             }
-           
+           objecList.add(pedestrian);
             pedestrians.add(pedestrian);
             mapContainer.getChildren().add(pedestrian.getImageView());
         }

@@ -171,7 +171,6 @@ public class Road implements GeneralRules {
     public ArrayList<Double> getRightMostLane(){
         return new ArrayList<>(rightMostLane);
     }
-    
     @Override
     public String toString() {
         return String.format(
@@ -202,6 +201,7 @@ public class Road implements GeneralRules {
             XCooForLanes.toString(), 
             rightMostLane.toString()
         );
-    }
+}
+
 
 }

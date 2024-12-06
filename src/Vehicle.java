@@ -36,8 +36,8 @@ public class Vehicle extends MovingObjects {
     }
 
     // Getter for timeTaken
-    public long getTimeTaken() {
-        return this.timeTaken;  // Return the time taken in nanoseconds
+    public double getTimeTaken() {
+        return this.timeTaken/1000;  // Return the time taken in nanoseconds
     }
     public String getDriverStyle() {
         return this.driverStyle;
