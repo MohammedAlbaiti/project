@@ -1,4 +1,6 @@
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -327,10 +329,19 @@ public class TrafficSimulation {
                         pedestrian.setAccidentHappen(true);
                         road.increaseNumberOfAccidents(1);
                         numberOfAccidents.setText("Accidents: " + road.getNumberOfAccidents());
-        
+                        
+                        FadeTransition carFadeOut = new FadeTransition(Duration.seconds(5), car.getVehicleView());
+                        carFadeOut.setFromValue(1.0); 
+                        carFadeOut.setToValue(0.0);   
+                        
+                        FadeTransition pedestrianFadeOut = new FadeTransition(Duration.seconds(5), pedestrian.getImageView());
+                        pedestrianFadeOut.setFromValue(1.0);
+                        pedestrianFadeOut.setToValue(0.0);   
+                        
                         // Create a PauseTransition that will last for the specified delay
-                        PauseTransition pause = new PauseTransition(Duration.millis(5000));
                         // Set the action to remove the ImageView after the pause
+                        PauseTransition pause = new PauseTransition(Duration.millis(5000));
+                        
                         pause.setOnFinished(event -> {
                             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
                             mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
@@ -338,7 +349,9 @@ public class TrafficSimulation {
                             pedestrians.remove(pedestrian);
                         });
 
-                        pause.play();
+                        ParallelTransition parallelTransition = new ParallelTransition(carFadeOut, pedestrianFadeOut, pause);
+
+                        parallelTransition.play();
                         pedestrianInPath=true;
                         break;
                         
