@@ -260,22 +260,32 @@ public class App extends Application {
     }
     
     private void startPhase1Simulation() {
-        if (phase1Window != null) {
-            if (phase1Simulation != null) {
-                phase1Simulation.stopSimulation();
-            }
-            phase1Window.close();
+
+    // If we're already running a simulation, stop it and close the window
+    if (phase1Window != null) {
+        if (phase1Simulation != null) {
+            phase1Simulation.stopSimulation();
         }
-        
-        phase1Window = new Stage();
-        Road road = new Road(numberOfRoads, numberOfLanes, "normal", simulationTime);
-        phase1Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
-        Scene simulationScene = phase1Simulation.createSimulationScene();
-        
-        phase1Window.setTitle("Phase 1 Simulation");
-        phase1Window.setScene(simulationScene);
-        phase1Window.show();
+        phase1Window.close();
     }
+
+    // Create a new window for the simulation
+    phase1Window = new Stage();
+
+    // Create a road and a traffic simulation
+    Road road = new Road(numberOfRoads, numberOfLanes, "normal", simulationTime);
+    phase1Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
+
+    // Get the scene from the simulation
+    Scene simulationScene = phase1Simulation.createSimulationScene();
+
+    // Set the title and scene of the window
+    phase1Window.setTitle("Phase 1 Simulation");
+    phase1Window.setScene(simulationScene);
+
+    // Show the window
+    phase1Window.show();
+}
     
     private void startPhase2Simulation() {
         if (phase2Window != null) {

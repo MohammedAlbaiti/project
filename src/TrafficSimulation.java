@@ -37,7 +37,12 @@ public class TrafficSimulation {
     private int numberOfPedestrian;
     public static boolean isMuted = false; // Track whether sounds are muted
     private boolean isPaused = false; // Track whether the simulation is paused
-
+    //  private boolean isPaused = false;
+    // private long startTime;
+    private long pauseStartTime = 0;
+    private long totalPausedTime = 0;
+    // private AnimationTimer animationTimer;
+    // private boolean isSimulationComplete = false;
     public TrafficSimulation(Road road, int numberOfCars, int numberOfPedestrian, int simulationDuration) {
         this.road = road;
         this.numberOfCars = numberOfCars;
@@ -45,69 +50,70 @@ public class TrafficSimulation {
         this.simulationDuration = simulationDuration;
     }
 
-public Scene createSimulationScene() {
-    Pane mapContainer = road.createMap();
-    double totalWidth = road.getObjectWidth();
+    public Scene createSimulationScene() {
+        Pane mapContainer = road.createMap();
+        double totalWidth = road.getObjectWidth();
 
-    generateVehicles(mapContainer, numberOfCars);
-    generatePedestrians(mapContainer, numberOfPedestrian);
+        generateVehicles(mapContainer, numberOfCars);
+        generatePedestrians(mapContainer, numberOfPedestrian);
 
-    passedCarsText = new Text(15, 25, "Passed Cars: 0");
-    passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
-    timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
-    numberOfAccidents = new Text(15, 85, "Accidents: 0");
-    passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-    passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-    timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-    numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+        passedCarsText = new Text(15, 25, "Passed Cars: 0");
+        passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
+        timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
+        numberOfAccidents = new Text(15, 85, "Accidents: 0");
+        passedCarsText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+        passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+        timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
+        numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
 
-    Pane dataContainer = new Pane();
-    Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
-    Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
-    topRect.setX(5);
-    topRect.setY(5);
-    dataContainer.getChildren().addAll(bottomRect, topRect, passedCarsText, passedPedestrianText, numberOfAccidents, timeRemainingText);
+        Pane dataContainer = new Pane();
+        Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
+        Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
+        topRect.setX(5);
+        topRect.setY(5);
+        dataContainer.getChildren().addAll(bottomRect, topRect, passedCarsText, passedPedestrianText, numberOfAccidents, timeRemainingText);
 
-    // Pause Button
-    Button pauseButton = new Button("Pause");
-    pauseButton.setLayoutX(15);
-    pauseButton.setLayoutY(110);
-    pauseButton.setOnAction(e -> togglePause(pauseButton));
-    dataContainer.getChildren().add(pauseButton);
+        // Pause Button
+        Button pauseButton = new Button("Pause");
+        pauseButton.setLayoutX(15);
+        pauseButton.setLayoutY(110);
+        pauseButton.setOnAction(e -> togglePause(pauseButton));
+        dataContainer.getChildren().add(pauseButton);
 
-    // Mute Button
-    Button muteButton = new Button("Mute");
-    muteButton.setLayoutX(15);
-    muteButton.setLayoutY(140);
-    muteButton.setOnAction(e -> toggleMute(muteButton));
-    dataContainer.getChildren().add(muteButton);
+        // Mute Button
+        Button muteButton = new Button("Mute");
+        muteButton.setLayoutX(15);
+        muteButton.setLayoutY(140);
+        muteButton.setOnAction(e -> toggleMute(muteButton));
+        dataContainer.getChildren().add(muteButton);
 
-    // Create Lane Buttons
-    List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
-    for (int i = 0; i < laneXCoordinates.size(); i++) {
-        double laneX = laneXCoordinates.get(i);
-        Button laneButton = new Button("Add Car Lane " + (i + 1));
-        laneButton.setLayoutX(15);
-        laneButton.setLayoutY(180 + i * 30); // Adjust Y position dynamically for each button
-        int laneIndex = i; // To capture the index for the lambda expression
-        laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
-        dataContainer.getChildren().add(laneButton);
+        // Create Lane Buttons
+        List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
+        for (int i = 0; i < laneXCoordinates.size(); i++) {
+            double laneX = laneXCoordinates.get(i);
+            Button laneButton = new Button("Add Car Lane " + (i + 1));
+            laneButton.setLayoutX(15);
+            laneButton.setLayoutY(180 + i * 30); // Adjust Y position dynamically for each button
+            int laneIndex = i; // To capture the index for the lambda expression
+            laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
+            dataContainer.getChildren().add(laneButton);
+        }
+
+        // Create Pedestrian Button
+        Button createPedestrianButton = new Button("Create Pedestrian");
+        createPedestrianButton.setLayoutX(15);
+        createPedestrianButton.setLayoutY(180 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
+        createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
+        dataContainer.getChildren().add(createPedestrianButton);
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(mapContainer, dataContainer);
+
+        startAnimation(mapContainer,simulationDuration);
+
+        return new Scene(stackPane, totalWidth, road.getObjectHeight());
     }
-
-    // Create Pedestrian Button
-    Button createPedestrianButton = new Button("Create Pedestrian");
-    createPedestrianButton.setLayoutX(15);
-    createPedestrianButton.setLayoutY(180 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
-    createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
-    dataContainer.getChildren().add(createPedestrianButton);
-
-    StackPane stackPane = new StackPane();
-    stackPane.getChildren().addAll(mapContainer, dataContainer);
-
-    startAnimation(mapContainer);
-
-    return new Scene(stackPane, totalWidth, road.getObjectHeight());
-}
+    
     private void toggleMute(Button muteButton) {
         isMuted = !isMuted;
         if(isMuted){
@@ -152,45 +158,53 @@ public Scene createSimulationScene() {
         
     }
     
-private void togglePause(Button pauseButton) {
-    if (isPaused) {
-        animationTimer.start();
-        pauseButton.setText("Pause");
-    } else {
-        animationTimer.stop();
-        pauseButton.setText("Resume");
-    }
-    isPaused = !isPaused;
-}
-
-private void startAnimation(Pane mapContainer) {
-    startTime = System.nanoTime();
-
-    animationTimer = new AnimationTimer() {
-        @Override
-        public void handle(long now) {
-            if (!isPaused && !isSimulationComplete) {
-                int elapsedSeconds = (int) ((now - startTime) / 1e9);
-                int remainingTime = simulationDuration - elapsedSeconds;
-
-                if (remainingTime <= 0) {
-                    SoundPlayer.stopGeneralSounds();
-                    stopSimulation();
-                    isSimulationComplete = true;
-                    return;
-                }
-
-                timeRemainingText.setText("Time Remaining: " + remainingTime + "s");
-                updateVehicles(mapContainer);
-                updatePedestrians(mapContainer);
-            }
+    private void togglePause(Button pauseButton) {
+        if (isPaused) {
+            // Resume the animation
+            animationTimer.start();
+            pauseButton.setText("Pause");
+            totalPausedTime += System.nanoTime() - pauseStartTime; // Add paused duration
+            pauseStartTime = 0; // Reset pause start time
+        } else {
+            // Pause the animation
+            animationTimer.stop();
+            pauseButton.setText("Resume");
+            pauseStartTime = System.nanoTime(); // Record when the pause starts
         }
-    };
-    animationTimer.start();
-}
+        isPaused = !isPaused;
+    }
+
+    private void startAnimation(Pane mapContainer, int simulationDuration) {
+        startTime = System.nanoTime();
+
+        animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (!isPaused && !isSimulationComplete) {
+                    // Calculate elapsed time excluding paused duration
+                    int elapsedSeconds = (int) ((now - startTime - totalPausedTime) / 1e9);
+                    int remainingTime = simulationDuration - elapsedSeconds;
+
+                    if (remainingTime <= 0) {
+                        SoundPlayer.stopGeneralSounds();
+                        stopSimulation();
+                        isSimulationComplete = true;
+                        return;
+                    }
+
+                    // Update the remaining time on the UI
+                    timeRemainingText.setText("Time Remaining: " + remainingTime + "s");
+
+                    // Update simulation elements
+                    updateVehicles(mapContainer);
+                    updatePedestrians(mapContainer);
+                }
+            }
+        };
+        animationTimer.start();
+    }
 
     private void updateVehicles(Pane mapContainer) {
-
 
         for (int i = 0; i < cars.size(); i++) {
             Vehicle car = cars.get(i);
@@ -265,58 +279,6 @@ private void startAnimation(Pane mapContainer) {
                 }
             }
             
-            // else if(driverStyle.equals("careful")){
-            //     double carX = car.getXCOO();
-            //     double carY = car.getYCOO();
-                
-                
-                
-    
-            //     // Check for vehicle collision
-            //     for (int j = 0; j < cars.size(); j++) {
-            //         if (i == j) continue;
-                    
-            //         Vehicle otherCar = cars.get(j);
-            //         double otherX = otherCar.getXCOO();
-            //         double otherY = otherCar.getYCOO();
-            //         double otherVehicleHeight = (otherCar instanceof Car) ? 110 : 130;
-            //         if(road.getNumberOfRoads()==1 || car.getObjectDirection().equals("up")){
-            //             // Check if vehicles are in the same lane
-            //             if (Math.abs(carX - otherX) < 20) {
-            //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
-            //                 if (otherY < carY && carY - otherY < minSafeDistance) {
-            //                     carStopped = true;
-            //                     break;
-            //                 }
-            //             }
-            //         }
-            //         else{
-            //             // Check if vehicles are in the same lane
-            //             if (Math.abs(carX - otherX) < 20) {
-            //                 double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 30;
-            //                 if (otherY > carY && -carY + otherY < minSafeDistance) {
-            //                     carStopped = true;
-            //                     break;
-            //                 }
-            //             }
-            //         }
-            //     }
-                
-            //     // Check for pedestrians
-                
-            //     for (Pedestrian pedestrian : pedestrians) {
-            //         double pedestrianX = pedestrian.getXCOO() - 10;
-            //         double pedestrianY = pedestrian.getYCOO() + 10;
-                    
-            //         if (Math.abs(carX - pedestrianX) < 40 && 
-            //             pedestrianY <= carY + vehicleHeight && 
-            //             pedestrianY >= carY - vehicleHeight) {
-            //             pedestrianInPath = true;
-            //             break;
-            //         }
-            //     }
-            // }
-            
             else{
                 double carX = car.getXCOO();
                 double carY = car.getYCOO();
@@ -353,71 +315,96 @@ private void startAnimation(Pane mapContainer) {
                 // Check for pedestrians
                 
                 for (Pedestrian pedestrian : pedestrians) {
-                    double pedestrianX = pedestrian.getXCOO() - 10;
-                    double pedestrianY = pedestrian.getYCOO() + 10;
-                    
-                    if (Math.abs(carX - pedestrianX) < 20 && 
-                        pedestrianY <= carY + vehicleHeight && 
-                        pedestrianY >= carY - vehicleHeight) {
-                            // if(car.getObjectDirection().equals("down")){
-                            //     System.out.println(2);
-                            // }
-                            
-                        if(pedestrian.getPedestrianStyle().equals("carless")){
-                            if(car.getObjectDirection().equals("up") && pedestrianY-carY>0 && pedestrianY-carY<=20){
-                                System.out.println(1);
-                                pedestrian.setAccidentHappen(true);
-                                car.setAccidentHappen(true);
-                                road.increaseNumberOfAccidents(1);
-                                numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
-                                        // Create a PauseTransition that will last for the specified delay
-                                PauseTransition pause = new PauseTransition(Duration.millis(10000));
-    
-                                // Set the action to remove the ImageView after the pause
-                                pause.setOnFinished(event -> {
-                                    mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
-                                    mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
-                                    cars.remove(car);
-                                    pedestrians.remove(pedestrian);
-                                });
-    
-                                // Start the pause (it runs asynchronously)
-                                pause.play();
-                                pedestrianInPath=true;
-                                break;
-                            }
-                            
-                            else if(car.getObjectDirection().equals("down") && 
-                            Math.abs(carX - pedestrianX) < 20 && 
-                            Math.abs(carY - pedestrianY) <= vehicleHeight && 
-                            pedestrianY - carY >= 10){
-                                System.out.println(1);
-                                pedestrian.setAccidentHappen(true);
-                                car.setAccidentHappen(true);
-                                pedestrianInPath = true;
-                                road.increaseNumberOfAccidents(1);
-                                numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
+                    double pedestrianX = pedestrian.getXCOO();
+                    double pedestrianY = pedestrian.getYCOO();
 
-                                        // Create a PauseTransition that will last for the specified delay
-                                PauseTransition pause = new PauseTransition(Duration.millis(10000));
+                    if (pedestrianX + pedestrian.getObjectWidth() > carX + 15 &&
+                        pedestrianX < carX + car.getObjectWidth() - 15 &&
+                        pedestrianY + pedestrian.getObjectHeight() > carY + 15 &&
+                        pedestrianY < carY + car.getObjectHeight() - 15 ){
+            
+                        car.setAccidentHappen(true); 
+                        pedestrian.setAccidentHappen(true);
+                        road.increaseNumberOfAccidents(1);
+                        numberOfAccidents.setText("Accidents: " + road.getNumberOfAccidents());
+        
+                        // Create a PauseTransition that will last for the specified delay
+                        PauseTransition pause = new PauseTransition(Duration.millis(5000));
+                        // Set the action to remove the ImageView after the pause
+                        pause.setOnFinished(event -> {
+                            mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
+                            mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                            cars.remove(car);
+                            pedestrians.remove(pedestrian);
+                        });
+
+                        pause.play();
+                        pedestrianInPath=true;
+                        break;
+                        
+                        // carStopped = true;
+                        // mapContainer.getChildren().remove(car.getVehicleView());
+                        // // cars.remove(i);
+                        
+                        // mapContainer.getChildren().remove(pedestrian.getImageView());
+                        // pedestrians.remove(pedestrian);
+                            
+                        // // if(pedestrian.getPedestrianStyle().equals("carless")){
+                        //     if(car.getObjectDirection().equals("up") && pedestrianY-carY>0 && pedestrianY-carY<=20){
+                        //         System.out.println(1);
+                        //         pedestrian.setAccidentHappen(true);
+                        //         car.setAccidentHappen(true);
+                        //         road.increaseNumberOfAccidents(1);
+                        //         numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
+                        //                 // Create a PauseTransition that will last for the specified delay
+                        //         PauseTransition pause = new PauseTransition(Duration.millis(10000));
     
-                                // Set the action to remove the ImageView after the pause
-                                pause.setOnFinished(event -> {
-                                    mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
-                                    mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
-                                    cars.remove(car);
-                                    pedestrians.remove(pedestrian);
-                                });
+                        //         // Set the action to remove the ImageView after the pause
+                        //         pause.setOnFinished(event -> {
+                        //             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
+                        //             mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                        //             cars.remove(car);
+                        //             pedestrians.remove(pedestrian);
+                        //         });
     
-                                // Start the pause (it runs asynchronously)
-                                pause.play();
-                                break;
-                            }
-                        }
-                        else{
-                            pedestrianInPath=true;
-                            break;
-                        }
+                        //         // Start the pause (it runs asynchronously)
+                        //         pause.play();
+                        //         pedestrianInPath=true;
+                        //         break;
+                        //     }
+                            
+                        //     else if(car.getObjectDirection().equals("down") && 
+                        //     Math.abs(carX - pedestrianX) < 20 && 
+                        //     Math.abs(carY - pedestrianY) <= vehicleHeight && 
+                        //     pedestrianY - carY >= 10){
+                        //         System.out.println(1);
+                        //         pedestrian.setAccidentHappen(true);
+                        //         car.setAccidentHappen(true);
+                        //         pedestrianInPath = true;
+                        //         road.increaseNumberOfAccidents(1);
+                        //         numberOfAccidents.setText("Accidents: "+road.getNumberOfAccidents());
+
+                        //                 // Create a PauseTransition that will last for the specified delay
+                        //         PauseTransition pause = new PauseTransition(Duration.millis(10000));
+    
+                        //         // Set the action to remove the ImageView after the pause
+                        //         pause.setOnFinished(event -> {
+                        //             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
+                        //             mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                        //             cars.remove(car);
+                        //             pedestrians.remove(pedestrian);
+                        //         });
+    
+                        //         // Start the pause (it runs asynchronously)
+                        //         pause.play();
+                        //         break;
+                        //     }
+                        // // }
+                        // else{
+                        //     pedestrianInPath=true;
+                        //     break;
+                        // }
+                    // }
                     }
                 }
             }
@@ -480,8 +467,10 @@ private void startAnimation(Pane mapContainer) {
                     
                     // generateVehicles(mapContainer, 1);
                 }
-        }}
+            }
+        }
     }
+    
 
     private void updatePedestrians(Pane mapContainer) {
         for (int i = 0; i < pedestrians.size(); i++) {
@@ -658,10 +647,10 @@ private void startAnimation(Pane mapContainer) {
         double RIGHTMOST_LANE_X1 = 0;
         String driverStyle;
         int value = random.nextInt(100)+1;
-        if(value<=0){  //50 %
+        if(value<=50){  //50 %
             driverStyle="normal";
         }
-        else if(value<=100){ // 30 %
+        else if(value<=80){ // 30 %
             driverStyle="careful";
         }
         else{// 20 %
