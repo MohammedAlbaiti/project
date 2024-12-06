@@ -338,18 +338,18 @@ public class App extends Application {
         comparison.append(String.format("Phase 1:\n" +
             "Passed Cars: %d\n" +
             "Passed Pedestrians: %d\n\n", 
-            phase1Simulation.getPassedCars(),
+            phase1Simulation.getPassedVehicles(),
             phase1Simulation.getPassedPedestrians()));
             
         comparison.append(String.format("Phase 2:\n" +
             "Passed Cars: %d\n" +
             "Passed Pedestrians: %d\n\n",
-            phase2Simulation.getPassedCars(),
+            phase2Simulation.getPassedVehicles(),
             phase2Simulation.getPassedPedestrians()));
             
-        if (phase1Simulation.getPassedCars() > 0 && phase1Simulation.getPassedPedestrians() > 0) {
-            double carImprovement = ((double)(phase2Simulation.getPassedCars() - phase1Simulation.getPassedCars()) / 
-                               phase1Simulation.getPassedCars()) * 100;
+        if (phase1Simulation.getPassedVehicles() > 0 && phase1Simulation.getPassedPedestrians() > 0) {
+            double carImprovement = ((double)(phase2Simulation.getPassedVehicles() - phase1Simulation.getPassedVehicles()) / 
+                               phase1Simulation.getPassedVehicles()) * 100;
             double pedImprovement = ((double)(phase2Simulation.getPassedPedestrians() - phase1Simulation.getPassedPedestrians()) / 
                                phase1Simulation.getPassedPedestrians()) * 100;
                                

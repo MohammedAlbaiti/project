@@ -25,11 +25,11 @@ public class Road implements GeneralRules {
         this.numberOfRoads = numberOfRoads;
     }
 
-    public int getNumberOfPassedCars() {
+    public int getNumberOfPassedVehicles() {
         return numberOfPassedCars;
     }
 
-    public void increaseNumberOfPassedCars(int increment) {
+    public void increaseNumberOfPassedVehicles(int increment) {
         numberOfPassedCars += increment;
     }
 
