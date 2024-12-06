@@ -1,7 +1,6 @@
 import javafx.animation.AnimationTimer;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.PauseTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +19,8 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+import javafx.scene.image.Image;
+import javafx.animation.Timeline;
 import java.security.SecureRandom;
 // import java.time.Duration;
 import javafx.util.Duration;
@@ -341,6 +341,11 @@ public class TrafficSimulation {
 
     private void updateVehicles(Pane mapContainer) {
 
+        Image accidentFlagImage = new Image("file:src/resources/accidentFlag.png");
+        ImageView accidentFlagView = new ImageView(accidentFlagImage);
+        accidentFlagView.setFitWidth(30);
+        accidentFlagView.setFitHeight(30);
+
         for (int i = 0; i < cars.size(); i++) {
             Vehicle car = cars.get(i);
             if(car.getAccidentHappen()){
@@ -463,28 +468,55 @@ public class TrafficSimulation {
                         road.increaseNumberOfAccidents(1);
                         numberOfAccidents.setText("Accidents: " + road.getNumberOfAccidents());
                         
-                        FadeTransition carFadeOut = new FadeTransition(Duration.seconds(5), car.getVehicleView());
-                        carFadeOut.setFromValue(1.0); 
-                        carFadeOut.setToValue(0.0);   
+                        accidentFlagView.setX(carX + (car.getObjectWidth() == 50 ? 10 : 15));
+                        accidentFlagView.setY(carY + (car.getObjectWidth() == 110  ? 40 : 50));
+                        mapContainer.getChildren().add(accidentFlagView);
                         
-                        FadeTransition pedestrianFadeOut = new FadeTransition(Duration.seconds(5), pedestrian.getImageView());
-                        pedestrianFadeOut.setFromValue(1.0);
-                        pedestrianFadeOut.setToValue(0.0);   
+                        // FadeTransition carFadeOut = new FadeTransition(Duration.seconds(5), car.getVehicleView());
+                        // carFadeOut.setFromValue(1.0); 
+                        // carFadeOut.setToValue(0.0);   
                         
-                        // Create a PauseTransition that will last for the specified delay
-                        // Set the action to remove the ImageView after the pause
-                        PauseTransition pause = new PauseTransition(Duration.millis(road.getAccidentDelay()));
+                        // FadeTransition pedestrianFadeOut = new FadeTransition(Duration.seconds(5), pedestrian.getImageView());
+                        // pedestrianFadeOut.setFromValue(1.0);
+                        // pedestrianFadeOut.setToValue(0.0);   
                         
-                        pause.setOnFinished(event -> {
+                        Timeline timeline = new Timeline();
+
+                        // Calculate the duration of each cycle (5 seconds / 10 cycles)
+                        double cycleDuration = 5.0 / 10.0; // in seconds
+
+                        for (int k = 0; k < 10; k++) {
+                        // Fade in
+                            timeline.getKeyFrames().add(
+                                new KeyFrame(
+                                    Duration.seconds(k * cycleDuration),
+                                    new KeyValue(accidentFlagView.opacityProperty(), 1.0),
+                                    new KeyValue(pedestrian.getImageView().opacityProperty(), 1.0),
+                                    new KeyValue(car.getVehicleView().opacityProperty(), 1.0)
+                                )
+                            );
+
+                            // Fade out
+                            timeline.getKeyFrames().add(
+                                new KeyFrame(
+                                    Duration.seconds((k + 0.5) * cycleDuration), // Halfway through the cycle
+                                    new KeyValue(accidentFlagView.opacityProperty(), 0.0),
+                                    new KeyValue(pedestrian.getImageView().opacityProperty(), 0.0),
+                                    new KeyValue(car.getVehicleView().opacityProperty(), 0.0)
+                                )
+                            );
+                        }
+                        
+                        timeline.setCycleCount(1);
+                        timeline.setOnFinished(e -> { 
                             mapContainer.getChildren().remove(car.getVehicleView()); // Remove from the parent container (Pane)
                             mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                            mapContainer.getChildren().remove(accidentFlagView); 
                             cars.remove(car);
                             pedestrians.remove(pedestrian);
                         });
 
-                        ParallelTransition parallelTransition = new ParallelTransition(carFadeOut, pedestrianFadeOut, pause);
-
-                        parallelTransition.play();
+                        timeline.play();
                         pedestrianInPath=true;
                         break;
                         
