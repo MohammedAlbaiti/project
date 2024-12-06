@@ -1,7 +1,6 @@
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -68,7 +67,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
             setXCOO(getXCOO()-getObjectSpeed());
             pedestrianView.setX(getXCOO());
         }
-
     }
     }
     @Override
@@ -102,7 +100,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     }
 
         public void createPedestrian() {
-        // xCoo = random.nextBoolean() ? 0 : road.getTotalWidth() - 145.63;
         if(getObjectDirection().equals("right")){
             xCoo = 0;
         }

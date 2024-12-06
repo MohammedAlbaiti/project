@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.animation.Timeline;
 import java.security.SecureRandom;
-// import java.time.Duration;
 import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +35,6 @@ public class TrafficSimulation {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Pedestrian> pedestrians = new ArrayList<>();
     private SecureRandom random = new SecureRandom();
-    // private static final ArrayList<Double> RIGHTMOST_LANE_X= new ArrayList<>();
     private Text passedVehiclesText;
     private Text passedPedestrianText;
     private Text timeRemainingText;
@@ -49,12 +47,8 @@ public class TrafficSimulation {
     private int numberOfPedestrian;
     public static boolean isMuted = false; // Track whether sounds are muted
     private boolean isPaused = false; // Track whether the simulation is paused
-    //  private boolean isPaused = false;
-    // private long startTime;
     private long pauseStartTime = 0;
     private long totalPausedTime = 0;
-    // private AnimationTimer animationTimer;
-    // private boolean isSimulationComplete = false;
     public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration) {
         this.road = road;
         this.numberOfVehicles = numberOfVehicles;
@@ -122,7 +116,7 @@ public class TrafficSimulation {
 
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(mapContainer, dataContainer);
-
+        
         startAnimation(mapContainer,simulationDuration);
 
         return new Scene(stackPane, totalWidth, road.getObjectHeight());
@@ -137,7 +131,6 @@ public class TrafficSimulation {
             SoundPlayer.playGeneralSounds(simulationDuration);
         }
         muteButton.setText(isMuted ? "Unmute" : "Mute");
-        // System.out.println("Sound " + (isMuted ? "muted" : "unmuted"));
     }
     private void createVehicleInLane(int laneIndex, double laneX, Pane mapContainer) {
 
@@ -148,25 +141,23 @@ public class TrafficSimulation {
             if (road.getNumberOfRoads() == 2) {
                 if (laneIndex < halfSizeLanePositions) {
                     direction = "down";
-                    y = -130; // Start from top for downward vehicles
-                    // y = -ySpacing;
+                    y = -130; 
                 } else {
                     direction = "up";
-                    y = road.getObjectHeight(); // Start from bottom for upward vehicles
-                    // y = road.getObjectHeight() + 20;
+                    y = road.getObjectHeight(); 
                 }
             } 
             else {
                 // Single road - all vehicles go up
                 direction = "up";
-                y = road.getObjectHeight(); /////////////////// what is the purpose of multiplyig ySpacing with car.size()? you can use ySpacig only
+                y = road.getObjectHeight(); 
             }
             
-        Vehicle newVehicle = creatVehicle(laneX+10, y, direction); // Adjust the Y position to fit the road
+        Vehicle newVehicle = creatVehicle(laneX+10, y, direction); 
         objecList.add(newVehicle);
         // Rotate vehicle based on direction
         if (direction.equals("down")) {
-            newVehicle.getVehicleView().setRotate(180); // the rotation won't change the coordinates (x, y)
+            newVehicle.getVehicleView().setRotate(180); 
         }
         vehicles.add(newVehicle);
         mapContainer.getChildren().add(newVehicle.getVehicleView());
@@ -270,7 +261,7 @@ public class TrafficSimulation {
         if (value instanceof Vehicle) 
             return new SimpleStringProperty(((Vehicle) value).getDriverStyle());
         if (value instanceof Pedestrian) 
-            return new SimpleStringProperty(((Pedestrian) value).getPedestrianType());
+            return new SimpleStringProperty(((Pedestrian) value).getPedestrianStyle());
         return new SimpleStringProperty("Unknown");
     });
 
@@ -333,8 +324,6 @@ public class TrafficSimulation {
     // Create scene
     VBox vbox = new VBox(tableView);
     Scene scene = new Scene(vbox, 800, 400);
-    // scene.getStylesheets().add(getClass().getResource("table_styles.css").toExternalForm());
-
     primaryStage.setScene(scene);
     primaryStage.show();
 }
@@ -391,7 +380,6 @@ public class TrafficSimulation {
                 }
                 
                 // Check for pedestrians
-                
                 for (Pedestrian pedestrian : pedestrians) {
                     double pedestrianX = pedestrian.getXCOO();
                     double pedestrianY = pedestrian.getYCOO();
@@ -453,7 +441,6 @@ public class TrafficSimulation {
                 }
                 
                 // Check for pedestrians
-                
                 for (Pedestrian pedestrian : pedestrians) {
                     double pedestrianX = pedestrian.getXCOO();
                     double pedestrianY = pedestrian.getYCOO();
@@ -502,14 +489,13 @@ public class TrafficSimulation {
                         timeline.setCycleCount(1);
                         timeline.setOnFinished(e -> { 
                             mapContainer.getChildren().remove(vehicle.getVehicleView()); // Remove from the parent container (Pane)
-                            mapContainer.getChildren().remove(pedestrian.getImageView());// System.out.println("ImageView removed after " + delayMillis + "ms.");
+                            mapContainer.getChildren().remove(pedestrian.getImageView());
                             mapContainer.getChildren().remove(accidentFlagView); 
                             vehicles.remove(vehicle);
                             pedestrians.remove(pedestrian);
                         });
 
                         timeline.play();
-                        // pedestrianInPath=true;
                         break;
                     }
                 }
@@ -525,17 +511,6 @@ public class TrafficSimulation {
             // Handle vehicle reaching the top
             if (vehicle.getYCOO() < -vehicleHeight) {
                 vehicle.stopTimer();
-                // System.out.println("Car null: " + (car == null));
-                if (vehicle != null) {
-                    try {
-                        // System.out.println("Driver Style: " + car.getDriverStyle());
-                        // System.out.println("Speed: " + car.getObjectSpeed());
-                        // System.out.println(car.toString());
-                    } catch (Exception e) {
-                        System.err.println("Error accessing car properties: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
                 mapContainer.getChildren().remove(vehicle.getVehicleView());
                 vehicles.remove(i);
                 i--;
@@ -551,18 +526,6 @@ public class TrafficSimulation {
                 // Handle vehicle reaching the top
                 if (vehicle.getYCOO() > road.getObjectHeight()+vehicleHeight) {
                     vehicle.stopTimer();
-                    // System.out.println("Car null: " + (car == null));
-                    if (vehicle != null) {
-                        try {
-                            // System.out.println("Driver Style: " + car.getDriverStyle());
-                            // System.out.println("Speed: " + car.getObjectSpeed());
-
-                            // System.out.println(car.toString());
-                        } catch (Exception e) {
-                            System.err.println("Error accessing car properties: " + e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
                     mapContainer.getChildren().remove(vehicle.getVehicleView());
                     vehicles.remove(i);
                     i--;
@@ -707,7 +670,6 @@ public class TrafficSimulation {
         if(road.getNumberOfRoads()==2){
             RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
             RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
-            // double RIGHTMOST_LANE_X = road.getRightMostLane().get(0);
         }
         else{
             RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
@@ -753,12 +715,12 @@ public class TrafficSimulation {
                 } else {
                     direction = "up";
                     y = road.getObjectHeight(); // Start from bottom for upward vehicles
-                    // y = road.getObjectHeight() + 20;
+                    
                 }
             } else {
                 // Single road - all vehicles go up
                 direction = "up";
-                y = road.getObjectHeight(); /////////////////// what is the purpose of multiplyig ySpacing with car.size()? you can use ySpacig only
+                y = road.getObjectHeight(); 
             }
             
             Vehicle vehicle = creatVehicle(x, y, direction);
@@ -766,7 +728,7 @@ public class TrafficSimulation {
             objecList.add(vehicle);
             // Rotate vehicle based on direction
             if (direction.equals("down")) {
-                vehicleImageView.setRotate(180); // the rotation won't change the coordinates (x, y)
+                vehicleImageView.setRotate(180); 
             }
             
             vehicles.add(vehicle);
@@ -788,7 +750,6 @@ public class TrafficSimulation {
             else{
                 pedestrianStyle="carless";
             }
-            // System.out.println(pedestrianStyle);
             Pedestrian pedestrian = new Pedestrian(road, pedestrianStyle);
             boolean right = random.nextBoolean();
             if(right){
@@ -798,7 +759,7 @@ public class TrafficSimulation {
             else{
                 pedestrian.setObjectDireciton("left");
                 pedestrian.createPedestrian();
-                pedestrian.getImageView().setRotate(180); // the rotation won't change the coordinates (x, y)
+                pedestrian.getImageView().setRotate(180);
             }
            objecList.add(pedestrian);
             pedestrians.add(pedestrian);

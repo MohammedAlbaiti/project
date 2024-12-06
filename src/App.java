@@ -139,12 +139,10 @@ public class App extends Application {
         // Set the minimum size for the window (prevents shrinking too much)
         primaryStage.setMinWidth(300);  // Minimum width of the window
         primaryStage.setMinHeight(600); // Minimum height of the window
-        // primaryStage.setMaxWidth(800);
         // Set the default size for the window
         primaryStage.setWidth(400);     // Default width
         primaryStage.setHeight(600);    // Default height
 
-        // double screenHeight = screenBounds.getHeight();
         // Set initial position on screen
         primaryStage.setX((screenWidth/2)-200);         // Set initial X position
         primaryStage.setY(50);         // Set initial Y position
@@ -243,7 +241,6 @@ public class App extends Application {
         // Get the screen bounds
         Rectangle2D screenBounds = screen.getBounds();
         double screenWidth = screenBounds.getWidth();
-        // double screenHeight = screenBounds.getHeight();
         // Set initial position on screen
         controlStage.setX((screenWidth/2)-200);         // Set initial X position
         controlStage.setY(100);         // Set initial Y position
@@ -252,11 +249,7 @@ public class App extends Application {
         controlStage.show();
     }
     
-    /**
-     * Helper method to bind the font size of a Button to the window width.
-     * @param button the Button to apply the font size binding to
-     * @param controlStage the control window Stage to bind the font size to
-     */
+
     private void bindFontSizeToButton(Button button, Stage controlStage) {
         double windowHeight = controlStage.getHeight();
         double windowWidth = controlStage.getWidth();
@@ -286,9 +279,10 @@ public class App extends Application {
 
         // Create a new window for phase 1 simulation
         phase1Window = new Stage();
+        phase1Window.setResizable(false);
         Road road = new Road(numberOfRoads, numberOfLanes, "normal", 5000);
         phase1Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
-
+        
         // Create and display the simulation scene
         Scene simulationScene = phase1Simulation.createSimulationScene();
         phase1Window.setTitle("Phase 1 Simulation");
@@ -308,7 +302,7 @@ public class App extends Application {
 
         // Create a new window for phase 2 simulation
         phase2Window = new Stage();
-        Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", simulationTime);
+        Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", 5000);
         phase2Simulation = new TrafficSimulation(road, numberOfCars, numberOfPedestrian, simulationTime);
         Scene simulationScene = phase2Simulation.createSimulationScene();
 
@@ -354,12 +348,11 @@ public class App extends Application {
                                phase1Simulation.getPassedPedestrians()) * 100;
                                
             comparison.append(String.format("Improvements:\n" +
-                "Cars: %.1f%%\n" +
+                "Vehicles: %.1f%%\n" +
                 "Pedestrians: %.1f%%",
                 carImprovement,
                 pedImprovement));
         }
-        // createLabelWithDynamicFont(comparison.toString(), compareStage);
         comparePanel.getChildren().add(createLabelWithDynamicFont(comparison.toString(), compareStage)
         );
         

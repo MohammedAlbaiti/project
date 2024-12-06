@@ -13,7 +13,6 @@ public abstract class MovingObjects implements GeneralRules {
         this.objectHeight = objectHeight;
     }
 
-    // Required abstract methods were missing concrete implementations
     public abstract double getObjectSpeed();
     public abstract void setObjectSpeed(double objectSpeed);
     public abstract void move();

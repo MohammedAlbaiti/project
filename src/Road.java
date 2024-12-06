@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -11,9 +10,7 @@ public class Road implements GeneralRules {
     private String trafficState;
     private int numberOfLanes;
     private double accidentDelay;
-    // private double objectDimension;
     private int numberOfRoads;
-    // private double totalWidth;
     private double objectWidth;
     private double objectHeight=480;
     private ArrayList<Double> XCooForLanes = new ArrayList<>();
@@ -93,9 +90,7 @@ public class Road implements GeneralRules {
         
     }
     public Pane createMap() {
-        // double totalWidth = 0;
         Pane mapContainer = new Pane();
-        // ArrayList<Double> XCooForLanes = new ArrayList<>();
         mapContainer.setStyle("-fx-padding: 0; -fx-background-color: #232329;");
         
         Image walkingsideLeft = new Image("file:src/resources/walkingsideLeft.png");

@@ -1,6 +1,5 @@
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
