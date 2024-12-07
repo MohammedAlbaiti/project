@@ -10,16 +10,16 @@ public class Road implements GeneralRules {
     private String trafficState;
     private int numberOfLanes;
     private double accidentDelay;
-    private int numberOfRoads;
+    private int numberOfPaths;
     private double objectWidth;
     private double objectHeight=480;
     private ArrayList<Double> XCooForLanes = new ArrayList<>();
     private ArrayList<Double> rightMostLane = new ArrayList<>();
-        public Road(int numberOfRoads,int numberOfLanes, String trafficState, double accidentDelay) {
+        public Road(int numberOfPaths,int numberOfLanes, String trafficState, double accidentDelay) {
         this.numberOfLanes = numberOfLanes;
         this.trafficState = trafficState;
         this.accidentDelay = accidentDelay;
-        this.numberOfRoads = numberOfRoads;
+        this.numberOfPaths = numberOfPaths;
     }
 
     public int getNumberOfPassedVehicles() {
@@ -103,11 +103,11 @@ public class Road implements GeneralRules {
         double width2 = 113;
         double width3 = 26;
         double width4 = 202;
-        int numberOfRoads = this.numberOfRoads;
+        int numberOfPaths = this.numberOfPaths;
         int numberOfLanes = this.numberOfLanes;
         double currentX = 0;
 
-        for (int i = 0; i < numberOfRoads; i++) {
+        for (int i = 0; i < numberOfPaths; i++) {
             // Add left walking side
             if(i!=0){
                 ImageView roadSepratorImageView = new ImageView(roadSeprator);
@@ -141,7 +141,7 @@ public class Road implements GeneralRules {
                     currentX += width3;
                 }
             }
-            if(i==numberOfRoads-1){
+            if(i==numberOfPaths-1){
             // Add right walking side
             ImageView rightWalk = new ImageView(walkingsideRight);
             rightWalk.setLayoutX(currentX);
@@ -151,7 +151,7 @@ public class Road implements GeneralRules {
         }}
         setObjectWidth(currentX);
         rightMostLane.add(XCooForLanes.get(XCooForLanes.size()-1));
-        if(numberOfRoads==2){
+        if(numberOfPaths==2){
             rightMostLane.add(XCooForLanes.get(0));
         }
         return mapContainer;
@@ -160,8 +160,8 @@ public class Road implements GeneralRules {
         // Return a new ArrayList containing the same elements as the original
         return new ArrayList<>(XCooForLanes);
     }
-    public int getNumberOfRoads(){
-        return this.numberOfRoads;
+    public int getNumberOfPaths(){
+        return this.numberOfPaths;
     }
     public ArrayList<Double> getRightMostLane(){
         return new ArrayList<>(rightMostLane);
@@ -189,7 +189,7 @@ public class Road implements GeneralRules {
             numberOfAccidents, 
             trafficState, 
             numberOfLanes, 
-            numberOfRoads, 
+            numberOfPaths, 
             accidentDelay, 
             getObjectWidth(), 
             getObjectHeight(), 

@@ -138,7 +138,7 @@ public class TrafficSimulation {
             String direction;
             double y;
             int halfSizeLanePositions = lanePositions.size() / 2;
-            if (road.getNumberOfRoads() == 2) {
+            if (road.getNumberOfPaths() == 2) {
                 if (laneIndex < halfSizeLanePositions) {
                     direction = "down";
                     y = -130; 
@@ -357,7 +357,7 @@ public class TrafficSimulation {
                     double otherX = otherVehicle.getXCOO();
                     double otherY = otherVehicle.getYCOO();
                     double otherVehicleHeight = (otherVehicle instanceof Car) ? 110 : 130;
-                    if(road.getNumberOfRoads()==1 || vehicle.getObjectDirection().equals("up")){
+                    if(road.getNumberOfPaths()==1 || vehicle.getObjectDirection().equals("up")){
                     // Check if vehicles are in the same lane
                     if (Math.abs(vehicleX - otherX) < 20) {
                         double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + (driverStyle.equals("normal") ? 30 : 80);
@@ -418,7 +418,7 @@ public class TrafficSimulation {
                     double otherX = otherVehicle.getXCOO();
                     double otherY = otherVehicle.getYCOO();
                     double otherVehicleHeight = (otherVehicle instanceof Car) ? 110 : 130;
-                    if(road.getNumberOfRoads()==1 || vehicle.getObjectDirection().equals("up")){
+                    if(road.getNumberOfPaths()==1 || vehicle.getObjectDirection().equals("up")){
                         // Check if vehicles are in the same lane
                         if (Math.abs(vehicleX - otherX) < 20) {
                             double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + 10;
@@ -507,7 +507,7 @@ public class TrafficSimulation {
             } else {
                 vehicle.move();
             }
-            if(road.getNumberOfRoads()==1 || vehicle.getObjectDirection().equals("up")){
+            if(road.getNumberOfPaths()==1 || vehicle.getObjectDirection().equals("up")){
             // Handle vehicle reaching the top
             if (vehicle.getYCOO() < -vehicleHeight) {
                 vehicle.stopTimer();
@@ -667,7 +667,7 @@ public class TrafficSimulation {
         else{// 20 %
             driverStyle="carless";
         }
-        if(road.getNumberOfRoads()==2){
+        if(road.getNumberOfPaths()==2){
             RIGHTMOST_LANE_X1 = road.getRightMostLane().get(road.getRightMostLane().size()-1)+10;
             RIGHTMOST_LANE_X = road.getRightMostLane().get(0)+10;
         }
@@ -706,7 +706,7 @@ public class TrafficSimulation {
             String direction;
             double y;
             
-            if (road.getNumberOfRoads() == 2) {
+            if (road.getNumberOfPaths() == 2) {
                 if (laneIndex < halfSizeLanePositions) {
                     direction = "down";
                     y = -130; // Start from top for downward vehicles

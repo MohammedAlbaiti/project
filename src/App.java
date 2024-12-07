@@ -21,7 +21,7 @@ public class App extends Application {
     private int numberOfVehicles;
     private int numberOfPedestrian;
     private int numberOfLanes;
-    private int numberOfRoads;
+    private int numberOfPaths;
 
     // Windows and simulation instances for phases
     private Stage phase1Window;
@@ -51,9 +51,9 @@ public class App extends Application {
         TextField timeField = new TextField();
         TextField vehiclesField = new TextField();
         TextField lanesField = new TextField();
-        ObservableList<String> inputNumberOfRoads = FXCollections.observableArrayList("1", "2");
-        ComboBox<String> comboBox = new ComboBox<>(inputNumberOfRoads);
-        comboBox.setPromptText("Select the number of roads");
+        ObservableList<String> inputNumberOfPaths = FXCollections.observableArrayList("1", "2");
+        ComboBox<String> comboBox = new ComboBox<>(inputNumberOfPaths);
+        comboBox.setPromptText("Select the number of paths");
         TextField pedestrianField = new TextField();
     
         // Add labels and text fields to the form
@@ -66,7 +66,7 @@ public class App extends Application {
             pedestrianField,
             createLabelWithDynamicFont("Number of Lanes:", primaryStage),
             lanesField,
-            createLabelWithDynamicFont("Number of Roads:", primaryStage),
+            createLabelWithDynamicFont("Number of Paths:", primaryStage),
             comboBox
         );
     
@@ -85,7 +85,7 @@ public class App extends Application {
                 numberOfVehicles = Integer.parseInt(vehiclesField.getText());
                 numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
                 numberOfLanes = Integer.parseInt(lanesField.getText());
-                numberOfRoads = Integer.parseInt(comboBox.getValue());
+                numberOfPaths = Integer.parseInt(comboBox.getValue());
     
                 // Validate that all inputs are positive numbers
                 if (simulationTime <= 0 || numberOfVehicles <= 0 || numberOfPedestrian <= 0 || 
@@ -95,7 +95,7 @@ public class App extends Application {
                     
                 }
                 else{
-                    Road road = new Road(numberOfRoads, numberOfLanes, "normal", 5000);
+                    Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
                     road.createMap();
                     if(road.getObjectWidth()>screenWidth){
                         throw new ArrayIndexOutOfBoundsException();
@@ -116,7 +116,7 @@ public class App extends Application {
                 // Display an error alert if the input is invalid
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Screen size issue");
-                alert.setContentText("Your screen size cannot show you this road. Please try to create road with less number of lanes or number or roads.");
+                alert.setContentText("Your screen size cannot show you this path. Please try to create road with less number of lanes or number or paths.");
                 alert.showAndWait(); // Wait for the user to acknowledge the error
             }
         });
@@ -280,7 +280,7 @@ public class App extends Application {
         // Create a new window for phase 1 simulation
         phase1Window = new Stage();
         phase1Window.setResizable(false);
-        Road road = new Road(numberOfRoads, numberOfLanes, "normal", 5000);
+        Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
         phase1Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime);
         
         // Create and display the simulation scene
@@ -303,7 +303,7 @@ public class App extends Application {
         // Create a new window for phase 2 simulation
         phase2Window = new Stage();
         phase1Window.setResizable(false);
-        Road road = new Road(numberOfRoads, numberOfLanes, "enhanced", 5000);
+        Road road = new Road(numberOfPaths, numberOfLanes, "enhanced", 5000);
         phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime);
         Scene simulationScene = phase2Simulation.createSimulationScene();
 
