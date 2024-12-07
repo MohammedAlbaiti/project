@@ -88,7 +88,7 @@ public class TrafficSimulation {
         // Pause Button
         Button pauseButton = new Button("Pause");
         pauseButton.getStyleClass().add("custom-button");
-        pauseButton.setLayoutX(15);
+        pauseButton.setLayoutX(road.getObjectWidth()-100);
         pauseButton.setLayoutY(110);
         pauseButton.setOnAction(e -> togglePause(pauseButton));
         dataContainer.getChildren().add(pauseButton);
@@ -96,7 +96,7 @@ public class TrafficSimulation {
         // Mute Button
         Button muteButton = new Button("Mute");
         muteButton.getStyleClass().add("custom-button");
-        muteButton.setLayoutX(15);
+        muteButton.setLayoutX(road.getObjectWidth()-100);
         muteButton.setLayoutY(150);
         muteButton.setOnAction(e -> toggleMute(muteButton));
         dataContainer.getChildren().add(muteButton);
@@ -108,7 +108,7 @@ public class TrafficSimulation {
             Button laneButton = new Button("Add Vehicle Lane " + (i + 1));
             laneButton.getStyleClass().add("custom-button");
             laneButton.setLayoutX(15);
-            laneButton.setLayoutY(200 + i * 30); // Adjust Y position dynamically for each button
+            laneButton.setLayoutY(110 + i * 30); // Adjust Y position dynamically for each button
             int laneIndex = i; // To capture the index for the lambda expression
             laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
             dataContainer.getChildren().add(laneButton);
@@ -118,7 +118,7 @@ public class TrafficSimulation {
         Button createPedestrianButton = new Button("Create Pedestrian");
         createPedestrianButton.getStyleClass().add("custom-button");
         createPedestrianButton.setLayoutX(15);
-        createPedestrianButton.setLayoutY(200 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
+        createPedestrianButton.setLayoutY(110 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
         createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
         dataContainer.getChildren().add(createPedestrianButton);
 
@@ -309,6 +309,16 @@ public class TrafficSimulation {
         return new SimpleStringProperty("Unknown");
     });
 
+    TableColumn<GeneralRules, String> timeDifferanceColumn = new TableColumn<>("Time Differance (s)");
+    timeDifferanceColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof Vehicle) 
+            return new SimpleStringProperty(String.format("%-10.2f",((Vehicle) value).getTimeDifferance()));
+        if (value instanceof Pedestrian) 
+            return new SimpleStringProperty(String.format("%-10.2f",((Pedestrian) value).getTimeDifferance()));
+        return new SimpleStringProperty("Unknown");
+    });
+
     // Corrected "Passed" column
     TableColumn<GeneralRules, String> passedColumn = new TableColumn<>("Passed");
     passedColumn.setCellValueFactory(cellData -> {
@@ -317,10 +327,21 @@ public class TrafficSimulation {
         return new SimpleStringProperty("Unknown");
     });
 
+    
+    TableColumn<GeneralRules, String> getAccidentColumn = new TableColumn<>("Accident Happen");
+    getAccidentColumn.setCellValueFactory(cellData -> {
+        GeneralRules value = cellData.getValue();
+        if (value instanceof MovingObjects) 
+            return new SimpleStringProperty(String.valueOf(((MovingObjects) cellData.getValue()).getAccidentHappen()));
+        return new SimpleStringProperty("Unknown");
+    });
+
+    
+
     // Create a list of columns and add them to the TableView
     List<TableColumn<GeneralRules, ?>> columns = Arrays.asList(
         idColumn, typeColumn, styleColumn, speedColumn, 
-        directionColumn, timeTakenColumn, idealTimeColumn, passedColumn
+        directionColumn, timeTakenColumn, idealTimeColumn, timeDifferanceColumn, passedColumn, getAccidentColumn
     );
     tableView.getColumns().addAll(columns);
 
@@ -339,8 +360,6 @@ public class TrafficSimulation {
 }
 
     private void updateVehicles(Pane mapContainer) {
-
-        int frontSafeDistance;
         Image accidentFlagImage = new Image("file:src/resources/accidentFlag.png");
         ImageView accidentFlagView = new ImageView(accidentFlagImage);
         accidentFlagView.setFitWidth(30);
@@ -348,181 +367,196 @@ public class TrafficSimulation {
 
         for (int i = 0; i < vehicles.size(); i++) {
             Vehicle vehicle = vehicles.get(i);
-            if(vehicle.getAccidentHappen()){
+            if (vehicle.getAccidentHappen()) {
                 continue;
             }
-            String driverStyle = vehicle.getDriverStyle();
-            boolean vehicleStopped = false;
-            double vehicleHeight = (vehicle instanceof Car) ? 110 : 130;
-            boolean pedestrianInPath = false;
 
-            double vehicleX = vehicle.getXCOO();
-            double vehicleY = vehicle.getYCOO();
+            boolean otherVheicleInFront = checkIfOtherVheicleInFrontOfVehicle(vehicle, i);
+            boolean pedestrianBlocking = checkIfPedestrianInVehiclePath(vehicle, mapContainer, accidentFlagView);
 
-            if(driverStyle.equals("normal")){
-                frontSafeDistance = random.nextInt(15) + 30;
-            }
-            else if(driverStyle.equals("careful")) {
-                frontSafeDistance = random.nextInt(20) + 80;
-            }
-            else { 
-                frontSafeDistance = random.nextInt(10) + 10;
-            }
-            // Check for vehicle collision
-            for (int j = 0; j < vehicles.size(); j++){
-                if (i == j) continue;
-
-                Vehicle otherVehicle = vehicles.get(j);
-                double otherX = otherVehicle.getXCOO();
-                double otherY = otherVehicle.getYCOO();
-                double otherVehicleHeight = (otherVehicle instanceof Car) ? 110 : 130;
-
-
-                if (Math.abs(vehicleX - otherX) < 20) {
-                    double minSafeDistance = Math.max(vehicleHeight, otherVehicleHeight) + frontSafeDistance;
-
-                    if(road.getNumberOfPaths()==1 || vehicle.getObjectDirection().equals("up")){
-                        if (otherY < vehicleY && vehicleY - otherY < minSafeDistance){
-                            vehicleStopped = true;
-                            break;
-                        }
-                    }
-
-                    else {
-                        if (otherY > vehicleY && -vehicleY + otherY < minSafeDistance) {
-                            vehicleStopped = true;
-                            break;
-                        }
-                    }   
-                }
+            // Move or stop the vehicle based on obstacle detection
+            if (otherVheicleInFront || pedestrianBlocking) {
+                vehicle.stop();
+            } else {
+                moveVehicleIfWithinRoadBounds(vehicle);
             }
 
-            // Check for pedestrians
-            for (Pedestrian pedestrian : pedestrians) {
-                double pedestrianX = pedestrian.getXCOO();
-                double pedestrianY = pedestrian.getYCOO();
-
-                if(driverStyle.equals("normal") || driverStyle.equals("careful")){
-
-                    if (vehicle.getObjectDirection() == "down"){
-                        if (vehicleX + vehicle.getObjectWidth() > pedestrianX && 
-                            pedestrianX + pedestrian.getObjectWidth() > vehicleX &&
-                            pedestrianY > vehicleY + vehicle.getObjectHeight() &&
-                            pedestrianY + pedestrian.getObjectHeight() < vehicleY + vehicle.getObjectHeight() + pedestrian.getObjectHeight() + 30){
-                                pedestrianInPath = true;
-                                break;
-                        }
-                    }
-
-                    if (vehicle.getObjectDirection() == "up"){
-                        if (pedestrianX + pedestrian.getObjectWidth() > vehicleX &&
-                            pedestrianX < vehicleX + vehicle.getObjectWidth() && 
-                            pedestrianY > vehicleY - pedestrian.getObjectHeight() - 30 &&
-                            pedestrianY + pedestrian.getObjectHeight() < vehicleY){
-                                pedestrianInPath = true;
-                                break;
-                        }
-                    }
-                }
-
-                else{
-                    if (pedestrianX + pedestrian.getObjectWidth() > vehicleX + 15 &&
-                    pedestrianX < vehicleX + vehicle.getObjectWidth() - 15 &&
-                    pedestrianY + pedestrian.getObjectHeight() > vehicleY + 15 &&
-                    pedestrianY < vehicleY + vehicle.getObjectHeight() - 15 ){
-                    
-                    vehicle.setAccidentHappen(true); 
-                    pedestrian.setAccidentHappen(true);
-                    road.increaseNumberOfAccidents(1);
-                    numberOfAccidents.setText("Accidents: " + road.getNumberOfAccidents());
-                    
-                    accidentFlagView.setX(vehicleX + (vehicle.getObjectWidth() == 50 ? 10 : 15));
-                    accidentFlagView.setY(vehicleY + (vehicle.getObjectWidth() == 110  ? 40 : 50));
-                    mapContainer.getChildren().add(accidentFlagView);
-                    
-                    Timeline timeline = new Timeline();
-
-                    // Calculate the duration of each cycle (5 seconds / 10 cycles)
-                    double cycleDuration = 5.0 / 10.0; // in seconds
-
-                    for (int k = 0; k < 10; k++) {
-                    // Fade in
-                        timeline.getKeyFrames().add(
-                            new KeyFrame(
-                                Duration.seconds(k * cycleDuration),
-                                new KeyValue(accidentFlagView.opacityProperty(), 1.0),
-                                new KeyValue(pedestrian.getImageView().opacityProperty(), 1.0),
-                                new KeyValue(vehicle.getVehicleView().opacityProperty(), 1.0)
-                            )
-                        );
-
-                        // Fade out
-                        timeline.getKeyFrames().add(
-                            new KeyFrame(
-                                Duration.seconds((k + 0.5) * cycleDuration), // Halfway through the cycle
-                                new KeyValue(accidentFlagView.opacityProperty(), 0.0),
-                                new KeyValue(pedestrian.getImageView().opacityProperty(), 0.0),
-                                new KeyValue(vehicle.getVehicleView().opacityProperty(), 0.0)
-                            )
-                        );
-                    }
-
-                    timeline.setCycleCount(1);
-                    timeline.setOnFinished(e -> { 
-                        mapContainer.getChildren().remove(vehicle.getVehicleView()); // Remove from the parent container (Pane)
-                        mapContainer.getChildren().remove(pedestrian.getImageView());
-                        mapContainer.getChildren().remove(accidentFlagView); 
-                        vehicles.remove(vehicle);
-                        pedestrians.remove(pedestrian);
-                    });
-
-                    timeline.play();
-                    break;
-
-                    }
-                }
-            }
-        
-        // Move vehicle
-        if (vehicleStopped || pedestrianInPath) {
-            vehicle.stop();
-        } else {
-            vehicle.move();
-        }
-        if(road.getNumberOfPaths()==1 || vehicle.getObjectDirection().equals("up")){
-            // Handle vehicle reaching the top
-            if (vehicle.getYCOO() < -vehicleHeight) {
-                vehicle.stopTimer();
-                mapContainer.getChildren().remove(vehicle.getVehicleView());
-                vehicles.remove(i);
+            // Handle vehicles that exit the road bounds
+            if (isVehicleOutOfRoadBounds(vehicle)) {
+                removeVehicleFromMap(mapContainer, vehicle, i);
                 i--;
-                vehicle.setObjectPassed();
-                road.increaseNumberOfPassedVehicles(1);
-                passedVehiclesText.setText("Passed Vehicles: " + road.getNumberOfPassedVehicles());
-
-                // generateVehicles(mapContainer, 1);
-            }
-        }
-        else{
-            // Handle vehicle reaching the top
-            if (vehicle.getYCOO() > road.getObjectHeight()+vehicleHeight) {
-                vehicle.stopTimer();
-                mapContainer.getChildren().remove(vehicle.getVehicleView());
-                vehicles.remove(i);
-                i--;
-                vehicle.setObjectPassed();
-                road.increaseNumberOfPassedVehicles(1);
-                passedVehiclesText.setText("Passed Vehicles: " + road.getNumberOfPassedVehicles());
             }
         }
     }
-}
 
+    private boolean checkIfOtherVheicleInFrontOfVehicle(Vehicle vehicle, int currentIndex) {
+        int frontSafeDistance = calculateSafeDistancesForVehicle(vehicle.getDriverStyle());
+
+        for (int j = 0; j < vehicles.size(); j++) {
+            if (currentIndex == j) continue;
+
+            Vehicle otherVehicle = vehicles.get(j);
+            double vehicleHeight = (vehicle instanceof Car) ? 110 : 130;
+            double minSafeDistance = Math.max(vehicleHeight, 
+                (otherVehicle instanceof Car ? 110 : 130)) + frontSafeDistance;
+
+            if (isVehicleTooCloseToAnotherVehicle(vehicle, otherVehicle, minSafeDistance)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int calculateSafeDistancesForVehicle(String driverStyle) {
+        if (driverStyle.equals("careful")) {
+            return random.nextInt(20) + 80;
+        }
+        else if (driverStyle.equals("normal")) {
+            return random.nextInt(15) + 30;
+        }
+        else{
+            return random.nextInt(10) + 10;
+        }
+    }
+
+    private boolean isVehicleTooCloseToAnotherVehicle(Vehicle vehicle, Vehicle otherVehicle, double minSafeDistance) {
+        double vehicleX = vehicle.getXCOO();
+        double vehicleY = vehicle.getYCOO();
+        double otherX = otherVehicle.getXCOO();
+        double otherY = otherVehicle.getYCOO();
+
+        if (Math.abs(vehicleX - otherX) < 20) {
+            // if (road.getNumberOfPaths() == 1 || vehicle.getObjectDirection().equals("up")) {
+            if (vehicle.getObjectDirection().equals("up")) {
+                return otherY < vehicleY && vehicleY - otherY < minSafeDistance;
+            } else {
+                return otherY > vehicleY && -vehicleY + otherY < minSafeDistance;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkIfPedestrianInVehiclePath(Vehicle vehicle, Pane mapContainer, ImageView accidentFlagView) {
+        for (Pedestrian pedestrian : pedestrians) {
+            if (isPedestrianBlockingVehicle(vehicle, pedestrian)) {
+                return true;
+            } else if (isPedestrianCausingAccidentWithVehicle(vehicle, pedestrian)) {
+                handleAccident(vehicle, pedestrian, mapContainer, accidentFlagView);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPedestrianBlockingVehicle(Vehicle vehicle, Pedestrian pedestrian) {
+        double vehicleX = vehicle.getXCOO();
+        double vehicleY = vehicle.getYCOO();
+        double pedestrianX = pedestrian.getXCOO();
+        double pedestrianY = pedestrian.getYCOO();
+
+        if (vehicle.getDriverStyle().equals("normal") || vehicle.getDriverStyle().equals("careful")) {
+            if (vehicle.getObjectDirection().equals("down")) {
+                return vehicleX + vehicle.getObjectWidth() > pedestrianX &&
+                       pedestrianX + pedestrian.getObjectWidth() > vehicleX &&
+                       pedestrianY > vehicleY + vehicle.getObjectHeight() &&
+                       pedestrianY < vehicleY + vehicle.getObjectHeight() + pedestrian.getObjectHeight() + 30;
+            } else if (vehicle.getObjectDirection().equals("up")) {
+                return pedestrianX + pedestrian.getObjectWidth() > vehicleX &&
+                       pedestrianX < vehicleX + vehicle.getObjectWidth() &&
+                       pedestrianY > vehicleY - pedestrian.getObjectHeight() - 30 &&
+                       pedestrianY < vehicleY;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPedestrianCausingAccidentWithVehicle(Vehicle vehicle, Pedestrian pedestrian) {
+        double vehicleX = vehicle.getXCOO();
+        double vehicleY = vehicle.getYCOO();
+        double pedestrianX = pedestrian.getXCOO();
+        double pedestrianY = pedestrian.getYCOO();
+
+        return pedestrianX + pedestrian.getObjectWidth() > vehicleX + 15 &&
+               pedestrianX < vehicleX + vehicle.getObjectWidth() - 15 &&
+               pedestrianY + pedestrian.getObjectHeight() > vehicleY + 15 &&
+               pedestrianY < vehicleY + vehicle.getObjectHeight() - 15;
+    }
+
+
+    private void handleAccident(Vehicle vehicle, Pedestrian pedestrian, Pane mapContainer, ImageView accidentFlagView) {
+        vehicle.setAccidentHappen(true);
+        pedestrian.setAccidentHappen(true);
+        road.increaseNumberOfAccidents(1);
+        numberOfAccidents.setText("Accidents: " + road.getNumberOfAccidents());
+
+        accidentFlagView.setX(vehicle.getXCOO() + (vehicle.getObjectWidth() == 50 ? 10 : 15));
+        accidentFlagView.setY(vehicle.getYCOO() + (vehicle.getObjectWidth() == 110 ? 40 : 50));
+        mapContainer.getChildren().add(accidentFlagView);
+
+        startAccidentAnimation(vehicle, pedestrian, mapContainer, accidentFlagView);
+    }
+
+    private void startAccidentAnimation(Vehicle vehicle, Pedestrian pedestrian, Pane mapContainer, ImageView accidentFlagView) {
+        Timeline timeline = new Timeline();
+        double cycleDuration = 5.0 / 10.0;
+
+        for (int k = 0; k < 10; k++) {
+            timeline.getKeyFrames().add(
+                new KeyFrame(
+                    Duration.seconds(k * cycleDuration),
+                    new KeyValue(accidentFlagView.opacityProperty(), 1.0),
+                    new KeyValue(pedestrian.getImageView().opacityProperty(), 1.0),
+                    new KeyValue(vehicle.getVehicleView().opacityProperty(), 1.0)
+                )
+            );
+
+            timeline.getKeyFrames().add(
+                new KeyFrame(
+                    Duration.seconds((k + 0.5) * cycleDuration),
+                    new KeyValue(accidentFlagView.opacityProperty(), 0.0),
+                    new KeyValue(pedestrian.getImageView().opacityProperty(), 0.0),
+                    new KeyValue(vehicle.getVehicleView().opacityProperty(), 0.0)
+                )
+            );
+        }
+
+        timeline.setCycleCount(1);
+        timeline.setOnFinished(e -> {
+            mapContainer.getChildren().removeAll(vehicle.getVehicleView(), pedestrian.getImageView(), accidentFlagView);
+            vehicles.remove(vehicle);
+            pedestrians.remove(pedestrian);
+        });
+
+        timeline.play();
+    }
+
+    private void moveVehicleIfWithinRoadBounds(Vehicle vehicle) {
+        vehicle.move();
+    }
+
+    private boolean isVehicleOutOfRoadBounds(Vehicle vehicle) {
+        double vehicleY = vehicle.getYCOO();
+        return (road.getNumberOfPaths() == 1 || vehicle.getObjectDirection().equals("up")) ?
+               vehicleY < -vehicle.getObjectHeight() :
+               vehicleY > road.getObjectHeight() + vehicle.getObjectHeight();
+    }
+
+    private void removeVehicleFromMap(Pane mapContainer, Vehicle vehicle, int index) {
+        mapContainer.getChildren().remove(vehicle.getVehicleView());
+        vehicles.remove(index);
+        vehicle.stopTimer();
+        vehicle.setObjectPassed();
+        road.increaseNumberOfPassedVehicles(1);
+        passedVehiclesText.setText("Passed Vehicles: " + road.getNumberOfPassedVehicles());
+        if(autoVehiclesGeneration){
+            generateVehicles(mapContainer, 1);
+        }
+    }
 
     private void updatePedestrians(Pane mapContainer) {
         for (int i = 0; i < pedestrians.size(); i++) {
             Pedestrian pedestrian = pedestrians.get(i);
-            boolean vehicleInFront = checkIfVehicleInFront(pedestrian);
+            boolean vehicleInFront = checkIfVehicleInFrontOfPedestria(pedestrian);
     
             // Move or stop the pedestrian based on car detection
             if (!vehicleInFront) {
@@ -540,9 +574,9 @@ public class TrafficSimulation {
     }
     
     // Check if there's a car in front of the pedestrian
-    private boolean checkIfVehicleInFront(Pedestrian pedestrian) {
+    private boolean checkIfVehicleInFrontOfPedestria(Pedestrian pedestrian) {
         boolean vehicleInFront = false;
-        int[] safeDistances = getSafeDistances(pedestrian.getPedestrianStyle());
+        int[] safeDistances = calculateSafeDistancesForPedestrians(pedestrian.getPedestrianStyle());
         int xSafeDistance = safeDistances[0];
         int ySafeDistance = safeDistances[1];
     
@@ -563,7 +597,7 @@ public class TrafficSimulation {
     }
     
     // Get safe distances based on pedestrian style
-    private int[] getSafeDistances(String pedestrianStyle) {
+    private int[] calculateSafeDistancesForPedestrians(String pedestrianStyle) {
         int xSafeDistance, ySafeDistance;
         if (pedestrianStyle.equals("normal")) {
             xSafeDistance = random.nextInt(5) + 20;
@@ -581,29 +615,34 @@ public class TrafficSimulation {
     }
     
     // Check if a car is blocking the pedestrian's path
-    private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehicle, double pedestrianX, double pedestrianY,
-                                            double vehicleX, double vehicleY, double vehicleHeight, int xSafeDistance, int ySafeDistance) {
-        if (pedestrian.getObjectDirection().equals("right")) {
-            return pedestrianX + pedestrian.getObjectWidth() > vehicleX - xSafeDistance &&
-                   pedestrianX + pedestrian.getObjectWidth() < vehicleX &&
-                   isYOverlap(pedestrian, pedestrianY, vehicleY, vehicleHeight, ySafeDistance, vehicle.getObjectDirection());
-        } else { // Moving left
-            return pedestrianX > vehicleX + vehicle.getObjectWidth() &&
-                   pedestrianX < vehicleX + vehicle.getObjectWidth() + xSafeDistance &&
-                   isYOverlap(pedestrian, pedestrianY, vehicleY, vehicleHeight, ySafeDistance, vehicle.getObjectDirection());
-        }
+private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehicle, double pedestrianX, double pedestrianY, double vehicleX, double vehicleY, double vehicleHeight, int xSafeDistance, int ySafeDistance) {
+    if (pedestrian.getObjectDirection().equals("right")) {
+        // Check X-axis conditions for a pedestrian moving right
+        boolean isXOverlap = pedestrianX + pedestrian.getObjectWidth() > vehicleX - xSafeDistance &&
+                             pedestrianX + pedestrian.getObjectWidth() < vehicleX;
+        // Check Y-axis overlap based on the vehicle's direction
+        boolean isYOverlap = vehicle.getObjectDirection().equals("up")
+                ? pedestrianY + pedestrian.getObjectHeight() >= vehicleY - ySafeDistance &&
+                  pedestrianY <= vehicleY + vehicleHeight
+                : pedestrianY + pedestrian.getObjectHeight() >= vehicleY &&
+                  pedestrianY <= vehicleY + vehicleHeight + ySafeDistance;
+
+        return isXOverlap && isYOverlap;
+    } else {
+        // Check X-axis conditions for a pedestrian moving left
+        boolean isXOverlap = pedestrianX > vehicleX + vehicle.getObjectWidth() &&
+                             pedestrianX < vehicleX + vehicle.getObjectWidth() + xSafeDistance;
+        // Check Y-axis overlap based on the vehicle's direction
+        boolean isYOverlap = vehicle.getObjectDirection().equals("up")
+                ? pedestrianY + pedestrian.getObjectHeight() >= vehicleY - ySafeDistance &&
+                  pedestrianY <= vehicleY + vehicleHeight
+                : pedestrianY + pedestrian.getObjectHeight() >= vehicleY &&
+                  pedestrianY <= vehicleY + vehicleHeight + ySafeDistance;
+
+        return isXOverlap && isYOverlap;
     }
-    
-    // Check for overlap in the Y-axis
-    private boolean isYOverlap(Pedestrian pedestrian, double pedestrianY, double vehicleY, double vehicleHeight, int ySafeDistance, String vehicleDireciton) {
-        if (vehicleDireciton.equals("up")) {
-            return pedestrianY + pedestrian.getObjectHeight() >= vehicleY - ySafeDistance &&
-                   pedestrianY <= vehicleY + vehicleHeight;
-        } else {
-            return pedestrianY + pedestrian.getObjectHeight() >= vehicleY &&
-                   pedestrianY <= vehicleY + vehicleHeight + ySafeDistance;
-        }
-    }
+}
+
     
     // Move pedestrian if within bounds
     private void movePedestrianIfWithinBounds(Pedestrian pedestrian) {
@@ -633,7 +672,6 @@ public class TrafficSimulation {
             generatePedestrians(mapContainer, 1);
         }
     }
-    
     
     private Vehicle creatVehicle(double x, double y, String direciton) {
         double RIGHTMOST_LANE_X = 0;

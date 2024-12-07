@@ -7,6 +7,7 @@ public abstract class MovingObjects implements GeneralRules {
     protected String direciton;
     private boolean accidentHappen = false;
     private boolean isPassed = false;
+    
     public MovingObjects(double objectSpeed, double objectWidth, double objectHeight) {
         this.objectSpeed = objectSpeed;
         this.objectWidth = objectWidth;

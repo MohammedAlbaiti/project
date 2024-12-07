@@ -15,6 +15,7 @@ public class Pedestrian extends MovingObjects {
     private long endTime;
     private long timeTaken;
     private double idealTime;
+    private double timeDifferance=0;
     private static final SecureRandom random = new SecureRandom();
 private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     "Dark Dressed Walker", "Purple Shirted Woman", "Casual Dressed Person", "Pink Shirt Walker", "Light Grey Dressed Walker"
@@ -34,7 +35,12 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         startTimer();
         caluclateIdealTime();
     }
-    
+    public void caluclateTimeDifferance(){
+        timeDifferance = getTimeTaken() - getIdealTime();
+    }
+    public double getTimeDifferance(){
+        return timeDifferance;
+    }
     // Getters and Setters
     public String getPedestrianID() {
         return pedestrianID;
@@ -139,6 +145,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     public void stopTimer() {
         this.endTime = System.currentTimeMillis();  // Capture the end time
         this.timeTaken = endTime - startTime;  // Calculate the time taken in nanoseconds
+        caluclateTimeDifferance();
     }
 
     // Getter for timeTaken

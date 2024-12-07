@@ -8,6 +8,7 @@ public class Vehicle extends MovingObjects {
     private long endTime;
     private long timeTaken;
     private double idealTime;
+    private double timeDifferance=0;
     protected  ImageView vehicleView;
     public Vehicle(Road road, String driverStyle, double objectSpeed, double objectWidth, double objectHeight) {
         super(objectSpeed, objectWidth,objectHeight);
@@ -24,15 +25,21 @@ public class Vehicle extends MovingObjects {
         double speed = getObjectSpeed()*42;
         this.idealTime = Math.round((d / speed) * 100.0) / 100.0;
     }
+    public double getTimeDifferance() {
+        return timeDifferance;
+    }
     // Method to start the timer
     private void startTimer() {
         this.startTime = System.currentTimeMillis();  // Capture the start time in nanoseconds
     }
-
+    public void caluclateTimeDifferance(){
+        timeDifferance = getTimeTaken() - getIdealTime();
+    }
     // Method to stop the timer and calculate the elapsed time
     public void stopTimer() {
         this.endTime = System.currentTimeMillis();  // Capture the end time
         this.timeTaken = endTime - startTime;  // Calculate the time taken in nanoseconds
+        caluclateTimeDifferance();
     }
 
     // Getter for timeTaken

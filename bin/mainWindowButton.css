@@ -2,7 +2,7 @@
 .custom-button {
     -fx-background-color: linear-gradient(to bottom, #4CAF50, #388E3C); /* Green gradient */
     -fx-text-fill: white;
-    -fx-font-size: 10px;
+    -fx-font-size: 9px;
     -fx-font-weight: bold;
     -fx-padding: 10px 20px;
     -fx-border-radius: 10px;

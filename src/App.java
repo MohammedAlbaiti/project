@@ -18,7 +18,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+
+/**
+ * Traffic Simulation Applicatio
+ * This application allows users to configure and run traffic simulations,
+ * and compare results across different simulation phases.
+ */
 public class App extends Application {
+
     // Simulation parameters
     private int simulationTime;
     private int numberOfVehicles;
@@ -27,18 +34,29 @@ public class App extends Application {
     private int numberOfPaths;
     private boolean autoVehiclesGeneration;
     private boolean autoPedestriansGeneration;
+    
     // Windows and simulation instances for phases
     private Stage phase1Window;
     private Stage phase2Window;
     private TrafficSimulation phase1Simulation;
     private TrafficSimulation phase2Simulation;
+    double roadWidth;
+   
 
-    // Entry point for JavaFX application
+       /**
+     * Entry point for the JavaFX application.
+     * @param primaryStage the primary stage for the application.
+     */
     @Override
     public void start(Stage primaryStage) {
         showInputForm(primaryStage); // Show the input form to gather user inputs
     }
 
+
+    /**
+     * Displays the input form to gather user inputs.
+     * @param primaryStage the primary stage for the application.
+     */
     private void showInputForm(Stage primaryStage) {
     // Get the primary screen
     Screen screen = Screen.getPrimary();
@@ -112,7 +130,8 @@ public class App extends Application {
             } else {
                 Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
                 road.createMap();
-                if (road.getObjectWidth() > screenWidth) {
+                roadWidth = road.getObjectWidth();
+                if (roadWidth > screenWidth) {
                     throw new ArrayIndexOutOfBoundsException();
                 }
             }
@@ -128,9 +147,9 @@ public class App extends Application {
         } catch (ArrayIndexOutOfBoundsException ex) {
             // Display an error alert if the input is invalid
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Screen size issue");
+            alert.setTitle("Screen width issue");
             alert.setContentText(
-                "Your screen size cannot show this path. Please try to create a road with fewer lanes or paths."
+                "Your screen width cannot show this path. Please try to create a road with fewer lanes or paths.\nYour screen width: "+screenWidth+"\nYour requested road width: "+roadWidth
             );
             alert.showAndWait(); // Wait for the user to acknowledge the error
         }
@@ -144,7 +163,7 @@ public class App extends Application {
     inputForm.prefHeightProperty().bind(primaryStage.heightProperty().multiply(0.8)); // 80% of window height
 
     // Set up the scene for the input form and show it
-    Scene scene = new Scene(inputForm, 500, 600);
+    Scene scene = new Scene(inputForm, 400, 600);
     scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
 
     // Set the window title and scene
@@ -158,15 +177,20 @@ public class App extends Application {
     primaryStage.setMinWidth(300); // Minimum width of the window
     primaryStage.setMinHeight(600); // Minimum height of the window
     primaryStage.setWidth(400); // Default width
-    primaryStage.setHeight(600); // Default height
+    primaryStage.setHeight(700); // Default height
 
     // Set initial position on screen
     primaryStage.setX((screenWidth / 2) - 200); // Set initial X position
-    primaryStage.setY(50); // Set initial Y position
+    primaryStage.setY(0); // Set initial Y position
 
     // Show the stage (window)
     primaryStage.show();
 }
+    /**
+     * Binds the font size of a CheckBox to the window size dynamically.
+     * @param checkBox the CheckBox to bind the font size.
+     * @param primaryStage the primary stage to monitor size changes.
+     */
     private void bindFontSizeToCheckBox(CheckBox checkBox, Stage primaryStage) {
         double windowHeight = primaryStage.getHeight();
         double windowWidth = primaryStage.getWidth();
@@ -202,6 +226,11 @@ public class App extends Application {
         }
     }
     
+        /**
+     * Binds the font size of a TextField to the window size dynamically.
+     * @param textField the TextField to bind the font size.
+     * @param primaryStage the primary stage to monitor size changes.
+     */
     private void bindFontSizeToTextField(TextField textField, Stage primaryStage) {
         double windowHeight = primaryStage.getHeight();
         double windowWidth = primaryStage.getWidth();
@@ -222,6 +251,13 @@ public class App extends Application {
 
     }
     
+
+        /**
+     * Creates a Label with font size dynamically bound to the window size.
+     * @param text the text for the label.
+     * @param primaryStage the primary stage to monitor size changes.
+     * @return a Label with dynamically bound font size.
+     */
     private Label createLabelWithDynamicFont(String text, Stage primaryStage) {
         Label label = new Label(text);
         double windowHeight = primaryStage.getHeight();
@@ -243,9 +279,13 @@ public class App extends Application {
         return label;
     }
     
-
+    /**
+     * Displays the control panel for managing simulations.
+     * @param primStage the primary stage for transitioning back to the input form.
+     */
     private void showControlPanel(Stage primStage) {
         Stage controlStage = new Stage();
+        
         Image icon = new Image("icon.jpg"); // Path to the icon file
         controlStage.getIcons().add(icon);
         VBox controlPanel = new VBox(20);
@@ -302,7 +342,11 @@ public class App extends Application {
         controlStage.show();
     }
     
-
+    /**
+     * Binds the font size of a Button to the window size dynamically.
+     * @param button the Button to bind the font size.
+     * @param controlStage the stage to monitor size changes.
+     */
     private void bindFontSizeToButton(Button button, Stage controlStage) {
         double windowHeight = controlStage.getHeight();
         double windowWidth = controlStage.getWidth();
@@ -320,7 +364,11 @@ public class App extends Application {
         }
     }
     
-    // Start phase 1 simulation
+
+    /**
+     * Starts the Phase 1 simulation.
+     * Opens a new window for Phase 1 and initializes the simulation.
+     */
     private void startPhase1Simulation() {
         // Close previous phase 1 window if it exists
         if (phase1Window != null) {
@@ -346,7 +394,10 @@ public class App extends Application {
         phase1Window.show();
     }
 
-    // Start phase 2 simulation
+    /**
+     * Starts the Phase 2 simulation.
+     * Opens a new window for Phase 2 and initializes the simulation.
+     */
     private void startPhase2Simulation() {
         // Close previous phase 2 window if it exists
         if (phase2Window != null) {
@@ -372,6 +423,11 @@ public class App extends Application {
         phase2Window.show();
     }
 
+
+    /**
+     * Compares the results of Phase 1 and Phase 2 simulations.
+     * Displays a new window with a comparison summary.
+     */
     private void compareResults() {
         if (phase1Simulation == null || phase2Simulation == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -427,6 +483,10 @@ public class App extends Application {
     }
     
 
+    /**
+     * Main method to launch the JavaFX application.
+     * @param args the command-line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }
