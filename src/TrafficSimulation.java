@@ -473,6 +473,7 @@ public class TrafficSimulation {
 
                         // Calculate the duration of each cycle (5 seconds / 10 cycles)
                         double cycleDuration = 5.0 / 10.0; // in seconds
+                        SoundPlayer.CarCrash(2);
 
                         for (int k = 0; k < 10; k++) {
                         // Fade in
