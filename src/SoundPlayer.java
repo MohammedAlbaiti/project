@@ -1,5 +1,3 @@
-
-// import javax.print.DocFlavor.URL;
 import java.net.URL;
 import javafx.util.Duration;
 
@@ -28,7 +26,6 @@ private static MediaPlayer mediaPlayer;
     
                     // Handle media readiness
                     mediaPlayer.setOnReady(() -> {
-                        System.out.println("Media ready. Playing sound for " + durationInSeconds + " seconds.");
                         mediaPlayer.play();
     
                         // Schedule stopping the media player after the specified duration
@@ -63,7 +60,6 @@ private static MediaPlayer mediaPlayer;
     
                     // Handle media readiness
                     mediaPlayer.setOnReady(() -> {
-                        System.out.println("Media ready. Playing sound for " + durationInSeconds + " seconds.");
                         mediaPlayer.play();
     
                         // Schedule stopping the media player after the specified duration
@@ -84,22 +80,10 @@ private static MediaPlayer mediaPlayer;
 
     public static void stopGeneralSounds() {
         if (mediaPlayer != null) {
-            System.out.println("Stopping sound.");
             mediaPlayer.stop();
             mediaPlayer.dispose();
             mediaPlayer = null;
         }
     }
-
-    // public static void playCrash() {
-    //     // Create a Media object from the file path
-    //     Media sound = new Media("file:///");
-
-    //     // Create a MediaPlayer object from the Media object
-    //     MediaPlayer mediaPlayer = new MediaPlayer(sound);
-
-    //     // Play the sound
-    //     mediaPlayer.play();
-    // }
 }
 

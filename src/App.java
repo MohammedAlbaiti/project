@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 
 /**
- * Traffic Simulation Applicatio
+ * Traffic Simulation Application
  * This application allows users to configure and run traffic simulations,
  * and compare results across different simulation phases.
  */
@@ -34,16 +34,17 @@ public class App extends Application {
     private int numberOfPaths;
     private boolean autoVehiclesGeneration;
     private boolean autoPedestriansGeneration;
-
+    private double roadWidth;
+    
     // Windows and simulation instances for phases
     private Stage phase1Window;
     private Stage phase2Window;
     private TrafficSimulation phase1Simulation;
     private TrafficSimulation phase2Simulation;
-    double roadWidth;
+
    
 
-       /**
+    /**
      * Entry point for the JavaFX application.
      * @param primaryStage the primary stage for the application.
      */
@@ -226,7 +227,7 @@ public class App extends Application {
         }
     }
     
-        /**
+    /**
      * Binds the font size of a TextField to the window size dynamically.
      * @param textField the TextField to bind the font size.
      * @param primaryStage the primary stage to monitor size changes.
@@ -252,7 +253,7 @@ public class App extends Application {
     }
     
 
-        /**
+    /**
      * Creates a Label with font size dynamically bound to the window size.
      * @param text the text for the label.
      * @param primaryStage the primary stage to monitor size changes.
