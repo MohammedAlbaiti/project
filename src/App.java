@@ -340,6 +340,7 @@ public class App extends Application {
         
         // Create and display the simulation scene
         Scene simulationScene = phase1Simulation.createSimulationScene();
+        simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
         phase1Window.setTitle("Phase 1 Simulation");
         phase1Window.setScene(simulationScene);
         phase1Window.show();
@@ -363,6 +364,7 @@ public class App extends Application {
         Road road = new Road(numberOfPaths, numberOfLanes, "enhanced", 5000);
         phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
         Scene simulationScene = phase2Simulation.createSimulationScene();
+        simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
 
         // Display the simulation scene
         phase2Window.setTitle("Phase 2 Simulation");

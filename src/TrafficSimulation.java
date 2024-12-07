@@ -87,6 +87,7 @@ public class TrafficSimulation {
 
         // Pause Button
         Button pauseButton = new Button("Pause");
+        pauseButton.getStyleClass().add("custom-button");
         pauseButton.setLayoutX(15);
         pauseButton.setLayoutY(110);
         pauseButton.setOnAction(e -> togglePause(pauseButton));
@@ -94,8 +95,9 @@ public class TrafficSimulation {
 
         // Mute Button
         Button muteButton = new Button("Mute");
+        muteButton.getStyleClass().add("custom-button");
         muteButton.setLayoutX(15);
-        muteButton.setLayoutY(140);
+        muteButton.setLayoutY(150);
         muteButton.setOnAction(e -> toggleMute(muteButton));
         dataContainer.getChildren().add(muteButton);
 
@@ -104,8 +106,9 @@ public class TrafficSimulation {
         for (int i = 0; i < laneXCoordinates.size(); i++) {
             double laneX = laneXCoordinates.get(i);
             Button laneButton = new Button("Add Vehicle Lane " + (i + 1));
+            laneButton.getStyleClass().add("custom-button");
             laneButton.setLayoutX(15);
-            laneButton.setLayoutY(180 + i * 30); // Adjust Y position dynamically for each button
+            laneButton.setLayoutY(200 + i * 30); // Adjust Y position dynamically for each button
             int laneIndex = i; // To capture the index for the lambda expression
             laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
             dataContainer.getChildren().add(laneButton);
@@ -113,8 +116,9 @@ public class TrafficSimulation {
 
         // Create Pedestrian Button
         Button createPedestrianButton = new Button("Create Pedestrian");
+        createPedestrianButton.getStyleClass().add("custom-button");
         createPedestrianButton.setLayoutX(15);
-        createPedestrianButton.setLayoutY(180 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
+        createPedestrianButton.setLayoutY(200 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
         createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
         dataContainer.getChildren().add(createPedestrianButton);
 
