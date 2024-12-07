@@ -175,7 +175,7 @@ public class Road implements GeneralRules {
             "Accidents", 
             "TrafficState", 
             "Lanes", 
-            "Roads", 
+            "Paths", 
             "AccidentDelay", 
             "Width", 
             "Height", 

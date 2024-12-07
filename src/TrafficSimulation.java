@@ -49,11 +49,15 @@ public class TrafficSimulation {
     private boolean isPaused = false; // Track whether the simulation is paused
     private long pauseStartTime = 0;
     private long totalPausedTime = 0;
-    public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration) {
+    private boolean autoVehiclesGeneration;
+    private boolean autoPedestriansGeneration;
+    public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration, boolean autoVehiclesGeneration, boolean autoPedestriansGeneration) {
         this.road = road;
         this.numberOfVehicles = numberOfVehicles;
         this.numberOfPedestrian = numberOfPedestrian;
         this.simulationDuration = simulationDuration;
+        this.autoVehiclesGeneration = autoVehiclesGeneration;
+        this.autoPedestriansGeneration = autoPedestriansGeneration;
         objecList.add(road);
     }
 
@@ -225,6 +229,8 @@ public class TrafficSimulation {
     }
     private void simulationSummary() {
     Stage primaryStage = new Stage();
+    Image icon = new Image("icon.jpg"); // Path to the icon file
+    primaryStage.getIcons().add(icon);
     primaryStage.setTitle("Simulation Summary");
 
     // Create TableView
@@ -259,9 +265,9 @@ public class TrafficSimulation {
     styleColumn.setCellValueFactory(cellData -> {
         GeneralRules value = cellData.getValue();
         if (value instanceof Vehicle) 
-            return new SimpleStringProperty(((Vehicle) value).getDriverStyle());
+            return new SimpleStringProperty(((Vehicle) value).getDriverStyle().toUpperCase());
         if (value instanceof Pedestrian) 
-            return new SimpleStringProperty(((Pedestrian) value).getPedestrianStyle());
+            return new SimpleStringProperty(((Pedestrian) value).getPedestrianStyle().toUpperCase());
         return new SimpleStringProperty("Unknown");
     });
 
@@ -275,7 +281,7 @@ public class TrafficSimulation {
     TableColumn<GeneralRules, String> directionColumn = new TableColumn<>("Direction");
     directionColumn.setCellValueFactory(cellData -> {
         if (cellData.getValue() instanceof MovingObjects) 
-            return new SimpleStringProperty(((MovingObjects) cellData.getValue()).getObjectDirection());
+            return new SimpleStringProperty(((MovingObjects) cellData.getValue()).getObjectDirection().toUpperCase());
         return new SimpleStringProperty("Unknown");
     });
 
@@ -517,8 +523,9 @@ public class TrafficSimulation {
                 vehicle.setObjectPassed();
                 road.increaseNumberOfPassedVehicles(1);
                 passedVehiclesText.setText("Passed Vehicles: " + road.getNumberOfPassedVehicles());
-                
-                // generateVehicles(mapContainer, 1);
+                if(autoVehiclesGeneration){
+                    generateVehicles(mapContainer, 1);
+                }
             }
 
             }
@@ -532,8 +539,9 @@ public class TrafficSimulation {
                     vehicle.setObjectPassed();
                     road.increaseNumberOfPassedVehicles(1);
                     passedVehiclesText.setText("Passed Vehicles: " + road.getNumberOfPassedVehicles());
-                    
-                    // generateVehicles(mapContainer, 1);
+                    if(autoVehiclesGeneration){
+                        generateVehicles(mapContainer, 1);
+                    }
                 }
             }
         }
@@ -649,7 +657,9 @@ public class TrafficSimulation {
         pedestrian.setObjectPassed();
         road.increaseNumberOfPassedPedestrians(1);
         passedPedestrianText.setText("Passed Pedestrian: " + road.getNumberOfPassedPedestrians());
-        generatePedestrians(mapContainer, 1);
+        if(autoPedestriansGeneration){
+            generatePedestrians(mapContainer, 1);
+        }
     }
     
     
@@ -695,7 +705,7 @@ public class TrafficSimulation {
             lanePositions.set(i, lanePositions.get(i) + 10);
         }
     
-        // For two roads, vehicles in the first half of lanes should go down, others go up
+        // For two paths, vehicles in the first half of lanes should go down, others go up
         int halfSizeLanePositions = lanePositions.size() / 2;
     
         for (int i = 0; i < numberOfVehicles; i++) {

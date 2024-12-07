@@ -8,9 +8,12 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -22,7 +25,8 @@ public class App extends Application {
     private int numberOfPedestrian;
     private int numberOfLanes;
     private int numberOfPaths;
-
+    private boolean autoVehiclesGeneration;
+    private boolean autoPedestriansGeneration;
     // Windows and simulation instances for phases
     private Stage phase1Window;
     private Stage phase2Window;
@@ -36,119 +40,166 @@ public class App extends Application {
     }
 
     private void showInputForm(Stage primaryStage) {
-        // Get the primary screen
-        Screen screen = Screen.getPrimary();
+    // Get the primary screen
+    Screen screen = Screen.getPrimary();
 
-        // Get the screen bounds
-        Rectangle2D screenBounds = screen.getBounds();
-        double screenWidth = screenBounds.getWidth();
-        // Create the input form layout (VBox)
-        VBox inputForm = new VBox(10);
-        inputForm.setPadding(new Insets(20)); // Padding between edges
-        inputForm.setAlignment(Pos.CENTER); // Center the elements within the form
+    // Get the screen bounds
+    Rectangle2D screenBounds = screen.getBounds();
+    double screenWidth = screenBounds.getWidth();
 
-        // Text fields for user input
-        TextField timeField = new TextField();
-        TextField vehiclesField = new TextField();
-        TextField lanesField = new TextField();
-        ObservableList<String> inputNumberOfPaths = FXCollections.observableArrayList("1", "2");
-        ComboBox<String> comboBox = new ComboBox<>(inputNumberOfPaths);
-        comboBox.setPromptText("Select the number of paths");
-        TextField pedestrianField = new TextField();
-    
-        // Add labels and text fields to the form
-        inputForm.getChildren().addAll(
-            createLabelWithDynamicFont("Simulation Time (seconds):", primaryStage),
-            timeField,
-            createLabelWithDynamicFont("Number of Vehicles:", primaryStage),
-            vehiclesField,
-            createLabelWithDynamicFont("Number of Pedestrian:", primaryStage),
-            pedestrianField,
-            createLabelWithDynamicFont("Number of Lanes:", primaryStage),
-            lanesField,
-            createLabelWithDynamicFont("Number of Paths:", primaryStage),
-            comboBox
-        );
-    
-        // Bind the font size of the TextFields to the window size
-        bindFontSizeToTextField(timeField, primaryStage);
-        bindFontSizeToTextField(vehiclesField, primaryStage);
-        bindFontSizeToTextField(lanesField, primaryStage);
-        bindFontSizeToTextField(pedestrianField, primaryStage);
-    
-        // Button to submit the form
-        Button submitButton = new Button("Submit");
-        submitButton.setOnAction(e -> {
-            try {
-                // Parse user input from the text fields
-                simulationTime = Integer.parseInt(timeField.getText());
-                numberOfVehicles = Integer.parseInt(vehiclesField.getText());
-                numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
-                numberOfLanes = Integer.parseInt(lanesField.getText());
-                numberOfPaths = Integer.parseInt(comboBox.getValue());
-    
-                // Validate that all inputs are positive numbers
-                if (simulationTime <= 0 || numberOfVehicles <= 0 || numberOfPedestrian <= 0 || 
-                    numberOfLanes <= 0) {
-                    throw new NumberFormatException();
-                    
-                    
+    // Create the input form layout (VBox)
+    VBox inputForm = new VBox(10);
+    inputForm.setPadding(new Insets(20)); // Padding between edges
+    inputForm.setAlignment(Pos.CENTER); // Align elements to the top-left
+
+    // Text fields for user input
+    TextField timeField = new TextField();
+    TextField vehiclesField = new TextField();
+    TextField lanesField = new TextField();
+    ObservableList<String> inputNumberOfPaths = FXCollections.observableArrayList("1", "2");
+    ComboBox<String> comboBox = new ComboBox<>(inputNumberOfPaths);
+    comboBox.setPromptText("Select the number of paths");
+    TextField pedestrianField = new TextField();
+
+    // Create CheckBoxes
+    CheckBox vehiclesCheckBox = new CheckBox("Auto regeneration vehicles");
+    bindFontSizeToCheckBox(vehiclesCheckBox, primaryStage); // Dynamic resizing
+    HBox vehiclesCheckBoxContainer = new HBox(vehiclesCheckBox);
+    vehiclesCheckBoxContainer.setAlignment(Pos.CENTER_LEFT); // Align to left
+
+    CheckBox pedestrianCheckBox = new CheckBox("Auto regeneration pedestrians");
+    bindFontSizeToCheckBox(pedestrianCheckBox, primaryStage); // Dynamic resizing
+    HBox pedestrianCheckBoxContainer = new HBox(pedestrianCheckBox);
+    pedestrianCheckBoxContainer.setAlignment(Pos.CENTER_LEFT); // Align to left
+
+    // Add labels and text fields to the form
+    inputForm.getChildren().addAll(
+        createLabelWithDynamicFont("Simulation Time (seconds):", primaryStage),
+        timeField,
+        createLabelWithDynamicFont("Number of Vehicles:", primaryStage),
+        vehiclesField,
+        vehiclesCheckBoxContainer, // Add vehicle checkbox container
+        createLabelWithDynamicFont("Number of Pedestrians:", primaryStage),
+        pedestrianField,
+        pedestrianCheckBoxContainer, // Add pedestrian checkbox container
+        createLabelWithDynamicFont("Number of Lanes:", primaryStage),
+        lanesField,
+        createLabelWithDynamicFont("Number of Paths:", primaryStage),
+        comboBox
+    );
+
+    // Bind the font size of the TextFields to the window size
+    bindFontSizeToTextField(timeField, primaryStage);
+    bindFontSizeToTextField(vehiclesField, primaryStage);
+    bindFontSizeToTextField(lanesField, primaryStage);
+    bindFontSizeToTextField(pedestrianField, primaryStage);
+
+    // Button to submit the form
+    Button submitButton = new Button("Submit");
+    submitButton.setOnAction(e -> {
+        try {
+            // Parse user input from the text fields
+            simulationTime = Integer.parseInt(timeField.getText());
+            numberOfVehicles = Integer.parseInt(vehiclesField.getText());
+            numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
+            numberOfLanes = Integer.parseInt(lanesField.getText());
+            numberOfPaths = Integer.parseInt(comboBox.getValue());
+            autoVehiclesGeneration = vehiclesCheckBox.isSelected();
+            autoPedestriansGeneration = pedestrianCheckBox.isSelected();
+            // Validate that all inputs are positive numbers
+            if (simulationTime <= 0 || numberOfVehicles <= 0 || numberOfPedestrian <= 0 || numberOfLanes <= 0) {
+                throw new NumberFormatException();
+            } else {
+                Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
+                road.createMap();
+                if (road.getObjectWidth() > screenWidth) {
+                    throw new ArrayIndexOutOfBoundsException();
                 }
-                else{
-                    Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
-                    road.createMap();
-                    if(road.getObjectWidth()>screenWidth){
-                        throw new ArrayIndexOutOfBoundsException();
-                    }
-                }
-    
-                // If validation is successful, proceed to the next stage
-                showControlPanel(primaryStage); // Transition to the control panel for the simulation
-                primaryStage.close(); // Close the current input form stage
-            } catch (NumberFormatException ex) {
-                // Display an error alert if the input is invalid
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Invalid Input");
-                alert.setContentText("Please enter valid positive numbers for all fields.");
-                alert.showAndWait(); // Wait for the user to acknowledge the error
             }
-            catch (ArrayIndexOutOfBoundsException ex){
-                // Display an error alert if the input is invalid
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Screen size issue");
-                alert.setContentText("Your screen size cannot show you this path. Please try to create road with less number of lanes or number or paths.");
-                alert.showAndWait(); // Wait for the user to acknowledge the error
-            }
-        });
-    
-        // Add the submit button to the form
-        inputForm.getChildren().add(submitButton);
-    
-        // Make the VBox responsive by binding the width and height
-        inputForm.prefWidthProperty().bind(primaryStage.widthProperty().multiply(0.8)); // 80% of window width
-        inputForm.prefHeightProperty().bind(primaryStage.heightProperty().multiply(0.8)); // 80% of window height
-    
-        // Set up the scene for the input form and show it
-        Scene scene = new Scene(inputForm, 500, 600);
-        scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
-    
-        // Set the window title and scene
-        primaryStage.setTitle("Simulation Configuration");
-        primaryStage.setScene(scene);
-    
-        // Set the minimum size for the window (prevents shrinking too much)
-        primaryStage.setMinWidth(300);  // Minimum width of the window
-        primaryStage.setMinHeight(600); // Minimum height of the window
-        // Set the default size for the window
-        primaryStage.setWidth(400);     // Default width
-        primaryStage.setHeight(600);    // Default height
+            // If validation is successful, proceed to the next stage
+            showControlPanel(primaryStage); // Transition to the control panel for the simulation
+            primaryStage.close(); // Close the current input form stage
+        } catch (NumberFormatException ex) {
+            // Display an error alert if the input is invalid
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Input");
+            alert.setContentText("Please enter valid positive numbers for all fields.");
+            alert.showAndWait(); // Wait for the user to acknowledge the error
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            // Display an error alert if the input is invalid
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Screen size issue");
+            alert.setContentText(
+                "Your screen size cannot show this path. Please try to create a road with fewer lanes or paths."
+            );
+            alert.showAndWait(); // Wait for the user to acknowledge the error
+        }
+    });
 
-        // Set initial position on screen
-        primaryStage.setX((screenWidth/2)-200);         // Set initial X position
-        primaryStage.setY(50);         // Set initial Y position
-        
-        // Show the stage (window)
-        primaryStage.show();
+    // Add the submit button to the form
+    inputForm.getChildren().add(submitButton);
+
+    // Make the VBox responsive by binding the width and height
+    inputForm.prefWidthProperty().bind(primaryStage.widthProperty().multiply(0.8)); // 80% of window width
+    inputForm.prefHeightProperty().bind(primaryStage.heightProperty().multiply(0.8)); // 80% of window height
+
+    // Set up the scene for the input form and show it
+    Scene scene = new Scene(inputForm, 500, 600);
+    scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
+
+    // Set the window title and scene
+    primaryStage.setTitle("Simulation Configuration");
+    primaryStage.setScene(scene);
+
+    Image icon = new Image("icon.jpg");
+    primaryStage.getIcons().add(icon);
+
+    // Set the minimum size for the window (prevents shrinking too much)
+    primaryStage.setMinWidth(300); // Minimum width of the window
+    primaryStage.setMinHeight(600); // Minimum height of the window
+    primaryStage.setWidth(400); // Default width
+    primaryStage.setHeight(600); // Default height
+
+    // Set initial position on screen
+    primaryStage.setX((screenWidth / 2) - 200); // Set initial X position
+    primaryStage.setY(50); // Set initial Y position
+
+    // Show the stage (window)
+    primaryStage.show();
+}
+    private void bindFontSizeToCheckBox(CheckBox checkBox, Stage primaryStage) {
+        double windowHeight = primaryStage.getHeight();
+        double windowWidth = primaryStage.getWidth();
+    
+        if (windowHeight >= windowWidth) {
+            // Bind the font size based on the width of the stage
+            checkBox.styleProperty().bind(Bindings.format(
+                "-fx-font-size: %.0f;",
+                Bindings.when(primaryStage.widthProperty().greaterThan(0))
+                       .then(primaryStage.widthProperty().multiply(0.02))
+                       .otherwise(16), // Default font size
+                Bindings.when(primaryStage.widthProperty().greaterThan(0))
+                       .then(primaryStage.widthProperty().multiply(0.05))
+                       .otherwise(30), // Default height
+                Bindings.when(primaryStage.widthProperty().greaterThan(0))
+                       .then(primaryStage.widthProperty().multiply(0.05))
+                       .otherwise(30)  // Default width
+            ));
+        } else {
+            // Bind the font size based on the height of the stage
+            checkBox.styleProperty().bind(Bindings.format(
+                "-fx-font-size: %.0f;",
+                Bindings.when(primaryStage.heightProperty().greaterThan(0))
+                       .then(primaryStage.heightProperty().multiply(0.02))
+                       .otherwise(16), // Default font size
+                Bindings.when(primaryStage.heightProperty().greaterThan(0))
+                       .then(primaryStage.heightProperty().multiply(0.05))
+                       .otherwise(30), // Default height
+                Bindings.when(primaryStage.heightProperty().greaterThan(0))
+                       .then(primaryStage.heightProperty().multiply(0.05))
+                       .otherwise(30)  // Default width
+            ));
+        }
     }
     
     private void bindFontSizeToTextField(TextField textField, Stage primaryStage) {
@@ -195,6 +246,8 @@ public class App extends Application {
 
     private void showControlPanel(Stage primStage) {
         Stage controlStage = new Stage();
+        Image icon = new Image("icon.jpg"); // Path to the icon file
+        controlStage.getIcons().add(icon);
         VBox controlPanel = new VBox(20);
         controlPanel.setPadding(new Insets(20));
         controlPanel.setAlignment(Pos.CENTER);
@@ -280,8 +333,10 @@ public class App extends Application {
         // Create a new window for phase 1 simulation
         phase1Window = new Stage();
         phase1Window.setResizable(false);
+        Image icon = new Image("icon.jpg"); // Path to the icon file
+        phase1Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
-        phase1Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime);
+        phase1Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
         
         // Create and display the simulation scene
         Scene simulationScene = phase1Simulation.createSimulationScene();
@@ -302,9 +357,11 @@ public class App extends Application {
 
         // Create a new window for phase 2 simulation
         phase2Window = new Stage();
-        phase1Window.setResizable(false);
+        phase2Window.setResizable(false);
+        Image icon = new Image("icon.jpg"); // Path to the icon file
+        phase2Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "enhanced", 5000);
-        phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime);
+        phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
         Scene simulationScene = phase2Simulation.createSimulationScene();
 
         // Display the simulation scene
@@ -323,6 +380,8 @@ public class App extends Application {
         }
         
         Stage compareStage = new Stage();
+        Image icon = new Image("icon.jpg"); // Path to the icon file
+        compareStage.getIcons().add(icon);
         VBox comparePanel = new VBox(10);
         comparePanel.setPadding(new Insets(20));
         comparePanel.setAlignment(Pos.CENTER);
