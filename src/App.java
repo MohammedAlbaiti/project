@@ -34,7 +34,7 @@ public class App extends Application {
     private int numberOfPaths;
     private boolean autoVehiclesGeneration;
     private boolean autoPedestriansGeneration;
-    
+
     // Windows and simulation instances for phases
     private Stage phase1Window;
     private Stage phase2Window;

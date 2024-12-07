@@ -22,7 +22,7 @@ public class Vehicle extends MovingObjects {
     }
     private void caluclateIdealTime(){
         double d =road.getObjectHeight();
-        double speed = getObjectSpeed()*42;
+        double speed = getObjectSpeed()*50;
         this.idealTime = Math.round((d / speed) * 100.0) / 100.0;
     }
     public double getTimeDifferance() {
