@@ -35,7 +35,7 @@ public class App extends Application {
     private boolean autoVehiclesGeneration;
     private boolean autoPedestriansGeneration;
     private double roadWidth;
-    
+
     // Windows and simulation instances for phases
     private Stage phase1Window;
     private Stage phase2Window;
@@ -449,7 +449,7 @@ public class App extends Application {
         comparison.append("Simulation Results\n\n");
         
         comparison.append(String.format("Phase 1:\n" +
-            "Passed Vejocles: %d\n" +
+            "Passed Vehicles: %d\n" +
             "Passed Pedestrians: %d\n\n", 
             phase1Simulation.getPassedVehicles(),
             phase1Simulation.getPassedPedestrians()));
