@@ -15,11 +15,13 @@ public class Road implements GeneralRules {
     private double objectHeight=480;
     private ArrayList<Double> XCooForLanes = new ArrayList<>();
     private ArrayList<Double> rightMostLane = new ArrayList<>();
+    private Bridge pedestrianBridge;
         public Road(int numberOfPaths,int numberOfLanes, String trafficState, double accidentDelay) {
         this.numberOfLanes = numberOfLanes;
         this.trafficState = trafficState;
         this.accidentDelay = accidentDelay;
         this.numberOfPaths = numberOfPaths;
+        this.pedestrianBridge = new Bridge(false);
     }
 
     public int getNumberOfPassedVehicles() {
@@ -86,9 +88,17 @@ public class Road implements GeneralRules {
         this.numberOfLanes = numberOfLanes;
     }
 
-    public void addBridge() {
+    // public void addBridge() {
         
+    // }
+    public Bridge getPedestrianBridge() {
+        return pedestrianBridge;
     }
+
+    public void toggleBridgePhase(boolean enableBridge) {
+        pedestrianBridge.setBridgeStatus(enableBridge);
+    }
+
     public Pane createMap() {
         Pane mapContainer = new Pane();
         mapContainer.setStyle("-fx-padding: 0; -fx-background-color: #232329;");
@@ -98,6 +108,7 @@ public class Road implements GeneralRules {
         Image separatorLines = new Image("file:src/resources/speratorLines.png");
         Image walkingsideRight = new Image("file:src/resources/walkingsideRight.png");
         Image roadSeprator = new Image("file:src/resources/roadSeprator.png");
+        Image bridge = new Image("file:src/resources/bridge.png");
 
         double width1 = 146;
         double width2 = 113;
@@ -149,6 +160,14 @@ public class Road implements GeneralRules {
             mapContainer.getChildren().add(rightWalk);
             currentX += width1;
         }}
+        if (pedestrianBridge.isBridgeStatus()) {
+            ImageView bridgeImageView = new ImageView(bridge);
+            bridgeImageView.setLayoutX(0); // Bridge spans the entire map width
+            bridgeImageView.setFitWidth(currentX);
+            bridgeImageView.setFitHeight(100); // Adjust height as needed
+            bridgeImageView.setLayoutY(-100); // Position the bridge above the road
+            mapContainer.getChildren().add(bridgeImageView);
+        }
         setObjectWidth(currentX);
         rightMostLane.add(XCooForLanes.get(XCooForLanes.size()-1));
         if(numberOfPaths==2){
