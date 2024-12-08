@@ -385,6 +385,7 @@ public class App extends Application {
         Image icon = new Image("icon.jpg"); // Path to the icon file
         phase1Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
+        road.getPedestrianBridge().disableBridge(); // Disable pedestrian bridge
         phase1Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
         
         // Create and display the simulation scene
@@ -414,6 +415,7 @@ public class App extends Application {
         Image icon = new Image("icon.jpg"); // Path to the icon file
         phase2Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "enhanced", 5000);
+        road.getPedestrianBridge().enableBridge(); // Enable pedestrian bridge
         phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
         Scene simulationScene = phase2Simulation.createSimulationScene();
         simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
