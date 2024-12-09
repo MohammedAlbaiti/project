@@ -4,15 +4,11 @@ import javafx.scene.layout.Pane;
 
 public class Bridge implements GeneralRules {
     private boolean bridgeStatus;
-    // private double objectDimension;
     private double objectWidth;
-    private double objectHeight=480;
+    private double objectHeight=150;
     private final ImageView bridgeImageView = new ImageView(new Image("file:src/resources/bridge.png"));
     private final double[] YBoundary = new double[2];
-    // private final double[] topLeftCoo = new double[2];
-    // private final double[] topRightCoo = new double[2];
-    // private final double[] bottomLeftCoo = new double[2];
-    // private final double[] bottomRightCoo = new double[2];
+
     public Bridge(boolean bridgeStatus) {
         this.bridgeStatus = bridgeStatus;
     }
@@ -26,7 +22,7 @@ public class Bridge implements GeneralRules {
         bridgeImageView.setFitWidth(roadWidth-186);
         bridgeImageView.setFitHeight(150);
         setObjectWidth(roadWidth-186);
-        setObjectHeight(150);
+        setObjectHeight(objectHeight);
     }
     public void setBridgeCoordinates(){
         bridgeImageView.setX(93);
@@ -39,17 +35,7 @@ public class Bridge implements GeneralRules {
     public void setBridgeStatus(boolean bridgeStatus) {
         this.bridgeStatus = bridgeStatus;
     }
-    // public void calculateBridgeBoundries(){
-    //     ImageView bridgeView = getBridgeImageView();
-    //     topLeftCoo[0] = bridgeView.getX();
-    //     topLeftCoo[1] = bridgeView.getY();
-    //     topRightCoo[0] = topLeftCoo[0]+getObjectWidth();
-    //     topRightCoo[1] = topLeftCoo[1];
-    //     bottomLeftCoo[0] = bridgeView.getX();
-    //     bottomLeftCoo[1] = topLeftCoo[1] + getObjectHeight();
-    //     bottomRightCoo[0] = topRightCoo[0];
-    //     bottomRightCoo[1] = bottomLeftCoo[1];
-    // }
+
     public double[] getYBoundary() {
         return YBoundary;
     }

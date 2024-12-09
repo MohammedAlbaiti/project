@@ -584,6 +584,10 @@ public class TrafficSimulation {
     private void goToBridge(Pedestrian pedestrian){ //////////////////////////////////////////////////////////////////////
         double[] bridgeBoundry = road.getPedestrianBridge().getYBoundary();
         double pedestrianY = pedestrian.getYCOO();
+        double pedestrianX = pedestrian.getXCOO();
+        if(pedestrianX<0 || pedestrianX+pedestrian.getObjectWidth()>=road.getObjectWidth()){
+            pedestrian.move();
+        }
         if(pedestrianY>=bridgeBoundry[1]-pedestrian.getObjectHeight()-20){
             pedestrian.moveUp();
         }
@@ -778,10 +782,8 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
         }
     }
     private void makePedestrianInUpperLayer(){
-        for(GeneralRules object: objecList){
-            if(object instanceof Pedestrian){
-                ((Pedestrian)object).getImageView().toFront();
-            }
+        for(Pedestrian pedestrian: pedestrians){
+                pedestrian.getImageView().toFront();
         }
     }
     private void generatePedestrians(Pane mapContainer, int numberOfPedestrians) {

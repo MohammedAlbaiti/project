@@ -16,6 +16,7 @@ public class Pedestrian extends MovingObjects {
     private long timeTaken;
     private double idealTime;
     private double timeDifferance=0;
+    private double distance = 0;
     private static final SecureRandom random = new SecureRandom();
 private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     "Dark Dressed Walker", "Purple Shirted Woman", "Casual Dressed Person", "Pink Shirt Walker", "Light Grey Dressed Walker"
@@ -33,7 +34,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         this.pedestrianStyle = pedestrianStyle;
         this.crossingStatus = false; // Default to not crossing
         startTimer();
-        caluclateIdealTime();
+        
     }
     public void caluclateTimeDifferance(){
         timeDifferance = getTimeTaken() - getIdealTime();
@@ -62,11 +63,13 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         this.pedestrianStyle = pedestrianStyle;
     }
     public void moveUp(){
+            distance+=getObjectSpeed();
             pedestrianView.setRotate(270);
             setYCOO(getYCOO()-getObjectSpeed());
             pedestrianView.setY(getYCOO());
     }
     public void moveDown(){
+            distance+=getObjectSpeed();
             pedestrianView.setRotate(90);
             setYCOO(getYCOO()+getObjectSpeed());
             pedestrianView.setY(getYCOO());
@@ -74,6 +77,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     @Override
     public void move() {
         if(!getAccidentHappen()){
+            distance+=getObjectSpeed();
         if(getObjectDirection().equals("right")){
 
             setXCOO(getXCOO()+getObjectSpeed());
@@ -117,13 +121,13 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         this.objectSpeed = objectSpeed;
     }
 
-        public void createPedestrian(boolean isBridgeStatus) {
+    public void createPedestrian(boolean isBridgeStatus) {
         if(isBridgeStatus){
             if(getObjectDirection().equals("right")){
-                xCoo = - random.nextInt(10);
+                xCoo = -30;
             }
             else{
-                xCoo = road.getObjectWidth() - random.nextInt(10) - 40;
+                xCoo = road.getObjectWidth();
             }
             if(getPedestrianStyle().equals("carless")){
                 yCoo = random.nextInt(100)+300;
@@ -144,7 +148,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
 
         
         
-        // System.out.println("pedestrian");
         pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
         Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");
         pedestrianView = new ImageView(pedestrianImage);
@@ -153,7 +156,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         pedestrianView.setX(xCoo);
         pedestrianView.setY(yCoo);
         pedestrianView.setUserData(pedestrianType);
-        
     }
     public ImageView getImageView(){
         return pedestrianView;
@@ -162,9 +164,8 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         return this.idealTime;
     }
     private void caluclateIdealTime(){
-        double d =road.getObjectWidth();
-        double speed = getObjectSpeed()*60;
-        this.idealTime = Math.round((d / speed) * 100.0) / 100.0;
+        double speed = getObjectSpeed()*54;
+        this.idealTime = Math.round((distance / speed) * 100.0) / 100.0;
     }
     // Method to start the timer
     private void startTimer() {
@@ -175,6 +176,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     public void stopTimer() {
         this.endTime = System.currentTimeMillis();  // Capture the end time
         this.timeTaken = endTime - startTime;  // Calculate the time taken in nanoseconds
+        caluclateIdealTime();
         caluclateTimeDifferance();
     }
 
