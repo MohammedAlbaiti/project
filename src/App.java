@@ -14,7 +14,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -439,51 +442,94 @@ public class App extends Application {
             alert.showAndWait();
             return;
         }
-        
+        phase1Simulation.calculateAverdifferanceTime();
+        phase2Simulation.calculateAverdifferanceTime();
         Stage compareStage = new Stage();
         Image icon = new Image("icon.jpg"); // Path to the icon file
         compareStage.getIcons().add(icon);
+    
         VBox comparePanel = new VBox(10);
         comparePanel.setPadding(new Insets(20));
         comparePanel.setAlignment(Pos.CENTER);
-        
+    
         StringBuilder comparison = new StringBuilder();
         comparison.append("Simulation Results\n\n");
-        
+    
         comparison.append(String.format("Phase 1:\n" +
             "Passed Vehicles: %d\n" +
-            "Passed Pedestrians: %d\n\n", 
+            "Passed Pedestrians: %d\n" +
+            "Average Differance Time for Vehicles: %.2f\n" +
+            "Average Differance Time for Pedestrian: %.2f\n"+
+            "Accidents: %d\n\n",
             phase1Simulation.getPassedVehicles(),
-            phase1Simulation.getPassedPedestrians()));
-            
+            phase1Simulation.getPassedPedestrians(),
+            phase1Simulation.getAverageVehicleDifferanceTime(),
+            phase1Simulation.getAveragePedestrianDifferanceTime(),
+            phase1Simulation.getRoad().getNumberOfAccidents()));
+    
         comparison.append(String.format("Phase 2:\n" +
             "Passed Vehicles: %d\n" +
-            "Passed Pedestrians: %d\n\n",
+            "Passed Pedestrians: %d\n" +
+            "Average Differance Time for Vehicles: %.2f\n" +
+            "Average Differance Time for Pedestrian: %.2f\n"+
+            "Accidents: %d\n\n",
             phase2Simulation.getPassedVehicles(),
-            phase2Simulation.getPassedPedestrians()));
-            
+            phase2Simulation.getPassedPedestrians(),
+            phase2Simulation.getAverageVehicleDifferanceTime(),
+            phase2Simulation.getAveragePedestrianDifferanceTime(),
+            phase2Simulation.getRoad().getNumberOfAccidents()));
+    
         if (phase1Simulation.getPassedVehicles() > 0 && phase1Simulation.getPassedPedestrians() > 0) {
-            double vehicleImprovement = ((double)(phase2Simulation.getPassedVehicles() - phase1Simulation.getPassedVehicles()) / 
+            double vehicleImprovement = ((double)(phase2Simulation.getPassedVehicles() - phase1Simulation.getPassedVehicles()) /
                                phase1Simulation.getPassedVehicles()) * 100;
-            double pedImprovement = ((double)(phase2Simulation.getPassedPedestrians() - phase1Simulation.getPassedPedestrians()) / 
+            double pedImprovement = ((double)(phase2Simulation.getPassedPedestrians() - phase1Simulation.getPassedPedestrians()) /
                                phase1Simulation.getPassedPedestrians()) * 100;
-                               
+            double pedDiffImprovement = -((double)(phase2Simulation.getAveragePedestrianDifferanceTime() - phase1Simulation.getAveragePedestrianDifferanceTime()) /
+                               phase1Simulation.getAveragePedestrianDifferanceTime()) * 100;
+            double vehicleDiffImprovement = -((double)(phase2Simulation.getAverageVehicleDifferanceTime() - phase1Simulation.getAverageVehicleDifferanceTime()) /
+                               phase1Simulation.getAverageVehicleDifferanceTime()) * 100;
+            double accidnetImprovement = -((double)(phase2Simulation.getRoad().getNumberOfAccidents() - phase1Simulation.getRoad().getNumberOfAccidents()) /
+                               phase1Simulation.getRoad().getNumberOfAccidents()) * 100;
             comparison.append(String.format("Improvements:\n" +
                 "Vehicles: %.1f%%\n" +
-                "Pedestrians: %.1f%%",
+                "Pedestrians: %.1f%%\n" +
+                "Average Differance Time for Vehicles: %.2f%%\n" +
+                "Average Differance Time for Pedestrian: %.2f%%\n"+
+                "Accidents: %.2f%%",
                 vehicleImprovement,
-                pedImprovement));
+                pedImprovement,
+                vehicleDiffImprovement,
+                pedDiffImprovement,
+                accidnetImprovement));
         }
-        comparePanel.getChildren().add(createLabelWithDynamicFont(comparison.toString(), compareStage)
-        );
-        
-        Scene scene = new Scene(comparePanel, 300, 400);
-        scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
-
+    
+        Label comparisonLabel = createLabelWithDynamicFont(comparison.toString(), compareStage);
+        // comparisonLabel.setStyle("-fx-text-fill: black;"); // Set text color to black
+        comparisonLabel.getStylesheets().add("-fx-text-fill: black;");
+        comparePanel.getChildren().add(comparisonLabel);
+    
+        // Create a responsive background rectangle
+        Rectangle background = new Rectangle();
+        background.setFill(Color.rgb(211, 211, 211, 0.8)); // Semi-transparent light gray
+        background.setArcWidth(20);
+        background.setArcHeight(20);
+    
+        // Bind the rectangle's width and height to the stage's dimensions
+        background.widthProperty().bind(compareStage.widthProperty().multiply(0.95)); // Adjust width
+        background.heightProperty().bind(compareStage.heightProperty().multiply(0.95)); // Adjust height
+    
+        // Use StackPane to layer the background and content
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(background, comparePanel);
+    
+        Scene scene = new Scene(stackPane, 400, 500);
+        scene.getStylesheets().add(getClass().getResource("compareResultStyles.css").toExternalForm());
+    
         compareStage.setTitle("Comparison Results");
         compareStage.setScene(scene);
         compareStage.show();
     }
+    
     
 
     /**

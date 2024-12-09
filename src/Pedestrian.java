@@ -164,7 +164,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         return this.idealTime;
     }
     private void caluclateIdealTime(){
-        double speed = getObjectSpeed()*54;
+        double speed = getObjectSpeed()*68;
         this.idealTime = Math.round((distance / speed) * 100.0) / 100.0;
     }
     // Method to start the timer

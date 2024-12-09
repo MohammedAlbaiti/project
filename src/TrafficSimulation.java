@@ -51,6 +51,10 @@ public class TrafficSimulation {
     private long totalPausedTime = 0;
     private boolean autoVehiclesGeneration;
     private boolean autoPedestriansGeneration;
+    private double averagePedestrianDifferanceTime;
+    private double averageVehicleDifferanceTime;
+    // private Image bg = new Image("file:src/resources/moving_street.png");
+    // private ImageView bgImageView = new ImageView(bg);
     public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration, boolean autoVehiclesGeneration, boolean autoPedestriansGeneration) {
         this.road = road;
         this.numberOfVehicles = numberOfVehicles;
@@ -65,10 +69,14 @@ public class TrafficSimulation {
         SoundPlayer.playGeneralSounds(simulationDuration);
         Pane mapContainer = road.createMap();
         double totalWidth = road.getObjectWidth();
-
+        double roadHeight = road.getObjectHeight();
+        // bgImageView.setRotate(90);
+        // bgImageView.setFitWidth(totalWidth);
+        // bgImageView.setFitHeight(200);
+        // bgImageView.setY(roadHeight);
         generateVehicles(mapContainer, numberOfVehicles);
         generatePedestrians(mapContainer, numberOfPedestrian);
-
+        
         passedVehiclesText = new Text(15, 25, "Passed Vehicles: 0");
         passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
         timeRemainingText = new Text(15, 65, "Time Remaining: " + simulationDuration + "s");
@@ -77,7 +85,9 @@ public class TrafficSimulation {
         passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-
+        Rectangle hideRctangle = new Rectangle(totalWidth, 200, Color.rgb(120, 126, 186));
+        // hideRctangle.setX(0);
+        hideRctangle.setY(roadHeight);
         Pane dataContainer = new Pane();
         Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
         Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
@@ -88,7 +98,7 @@ public class TrafficSimulation {
         // Pause Button
         Button pauseButton = new Button("Pause");
         pauseButton.getStyleClass().add("custom-button");
-        pauseButton.setLayoutX(road.getObjectWidth()-100);
+        pauseButton.setLayoutX(15);
         pauseButton.setLayoutY(110);
         pauseButton.setOnAction(e -> togglePause(pauseButton));
         dataContainer.getChildren().add(pauseButton);
@@ -96,21 +106,19 @@ public class TrafficSimulation {
         // Mute Button
         Button muteButton = new Button("Mute");
         muteButton.getStyleClass().add("custom-button");
-        muteButton.setLayoutX(road.getObjectWidth()-100);
+        muteButton.setLayoutX(15);
         muteButton.setLayoutY(150);
         muteButton.setOnAction(e -> toggleMute(muteButton));
         dataContainer.getChildren().add(muteButton);
-
+        dataContainer.getChildren().add(hideRctangle);
         // Create Lane Buttons
         List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
-        for (int i = 0; i < laneXCoordinates.size(); i++) {
-            double laneX = laneXCoordinates.get(i);
-            Button laneButton = new Button("Add Vehicle Lane " + (i + 1));
+        for (Double laneX : laneXCoordinates) {
+            Button laneButton = new Button("Add Vehicle");
             laneButton.getStyleClass().add("custom-button");
-            laneButton.setLayoutX(15);
-            laneButton.setLayoutY(110 + i * 30); // Adjust Y position dynamically for each button
-            int laneIndex = i; // To capture the index for the lambda expression
-            laneButton.setOnAction(e -> createVehicleInLane(laneIndex, laneX, mapContainer));
+            laneButton.setLayoutX(laneX-15);
+            laneButton.setLayoutY(roadHeight+40); // Adjust Y position dynamically for each button
+            laneButton.setOnAction(e -> createVehicleInLane(laneXCoordinates.indexOf(laneX), laneX, mapContainer));
             dataContainer.getChildren().add(laneButton);
         }
 
@@ -118,16 +126,17 @@ public class TrafficSimulation {
         Button createPedestrianButton = new Button("Create Pedestrian");
         createPedestrianButton.getStyleClass().add("custom-button");
         createPedestrianButton.setLayoutX(15);
-        createPedestrianButton.setLayoutY(110 + laneXCoordinates.size() * 30 + 20); // Position below the lane buttons
+        createPedestrianButton.setLayoutY(190); // Position below the lane buttons
         createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
         dataContainer.getChildren().add(createPedestrianButton);
-
+        
+        // mapContainer.getChildren().add(bgImageView);
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(mapContainer, dataContainer);
         
         startAnimation(mapContainer,simulationDuration);
 
-        return new Scene(stackPane, totalWidth-10, road.getObjectHeight()-10);
+        return new Scene(stackPane, totalWidth-10, road.getObjectHeight()+100);
     }
     
     private void toggleMute(Button muteButton) {
@@ -170,6 +179,7 @@ public class TrafficSimulation {
         vehicles.add(newVehicle);
         mapContainer.getChildren().add(newVehicle.getVehicleView());
         road.getPedestrianBridge().getBridgeImageView().toFront();
+        // bgImageView.toFront();
         makePedestrianInUpperLayer();
         
     }
@@ -337,9 +347,6 @@ public class TrafficSimulation {
             return new SimpleStringProperty(String.valueOf(((MovingObjects) cellData.getValue()).getAccidentHappen()));
         return new SimpleStringProperty("Unknown");
     });
-
-    
-
     // Create a list of columns and add them to the TableView
     List<TableColumn<GeneralRules, ?>> columns = Arrays.asList(
         idColumn, typeColumn, styleColumn, speedColumn, 
@@ -555,6 +562,36 @@ public class TrafficSimulation {
         }
     }
 
+    public void calculateAverdifferanceTime(){
+        int vehicleCounter = 0;
+        int pedestrianCounter = 0;
+        double totalVehicleDifferanceTime = 0;
+        double totalPedestrianDifferanceTime = 0;
+        for(GeneralRules object:objecList){
+            if(object instanceof Vehicle){
+                Vehicle vehicle = (Vehicle)object;
+                if(vehicle.getTimeTaken()!=0){
+                    vehicleCounter++;
+                    totalVehicleDifferanceTime+=vehicle.getTimeDifferance();
+                }
+            }
+            else if(object instanceof Pedestrian){
+                Pedestrian pedestrian = (Pedestrian)object;
+                if(pedestrian.getTimeTaken()!=0){
+                    pedestrianCounter++;
+                    totalPedestrianDifferanceTime+=pedestrian.getTimeDifferance();
+                }
+            }
+        }
+        averagePedestrianDifferanceTime=totalPedestrianDifferanceTime/pedestrianCounter;
+        averageVehicleDifferanceTime=totalVehicleDifferanceTime/vehicleCounter;
+    }
+    public double getAverageVehicleDifferanceTime() {
+        return averageVehicleDifferanceTime;
+    }
+    public double getAveragePedestrianDifferanceTime() {
+        return averagePedestrianDifferanceTime;
+    }
     private void updatePedestrians(Pane mapContainer) {
         boolean condition = road.getPedestrianBridge().isBridgeStatus();
         for (int i = 0; i < pedestrians.size(); i++) {
@@ -706,7 +743,7 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
         if(value<=50){  //50 %
             driverStyle="normal";
         }
-        else if(value<=80){ // 30 %
+        else if(value<=90){ // 30 %
             driverStyle="careful";
         }
         else{// 20 %
@@ -778,6 +815,7 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
             vehicles.add(vehicle);
             mapContainer.getChildren().add(vehicleImageView);
             road.getPedestrianBridge().getBridgeImageView().toFront();
+            // bgImageView.toFront();
             makePedestrianInUpperLayer();
         }
     }
@@ -829,5 +867,12 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
     
     public int getPassedPedestrians() {
         return road.getNumberOfPassedPedestrians();
+    }
+
+    public int getNumberOfAccidents() {
+        return road.getNumberOfAccidents();
+    }
+    public Road getRoad(){
+        return road;
     }
 }
