@@ -164,8 +164,8 @@ public class Road implements GeneralRules {
             double bridgeWidth = currentX; // Set bridge width to cover the entire road width including walkingsides
             
             ImageView bridgeImageView = new ImageView(bridge);
-            bridgeImageView.setLayoutX((width1 / 1.6)); // Position it to start at 1/3 of left walking side
-            bridgeImageView.setFitWidth(bridgeWidth - (2 * (width1 / 1.6))); // Adjust width to connect to the right walking side and take 1/3 of both sides
+            bridgeImageView.setLayoutX((width1 / 1.6)); // Position it to start at left walking side
+            bridgeImageView.setFitWidth(bridgeWidth - (2 * (width1 / 1.6))); // Adjust width to connect to the right walking side 
             double bridgeHeight = 100; // Adjust height as needed
             bridgeImageView.setFitHeight(bridgeHeight);
             double roadHeight = getObjectHeight(); // Total height of the road
