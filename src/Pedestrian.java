@@ -61,16 +61,28 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     public void setPedestrianStyle(String pedestrianStyle) {
         this.pedestrianStyle = pedestrianStyle;
     }
-
+    public void moveUp(){
+            pedestrianView.setRotate(270);
+            setYCOO(getYCOO()-getObjectSpeed());
+            pedestrianView.setY(getYCOO());
+    }
+    public void moveDown(){
+            pedestrianView.setRotate(90);
+            setYCOO(getYCOO()+getObjectSpeed());
+            pedestrianView.setY(getYCOO());
+    }
     @Override
     public void move() {
         if(!getAccidentHappen()){
         if(getObjectDirection().equals("right")){
+
             setXCOO(getXCOO()+getObjectSpeed());
+            pedestrianView.setRotate(0);
             pedestrianView.setX(getXCOO());
         }
         else{
             setXCOO(getXCOO()-getObjectSpeed());
+            pedestrianView.setRotate(180);
             pedestrianView.setX(getXCOO());
         }
     }
@@ -105,15 +117,33 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         this.objectSpeed = objectSpeed;
     }
 
-        public void createPedestrian() {
-        if(getObjectDirection().equals("right")){
-            xCoo = 0;
+        public void createPedestrian(boolean isBridgeStatus) {
+        if(isBridgeStatus){
+            if(getObjectDirection().equals("right")){
+                xCoo = - random.nextInt(10);
+            }
+            else{
+                xCoo = road.getObjectWidth() - random.nextInt(10) - 40;
+            }
+            if(getPedestrianStyle().equals("carless")){
+                yCoo = random.nextInt(100)+300;
+            }
+            else{
+                yCoo = random.nextInt(400);
+            }
         }
         else{
-            xCoo = road.getObjectWidth();
+            if(getObjectDirection().equals("right")){
+                xCoo = -30 ;
+            }
+            else{
+                xCoo = road.getObjectWidth();
+            }
+            yCoo = random.nextInt(400);
         }
+
         
-        yCoo = random.nextInt(400);
+        
         // System.out.println("pedestrian");
         pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
         Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");

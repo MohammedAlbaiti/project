@@ -21,7 +21,7 @@ public class Road implements GeneralRules {
         this.trafficState = trafficState;
         this.accidentDelay = accidentDelay;
         this.numberOfPaths = numberOfPaths;
-        this.pedestrianBridge = new Bridge(false);
+        this.pedestrianBridge = new Bridge(true);
     }
 
     public int getNumberOfPassedVehicles() {
@@ -108,7 +108,7 @@ public class Road implements GeneralRules {
         Image separatorLines = new Image("file:src/resources/speratorLines.png");
         Image walkingsideRight = new Image("file:src/resources/walkingsideRight.png");
         Image roadSeprator = new Image("file:src/resources/roadSeprator.png");
-        Image bridge = new Image("file:src/resources/bridge.png");
+        // Image bridge = new Image("file:src/resources/bridge.png");
 
         double width1 = 146;
         double width2 = 113;
@@ -161,17 +161,20 @@ public class Road implements GeneralRules {
             currentX += width1;
         }}
         if (pedestrianBridge.isBridgeStatus()) {
-            double bridgeWidth = currentX; // Set bridge width to cover the entire road width including walkingsides
+            pedestrianBridge.resizeBridge(currentX);
+            pedestrianBridge.setBridgeCoordinates();
+            pedestrianBridge.placeBridgeInMap(mapContainer);
+            // double bridgeWidth = currentX; // Set bridge width to cover the entire road width including walkingsides
             
-            ImageView bridgeImageView = new ImageView(bridge);
-            bridgeImageView.setLayoutX((width1 / 1.6)); // Position it to start at left walking side
-            bridgeImageView.setFitWidth(bridgeWidth - (2 * (width1 / 1.6))); // Adjust width to connect to the right walking side 
-            double bridgeHeight = 100; // Adjust height as needed
-            bridgeImageView.setFitHeight(bridgeHeight);
-            double roadHeight = getObjectHeight(); // Total height of the road
-            bridgeImageView.setLayoutY((roadHeight - bridgeHeight) / 2); // Center the bridge vertically
-            mapContainer.getChildren().add(bridgeImageView);
-            System.out.println("Bridge added to the map with adjusted width and position.");
+            // ImageView bridgeImageView = new ImageView(bridge);
+            // bridgeImageView.setLayoutX((width1 / 1.6)); // Position it to start at left walking side
+            // bridgeImageView.setFitWidth(bridgeWidth - (2 * (width1 / 1.6))); // Adjust width to connect to the right walking side 
+            // double bridgeHeight = 100; // Adjust height as needed
+            // bridgeImageView.setFitHeight(bridgeHeight);
+            // double roadHeight = getObjectHeight(); // Total height of the road
+            // bridgeImageView.setLayoutY((roadHeight - bridgeHeight) / 2); // Center the bridge vertically
+            // mapContainer.getChildren().add(bridgeImageView);
+            // System.out.println("Bridge added to the map with adjusted width and position.");
         }
         setObjectWidth(currentX);
         rightMostLane.add(XCooForLanes.get(XCooForLanes.size()-1));

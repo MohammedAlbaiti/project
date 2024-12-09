@@ -169,6 +169,8 @@ public class TrafficSimulation {
         }
         vehicles.add(newVehicle);
         mapContainer.getChildren().add(newVehicle.getVehicleView());
+        road.getPedestrianBridge().getBridgeImageView().toFront();
+        makePedestrianInUpperLayer();
         
     }
     
@@ -438,9 +440,9 @@ public class TrafficSimulation {
 
     private boolean checkIfPedestrianInVehiclePath(Vehicle vehicle, Pane mapContainer, ImageView accidentFlagView) {
         for (Pedestrian pedestrian : pedestrians) {
-            if (isPedestrianBlockingVehicle(vehicle, pedestrian)) {
+            if ((isPedestrianBlockingVehicle(vehicle, pedestrian) && !road.getPedestrianBridge().isBridgeStatus())  || (road.getPedestrianBridge().isBridgeStatus() && isPedestrianBlockingVehicle(vehicle, pedestrian) && pedestrian.getPedestrianStyle().equals("carless"))) {
                 return true;
-            } else if (isPedestrianCausingAccidentWithVehicle(vehicle, pedestrian)) {
+            } else if (isPedestrianCausingAccidentWithVehicle(vehicle, pedestrian) && (!road.getPedestrianBridge().isBridgeStatus()|| pedestrian.getPedestrianStyle().equals("carless"))) {
                 handleAccident(vehicle, pedestrian, mapContainer, accidentFlagView);
                 return false;
             }
@@ -554,16 +556,23 @@ public class TrafficSimulation {
     }
 
     private void updatePedestrians(Pane mapContainer) {
+        boolean condition = road.getPedestrianBridge().isBridgeStatus();
         for (int i = 0; i < pedestrians.size(); i++) {
             Pedestrian pedestrian = pedestrians.get(i);
-            boolean vehicleInFront = checkIfVehicleInFrontOfPedestria(pedestrian);
-    
-            // Move or stop the pedestrian based on car detection
-            if (!vehicleInFront) {
-                movePedestrianIfWithinBounds(pedestrian);
-            } else {
-                pedestrian.stop();
+            if(condition && !pedestrian.getPedestrianStyle().equals("carless")){
+                goToBridge(pedestrian);
             }
+            else{
+                boolean vehicleInFront = checkIfVehicleInFrontOfPedestria(pedestrian);
+    
+                // Move or stop the pedestrian based on car detection
+                if (!vehicleInFront) {
+                    movePedestrianIfWithinBounds(pedestrian);
+                } else {
+                    pedestrian.stop();
+                }
+            }
+
     
             // Handle pedestrians that pass the road bounds
             if (isPedestrianOutOfBounds(pedestrian)) {
@@ -572,7 +581,19 @@ public class TrafficSimulation {
             }
         }
     }
-    
+    private void goToBridge(Pedestrian pedestrian){ //////////////////////////////////////////////////////////////////////
+        double[] bridgeBoundry = road.getPedestrianBridge().getYBoundary();
+        double pedestrianY = pedestrian.getYCOO();
+        if(pedestrianY>=bridgeBoundry[1]-pedestrian.getObjectHeight()-20){
+            pedestrian.moveUp();
+        }
+        else if(pedestrianY+pedestrian.getObjectHeight()<=bridgeBoundry[0]+ pedestrian.getObjectHeight()+20){
+            pedestrian.moveDown();
+        }
+        else{
+            pedestrian.move();
+        }
+    }
     // Check if there's a car in front of the pedestrian
     private boolean checkIfVehicleInFrontOfPedestria(Pedestrian pedestrian) {
         boolean vehicleInFront = false;
@@ -752,9 +773,17 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
             
             vehicles.add(vehicle);
             mapContainer.getChildren().add(vehicleImageView);
+            road.getPedestrianBridge().getBridgeImageView().toFront();
+            makePedestrianInUpperLayer();
         }
     }
-    
+    private void makePedestrianInUpperLayer(){
+        for(GeneralRules object: objecList){
+            if(object instanceof Pedestrian){
+                ((Pedestrian)object).getImageView().toFront();
+            }
+        }
+    }
     private void generatePedestrians(Pane mapContainer, int numberOfPedestrians) {
         String pedestrianStyle;
         for (int i = 0; i < numberOfPedestrians; i++) {
@@ -773,11 +802,11 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
             boolean right = random.nextBoolean();
             if(right){
                 pedestrian.setObjectDireciton("right");
-                pedestrian.createPedestrian();
+                pedestrian.createPedestrian(road.getPedestrianBridge().isBridgeStatus());
             }
             else{
                 pedestrian.setObjectDireciton("left");
-                pedestrian.createPedestrian();
+                pedestrian.createPedestrian(road.getPedestrianBridge().isBridgeStatus());
                 pedestrian.getImageView().setRotate(180);
             }
            objecList.add(pedestrian);
