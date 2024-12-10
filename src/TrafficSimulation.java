@@ -4,8 +4,10 @@ import javafx.animation.KeyValue;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
@@ -53,6 +55,8 @@ public class TrafficSimulation {
     private boolean autoPedestriansGeneration;
     private double averagePedestrianDifferanceTime;
     private double averageVehicleDifferanceTime;
+    private ArrayList<Button> addVehicleButtons = new ArrayList<>();
+    private Rectangle hideRectangle;
     public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration, boolean autoVehiclesGeneration, boolean autoPedestriansGeneration) {
         this.road = road;
         this.numberOfVehicles = numberOfVehicles;
@@ -68,8 +72,7 @@ public class TrafficSimulation {
         Pane mapContainer = road.createMap();
         double totalWidth = road.getObjectWidth();
         double roadHeight = road.getObjectHeight();
-        generateVehicles(mapContainer, numberOfVehicles);
-        generatePedestrians(mapContainer, numberOfPedestrian);
+
         
         passedVehiclesText = new Text(15, 25, "Passed Vehicles: 0");
         passedPedestrianText = new Text(15, 45, "Passed Pedestrians: 0");
@@ -79,8 +82,8 @@ public class TrafficSimulation {
         passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-        Rectangle hideRctangle = new Rectangle(totalWidth, 200, Color.rgb(43, 123, 50));
-        hideRctangle.setY(roadHeight);
+        hideRectangle = new Rectangle(totalWidth, 100, Color.rgb(43, 123, 50));
+        hideRectangle.setY(roadHeight);
         Pane dataContainer = new Pane();
         Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
         Rectangle topRect = new Rectangle(136, 90, Color.rgb(180, 188, 217));
@@ -103,7 +106,7 @@ public class TrafficSimulation {
         muteButton.setLayoutY(150);
         muteButton.setOnAction(e -> toggleMute(muteButton));
         dataContainer.getChildren().add(muteButton);
-        dataContainer.getChildren().add(hideRctangle);
+        mapContainer.getChildren().add(hideRectangle);
         // Create Lane Buttons
         List<Double> laneXCoordinates = road.getXCooForLanes(); // Assuming this method returns X-coordinates for lanes
         for (Double laneX : laneXCoordinates) {
@@ -112,19 +115,34 @@ public class TrafficSimulation {
             laneButton.setLayoutX(laneX-15);
             laneButton.setLayoutY(roadHeight+40); // Adjust Y position dynamically for each button
             laneButton.setOnAction(e -> createVehicleInLane(laneXCoordinates.indexOf(laneX), laneX, mapContainer));
-            dataContainer.getChildren().add(laneButton);
+            mapContainer.getChildren().add(laneButton);
+            addVehicleButtons.add(laneButton);
         }
-
+        generateVehicles(mapContainer, numberOfVehicles);
+        generatePedestrians(mapContainer, numberOfPedestrian);
         // Create Pedestrian Button
         Button createPedestrianButton = new Button("Create Pedestrian");
         createPedestrianButton.getStyleClass().add("custom-button");
         createPedestrianButton.setLayoutX(15);
         createPedestrianButton.setLayoutY(190); // Position below the lane buttons
         createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
+        mapContainer.setPrefWidth(totalWidth); // Ensure this matches the actual width of the road
+
         dataContainer.getChildren().add(createPedestrianButton);
-        
+        ScrollPane scrollPane = new ScrollPane(mapContainer);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Horizontal scroll bar
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);    // Disable vertical scroll bar
+        // Optional: Set the preferred viewport size
+        scrollPane.setPrefViewportWidth(400);
+        scrollPane.setPrefViewportHeight(200);
         StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(mapContainer, dataContainer);
+        
+        stackPane.getChildren().add(scrollPane);
+        stackPane.getChildren().add(dataContainer);
+
+        StackPane.setAlignment(dataContainer, Pos.BOTTOM_CENTER);
+        dataContainer.setPickOnBounds(false); // Only block clicks on actual elements, not the empty area
+
         
         startAnimation(mapContainer,simulationDuration);
 
@@ -807,6 +825,13 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
             mapContainer.getChildren().add(vehicleImageView);
             road.getPedestrianBridge().getBridgeImageView().toFront();
             makePedestrianInUpperLayer();
+            makeRectangleButtonsUpperLayer();
+        }
+    }
+    private void makeRectangleButtonsUpperLayer(){
+        hideRectangle.toFront();
+        for(Button btn:addVehicleButtons){
+            btn.toFront();
         }
     }
     private void makePedestrianInUpperLayer(){
