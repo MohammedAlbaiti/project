@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MethodCallCounter",
+            "request": "launch",
+            "mainClass": "MethodCallCounter",
+            "projectName": "project-2_b55a7a33"
+        },
+        {
+            "type": "java",
             "name": "App",
             "request": "launch",
             "mainClass": "App",
