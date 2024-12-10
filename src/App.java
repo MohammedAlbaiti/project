@@ -351,7 +351,7 @@ submitButton.setOnAction(e -> {
         
         // Set the minimum size for the window
         controlStage.setMinWidth(300);  // Minimum width of the control panel window
-        controlStage.setMinHeight(200); // Minimum height of the control panel window
+        controlStage.setMinHeight(300); // Minimum height of the control panel window
         
         // Set the default size for the window
         controlStage.setWidth(400);     // Default width
