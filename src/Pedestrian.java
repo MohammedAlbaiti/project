@@ -28,7 +28,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     public Pedestrian(Road road, String pedestrianStyle) {
         super(random.nextInt(3) + 1,30,50);
         setObjectDireciton("right");
-        // System.out.println("pedestrian");
         this.road=road;
         this.pedestrianID = "P" + (++counter);
         this.pedestrianStyle = pedestrianStyle;

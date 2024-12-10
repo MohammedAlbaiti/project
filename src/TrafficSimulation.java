@@ -53,8 +53,6 @@ public class TrafficSimulation {
     private boolean autoPedestriansGeneration;
     private double averagePedestrianDifferanceTime;
     private double averageVehicleDifferanceTime;
-    // private Image bg = new Image("file:src/resources/moving_street.png");
-    // private ImageView bgImageView = new ImageView(bg);
     public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration, boolean autoVehiclesGeneration, boolean autoPedestriansGeneration) {
         this.road = road;
         this.numberOfVehicles = numberOfVehicles;
@@ -70,10 +68,6 @@ public class TrafficSimulation {
         Pane mapContainer = road.createMap();
         double totalWidth = road.getObjectWidth();
         double roadHeight = road.getObjectHeight();
-        // bgImageView.setRotate(90);
-        // bgImageView.setFitWidth(totalWidth);
-        // bgImageView.setFitHeight(200);
-        // bgImageView.setY(roadHeight);
         generateVehicles(mapContainer, numberOfVehicles);
         generatePedestrians(mapContainer, numberOfPedestrian);
         
@@ -86,7 +80,6 @@ public class TrafficSimulation {
         timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         Rectangle hideRctangle = new Rectangle(totalWidth, 200, Color.rgb(120, 126, 186));
-        // hideRctangle.setX(0);
         hideRctangle.setY(roadHeight);
         Pane dataContainer = new Pane();
         Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
@@ -130,7 +123,6 @@ public class TrafficSimulation {
         createPedestrianButton.setOnAction(e -> generatePedestrians(mapContainer,1)); // Method to create a pedestrian
         dataContainer.getChildren().add(createPedestrianButton);
         
-        // mapContainer.getChildren().add(bgImageView);
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(mapContainer, dataContainer);
         
@@ -435,7 +427,6 @@ public class TrafficSimulation {
         double otherY = otherVehicle.getYCOO();
 
         if (Math.abs(vehicleX - otherX) < 20) {
-            // if (road.getNumberOfPaths() == 1 || vehicle.getObjectDirection().equals("up")) {
             if (vehicle.getObjectDirection().equals("up")) {
                 return otherY < vehicleY && vehicleY - otherY < minSafeDistance;
             } else {
@@ -618,7 +609,7 @@ public class TrafficSimulation {
             }
         }
     }
-    private void goToBridge(Pedestrian pedestrian){ //////////////////////////////////////////////////////////////////////
+    private void goToBridge(Pedestrian pedestrian){ 
         double[] bridgeBoundry = road.getPedestrianBridge().getYBoundary();
         double pedestrianY = pedestrian.getYCOO();
         double pedestrianX = pedestrian.getXCOO();
@@ -815,7 +806,6 @@ private boolean isVehicleBlockingPedestrian(Pedestrian pedestrian, Vehicle vehic
             vehicles.add(vehicle);
             mapContainer.getChildren().add(vehicleImageView);
             road.getPedestrianBridge().getBridgeImageView().toFront();
-            // bgImageView.toFront();
             makePedestrianInUpperLayer();
         }
     }

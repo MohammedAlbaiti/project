@@ -12,6 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -117,47 +118,56 @@ public class App extends Application {
     bindFontSizeToTextField(pedestrianField, primaryStage);
 
     // Button to submit the form
-    Button submitButton = new Button("Submit");
-    submitButton.setOnAction(e -> {
-        try {
-            // Parse user input from the text fields
-            simulationTime = Integer.parseInt(timeField.getText());
-            numberOfVehicles = Integer.parseInt(vehiclesField.getText());
-            numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
-            numberOfLanes = Integer.parseInt(lanesField.getText());
-            numberOfPaths = Integer.parseInt(comboBox.getValue());
-            autoVehiclesGeneration = vehiclesCheckBox.isSelected();
-            autoPedestriansGeneration = pedestrianCheckBox.isSelected();
-            // Validate that all inputs are positive numbers
-            if (simulationTime <= 0 || numberOfVehicles <= 0 || numberOfPedestrian <= 0 || numberOfLanes <= 0) {
-                throw new NumberFormatException();
-            } else {
-                Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
-                road.createMap();
-                roadWidth = road.getObjectWidth();
-                if (roadWidth > screenWidth) {
-                    throw new ArrayIndexOutOfBoundsException();
-                }
+    // Create tooltips for the checkboxes
+    Tooltip vehiclesTooltip = new Tooltip("Automatically generate vehicles during the simulation.");
+    Tooltip pedestriansTooltip = new Tooltip("Automatically generate pedestrians during the simulation.");
+
+    // Set the tooltips to the checkboxes
+    vehiclesCheckBox.setTooltip(vehiclesTooltip);
+    pedestrianCheckBox.setTooltip(pedestriansTooltip);
+
+// Button configuration remains the same
+Button submitButton = new Button("Submit");
+submitButton.setOnAction(e -> {
+    try {
+        // Parse user input from the text fields
+        simulationTime = Integer.parseInt(timeField.getText());
+        numberOfVehicles = Integer.parseInt(vehiclesField.getText());
+        numberOfPedestrian = Integer.parseInt(pedestrianField.getText());
+        numberOfLanes = Integer.parseInt(lanesField.getText());
+        numberOfPaths = Integer.parseInt(comboBox.getValue());
+        autoVehiclesGeneration = vehiclesCheckBox.isSelected();
+        autoPedestriansGeneration = pedestrianCheckBox.isSelected();
+        // Validate that all inputs are positive numbers
+        if (simulationTime <= 0 || numberOfVehicles <= 0 || numberOfPedestrian <= 0 || numberOfLanes <= 0) {
+            throw new NumberFormatException();
+        } else {
+            Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
+            road.createMap();
+            roadWidth = road.getObjectWidth();
+            if (roadWidth > screenWidth) {
+                throw new ArrayIndexOutOfBoundsException();
             }
-            // If validation is successful, proceed to the next stage
-            showControlPanel(primaryStage); // Transition to the control panel for the simulation
-            primaryStage.close(); // Close the current input form stage
-        } catch (NumberFormatException ex) {
-            // Display an error alert if the input is invalid
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid Input");
-            alert.setContentText("Please enter valid positive numbers for all fields.");
-            alert.showAndWait(); // Wait for the user to acknowledge the error
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            // Display an error alert if the input is invalid
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Screen width issue");
-            alert.setContentText(
-                "Your screen width cannot show this path. Please try to create a road with fewer lanes or paths.\nYour screen width: "+screenWidth+"\nYour requested road width: "+roadWidth
-            );
-            alert.showAndWait(); // Wait for the user to acknowledge the error
         }
-    });
+        // If validation is successful, proceed to the next stage
+        showControlPanel(primaryStage); // Transition to the control panel for the simulation
+        primaryStage.close(); // Close the current input form stage
+    } catch (NumberFormatException ex) {
+        // Display an error alert if the input is invalid
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setContentText("Please enter valid positive numbers for all fields.");
+        alert.showAndWait(); // Wait for the user to acknowledge the error
+    } catch (ArrayIndexOutOfBoundsException ex) {
+        // Display an error alert if the input is invalid
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Screen width issue");
+        alert.setContentText(
+            "Your screen width cannot show this path. Please try to create a road with fewer lanes or paths.\nYour screen width: "+screenWidth+"\nYour requested road width: "+roadWidth
+        );
+        alert.showAndWait(); // Wait for the user to acknowledge the error
+    }
+});
 
     // Add the submit button to the form
     inputForm.getChildren().add(submitButton);
@@ -274,7 +284,7 @@ public class App extends Application {
                    .otherwise(16))); // Default size in case the width is 0 or invalid
         }
         else{
-                    // Bind the font size to the width of the stage, with a fallback value to avoid NaN
+        // Bind the font size to the width of the stage, with a fallback value to avoid NaN
         label.styleProperty().bind(Bindings.format("-fx-font-size: %.0f;", 
         Bindings.when(primaryStage.heightProperty().greaterThan(0))
                .then(primaryStage.heightProperty().multiply(0.025))
@@ -504,7 +514,7 @@ public class App extends Application {
         }
     
         Label comparisonLabel = createLabelWithDynamicFont(comparison.toString(), compareStage);
-        // comparisonLabel.setStyle("-fx-text-fill: black;"); // Set text color to black
+       
         comparisonLabel.getStylesheets().add("-fx-text-fill: black;");
         comparePanel.getChildren().add(comparisonLabel);
     

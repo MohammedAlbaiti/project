@@ -39,7 +39,6 @@ private static final ArrayList<String> TRUCK_TYPES = new ArrayList<>(Arrays.asLi
     public void createTruck(double x, double y) {
         xCoo=x;
         yCoo=y;
-        // System.out.println("truck");
         int i = random.nextInt(TRUCK_TYPES.size());
         this.truckType = TRUCK_TYPES.get(i);
         Image truckImage = truckImages.get(i);

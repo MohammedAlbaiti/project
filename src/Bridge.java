@@ -49,8 +49,7 @@ public class Bridge implements GeneralRules {
     }
 
     public void disableBridge() {
-        this.bridgeStatus = false;
-        
+        this.bridgeStatus = false;  
     }
     @Override
     public void setObjectHeight(double objectHeight){
