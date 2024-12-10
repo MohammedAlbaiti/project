@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -42,7 +43,7 @@ public class App extends Application {
     private boolean autoVehiclesGeneration;
     private boolean autoPedestriansGeneration;
     private double roadWidth;
-
+    private DialogPane dialog;
     // Windows and simulation instances for phases
     private Stage phase1Window;
     private Stage phase2Window;
@@ -156,9 +157,12 @@ submitButton.setOnAction(e -> {
         primaryStage.close(); // Close the current input form stage
     } catch (NumberFormatException ex) {
         // Display an error alert if the input is invalid
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.ERROR,"Error",ButtonType.OK);
         alert.setTitle("Invalid Input");
         alert.setContentText("Please enter valid positive numbers for all fields.");
+        dialog = alert.getDialogPane();
+        dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
+        dialog.getStyleClass().add("dialog");
         alert.showAndWait(); // Wait for the user to acknowledge the error
     } catch (ArrayIndexOutOfBoundsException ex) {
     // Create a confirmation alert
@@ -171,7 +175,9 @@ submitButton.setOnAction(e -> {
         "Your requested road width: " + roadWidth + "\n\n" +
         "Would you like to continue anyway?"
     );
-
+    dialog = alert.getDialogPane();
+    dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
+    dialog.getStyleClass().addAll("dialog");
     // Wait for the user's response
     Optional<ButtonType> result = alert.showAndWait();
 
