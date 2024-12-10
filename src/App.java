@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -8,6 +10,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -158,14 +161,26 @@ submitButton.setOnAction(e -> {
         alert.setContentText("Please enter valid positive numbers for all fields.");
         alert.showAndWait(); // Wait for the user to acknowledge the error
     } catch (ArrayIndexOutOfBoundsException ex) {
-        // Display an error alert if the input is invalid
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Screen width issue");
-        alert.setContentText(
-            "Your screen width cannot show this path. Please try to create a road with fewer lanes or paths.\nYour screen width: "+screenWidth+"\nYour requested road width: "+roadWidth
-        );
-        alert.showAndWait(); // Wait for the user to acknowledge the error
+    // Create a confirmation alert
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Screen Width Issue");
+    alert.setHeaderText("Road Width Exceeds Screen Width");
+    alert.setContentText(
+        "Your screen width cannot show this path. Please try to create a road with fewer lanes or paths.\n" +
+        "Your screen width: " + screenWidth + "\n" +
+        "Your requested road width: " + roadWidth + "\n\n" +
+        "Would you like to continue anyway?"
+    );
+
+    // Wait for the user's response
+    Optional<ButtonType> result = alert.showAndWait();
+
+    if (result.isPresent() && result.get() == ButtonType.OK) {
+        showControlPanel(primaryStage); // Transition to the control panel for the simulation
+        primaryStage.close(); // Close the current input form stage
     }
+}
+
 });
 
     // Add the submit button to the form
