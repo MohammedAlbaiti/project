@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CustomTitleBar",
+            "request": "launch",
+            "mainClass": "CustomTitleBar",
+            "projectName": "project-2_b55a7a33"
+        },
+        {
+            "type": "java",
             "name": "MethodCallCounter",
             "request": "launch",
             "mainClass": "MethodCallCounter",

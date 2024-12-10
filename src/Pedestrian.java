@@ -7,7 +7,6 @@ import javafx.scene.image.ImageView;
 public class Pedestrian extends MovingObjects {
     // Attributes
     private String pedestrianID;
-    private boolean crossingStatus;
     private String pedestrianStyle;
     private static int counter=1;
     String pedestrianType;
@@ -31,7 +30,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         this.road=road;
         this.pedestrianID = "P" + (++counter);
         this.pedestrianStyle = pedestrianStyle;
-        this.crossingStatus = false; // Default to not crossing
         startTimer();
         
     }
@@ -44,16 +42,7 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     // Getters and Setters
     public String getPedestrianID() {
         return pedestrianID;
-    }
-    
-    public boolean getCrossingStatus() {
-        return crossingStatus;
-    }
-    
-    public void setCrossingStatus(boolean crossingStatus) {
-        this.crossingStatus = crossingStatus;
-    }
-    
+    }    
     public String getPedestrianStyle() {
         return pedestrianStyle;
     }
@@ -144,9 +133,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
             }
             yCoo = random.nextInt(400);
         }
-
-        
-        
         pedestrianType = pedestrianTypes.get(random.nextInt(pedestrianTypes.size()));
         Image pedestrianImage = new Image("file:src/resources/" + pedestrianType + ".png");
         pedestrianView = new ImageView(pedestrianImage);
@@ -164,13 +150,12 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     }
     private void caluclateIdealTime(){
         double speed = getObjectSpeed()*68;
-        this.idealTime = Math.round((distance / speed) * 100.0) / 100.0;
+        this.idealTime = distance / speed;
     }
     // Method to start the timer
     private void startTimer() {
         this.startTime = System.currentTimeMillis();  // Capture the start time in nanoseconds
     }
-
     // Method to stop the timer and calculate the elapsed time
     public void stopTimer() {
         this.endTime = System.currentTimeMillis();  // Capture the end time
@@ -178,7 +163,6 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
         caluclateIdealTime();
         caluclateTimeDifferance();
     }
-
     // Getter for timeTaken
     public double getTimeTaken() {
         return Math.round(this.timeTaken/10) / 100.0;  // Return the time taken in nanoseconds
@@ -189,8 +173,8 @@ private final ArrayList<String> pedestrianTypes = new ArrayList<>(Arrays.asList(
     @Override
     public String toString() {
         return String.format(
-            "%-5s %-25s %-10s %-10.2f %-10s %-10.2f %-10.2f %-10s",  // Added timeTaken to the format
-            pedestrianID, pedestrianType, pedestrianStyle, getObjectSpeed(), getObjectDirection(), getTimeTaken(), getIdealTime(),isObjectPassed()
+            "%-5s %-25s %-10s %-10.2f %-10s %-10.2f %-10.2f %-10.2f %-10s %-10s",  // Added timeTaken to the format
+            pedestrianID, pedestrianType, pedestrianStyle, getObjectSpeed(), getObjectDirection(), getTimeTaken(), getIdealTime(),getTimeDifferance(),isObjectPassed(),getAccidentHappen()
         );
     }
 }

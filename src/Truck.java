@@ -55,7 +55,7 @@ private static final ArrayList<String> TRUCK_TYPES = new ArrayList<>(Arrays.asLi
     @Override
     public String toString() {
         return String.format(
-            "%-5s %-25s %-10s %-10.2f %-10s %-10.2f %-10.2f %-10s",  // Added timeTaken to the format
+            "%-5s %-25s %-10s %-10.2f %-10s %-10.2f %-10.2f %-10.2f %-10s %-10s",  // Added timeTaken to the format
             truckID, 
             truckType,
             getDriverStyle(), 
@@ -63,7 +63,9 @@ private static final ArrayList<String> TRUCK_TYPES = new ArrayList<>(Arrays.asLi
             getObjectDirection(),
             getTimeTaken(),
             getIdealTime(),
-            isObjectPassed()
+            getTimeDifferance(),
+            isObjectPassed(),
+            getAccidentHappen()
         );
     }
 

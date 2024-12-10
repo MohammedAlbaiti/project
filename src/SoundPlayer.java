@@ -20,12 +20,12 @@ private static MediaPlayer mediaPlayer;
                         System.out.println("Sound file not found.");
                         return;
                     }
-    
                     Media media = new Media(resource.toString());
                     mediaPlayer = new MediaPlayer(media);
     
                     // Handle media readiness
                     mediaPlayer.setOnReady(() -> {
+                        mediaPlayer.setVolume(0.02); // Set volume to 10% of the maximum
                         mediaPlayer.play();
     
                         // Schedule stopping the media player after the specified duration

@@ -1,5 +1,4 @@
 import java.util.Optional;
-
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -8,6 +7,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -163,6 +166,9 @@ submitButton.setOnAction(e -> {
         dialog = alert.getDialogPane();
         dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
         dialog.getStyleClass().add("dialog");
+        Stage dialogStage = (Stage) dialog.getScene().getWindow();
+        Image icon = new Image("icon.jpg"); // Path to the icon file
+        dialogStage.getIcons().add(icon);
         alert.showAndWait(); // Wait for the user to acknowledge the error
     } catch (ArrayIndexOutOfBoundsException ex) {
     // Create a confirmation alert
@@ -176,6 +182,9 @@ submitButton.setOnAction(e -> {
         "Would you like to continue anyway?"
     );
     dialog = alert.getDialogPane();
+    Stage dialogStage = (Stage) dialog.getScene().getWindow();
+    Image icon = new Image("icon.jpg"); // Path to the icon file
+    dialogStage.getIcons().add(icon);
     dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
     dialog.getStyleClass().addAll("dialog");
     // Wait for the user's response
@@ -472,7 +481,9 @@ submitButton.setOnAction(e -> {
             dialog = alert.getDialogPane();
             dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
             dialog.getStyleClass().add("dialog");
-
+            Stage dialogStage = (Stage) dialog.getScene().getWindow();
+            Image icon = new Image("icon.jpg"); // Path to the icon file
+            dialogStage.getIcons().add(icon);
             alert.showAndWait();
             return;
         }
@@ -535,8 +546,9 @@ submitButton.setOnAction(e -> {
                 vehicleDiffImprovement,
                 pedDiffImprovement,
                 accidnetImprovement));
+                createImprovementChart(vehicleImprovement,pedImprovement,vehicleDiffImprovement,pedDiffImprovement,accidnetImprovement, phase1Simulation,phase2Simulation);
         }
-    
+        
         Label comparisonLabel = createLabelWithDynamicFont(comparison.toString(), compareStage);
        
         comparisonLabel.getStylesheets().add("-fx-text-fill: black;");
@@ -551,19 +563,88 @@ submitButton.setOnAction(e -> {
         // Bind the rectangle's width and height to the stage's dimensions
         background.widthProperty().bind(compareStage.widthProperty().multiply(0.95)); // Adjust width
         background.heightProperty().bind(compareStage.heightProperty().multiply(0.95)); // Adjust height
-    
+        
         // Use StackPane to layer the background and content
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(background, comparePanel);
     
         Scene scene = new Scene(stackPane, 400, 500);
         scene.getStylesheets().add(getClass().getResource("compareResultStyles.css").toExternalForm());
-    
         compareStage.setTitle("Comparison Results");
         compareStage.setScene(scene);
         compareStage.show();
     }
     
+
+
+    public void createImprovementChart(double vehicleImprovement,double pedestrianImprovement,double vehicleDiffImprovement,double pedestrianDiffImprovement,double accidnetImprovement,TrafficSimulation phase1,TrafficSimulation phase2) {
+        // Create the X and Y axes
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Improvement Type");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Improvement (%)");
+
+        // Create the BarChart
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Phase 2 vs Phase 1 Improvement");
+        barChart.getStylesheets().add(getClass().getResource("chartStyle.css").toExternalForm());
+        barChart.setLegendVisible(false);
+        // Create a series of data for the chart
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Improvements");
+
+        // Add data points to the series
+        series.getData().add(new XYChart.Data<>("Vehicle Improvement", vehicleImprovement));
+        series.getData().add(new XYChart.Data<>("Pedestrian Improvement", pedestrianImprovement));
+        series.getData().add(new XYChart.Data<>("Vehicle Diff Improvement", vehicleDiffImprovement));
+        series.getData().add(new XYChart.Data<>("Pedestrian Diff Improvement", pedestrianDiffImprovement));
+        series.getData().add(new XYChart.Data<>("Accident Improvement", accidnetImprovement));
+        
+        // Add the series to the chart
+        barChart.getData().add(series);
+
+        // Add tooltips to each bar
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            String improvementType = data.getXValue();
+            String tooltipText = "";
+
+            // Set the tooltip text based on the improvement type using if-else statements
+            if (improvementType.equals("Vehicle Improvement")) {
+                tooltipText = "Phase 1: " + phase1.getRoad().getNumberOfPassedVehicles() + " Vehicles\nPhase 2: " + phase2.getRoad().getNumberOfPassedVehicles() + " Vehicles";
+            } else if (improvementType.equals("Pedestrian Improvement")) {
+                tooltipText = "Phase 1: " + phase1.getRoad().getNumberOfPassedPedestrians() + " Pedestrian\nPhase 2: " + phase2.getRoad().getNumberOfPassedPedestrians() + " Pedestrian";
+            } else if (improvementType.equals("Pedestrian Diff Improvement")) {
+                tooltipText = "Phase 1: " + String.format("%.2f", phase1.getAveragePedestrianDifferanceTime()) + "s\nPhase 2: " + String.format("%.2f", phase2.getAveragePedestrianDifferanceTime()) + "s";
+            } else if (improvementType.equals("Vehicle Diff Improvement")) {
+                tooltipText = "Phase 1: " + String.format("%.2f", phase1.getAverageVehicleDifferanceTime()) + "s\nPhase 2: " + String.format("%.2f", phase2.getAverageVehicleDifferanceTime()) + "s";
+            } else if (improvementType.equals("Accident Improvement")) {
+                tooltipText = "Phase 1: " + phase1.getRoad().getNumberOfAccidents() + " Accidents\nPhase 2: " + phase2.getRoad().getNumberOfAccidents() + " Accidents";
+            }
+
+            // Create the tooltip and set it for the current data point
+            Tooltip tooltip = new Tooltip(tooltipText);
+            Tooltip.install(data.getNode(), tooltip);
+
+            // Add mouse hover event for dynamic tooltip display (optional, but useful for styling)
+            data.getNode().setOnMouseEntered(event -> {
+                Tooltip.install(data.getNode(), tooltip);
+            });
+
+            // Optional: Remove tooltip on mouse exit
+            data.getNode().setOnMouseExited(event -> {
+                Tooltip.uninstall(data.getNode(), tooltip);
+            });
+        }
+        // Create a scene and display the chart (assuming this is called from a method that has access to the Stage)
+        javafx.scene.Scene scene = new javafx.scene.Scene(barChart, 800, 600);
+        javafx.stage.Stage stage = new javafx.stage.Stage();
+        stage.setTitle("Improvement Chart");
+        stage.setScene(scene);
+        Image icon = new Image("icon.jpg"); // Path to the icon file
+        stage.getIcons().add(icon);
+        stage.show();
+    }
+
     
 
     /**

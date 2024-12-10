@@ -1,0 +1,62 @@
+/* General Chart Styling */
+.chart {
+    -fx-background-color: linear-gradient(to top right, rgba(29, 107, 119, 1), rgba(0, 0, 0, 1));  /* Ensures transparency for the chart background */
+}
+
+.chart-plot-background {
+    -fx-background-color: linear-gradient(to bottom left, rgba(226, 236, 254, 1), rgba(29, 107, 119, 0.3)); /* Soft gradient for depth */
+    -fx-background-radius: 10px; /* Rounded corners for a smooth appearance */
+    -fx-border-color: rgba(141, 238, 237, 0.8); /* Subtle border to highlight the plot area */
+    -fx-border-width: 2px; /* Thin border for elegance */
+    -fx-border-radius: 10px;
+}
+/* BarChart Title */
+.chart-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(255, 255, 255); /* Dark title text for contrast */
+}
+
+/* Axis Labels */
+.axis-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(255, 255, 255); /* Dark axis labels */
+}
+.axis {
+    -fx-font-size: 1.4em;    
+    -fx-tick-label-fill: #ffffff;
+    -fx-font-family: Tahoma;
+    -fx-tick-length: 20;
+    -fx-minor-tick-length: 10;
+}
+/* Bar Styling */
+.chart-bar {
+    -fx-background-color: linear-gradient(to top, rgba(29, 107, 119, 1), rgba(0, 0, 0, 1)); /* Gradient fill for bars */
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
+}
+
+/* Bar Hover Effect */
+.chart-bar:hover {
+    -fx-background-color: linear-gradient(to top, rgba(141, 238, 237, 1), rgba(29, 107, 119, 1)); /* Lighter gradient on hover */
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
+}
+
+/* Tooltip Styling */
+.tooltip {
+    -fx-background-color: linear-gradient(to bottom, rgba(29, 107, 119, 1), rgba(0, 0, 0, 0.9)); /* Gradient background for tooltip */
+    -fx-text-fill: white; /* White text for visibility */
+    -fx-font-size: 16px; /* Readable font size */
+    -fx-padding: 10px; /* Clean padding */
+    -fx-border-color: rgba(141, 238, 237, 0.8); /* Highlighted border color */
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+/* Tooltip Arrow Styling */
+.tooltip:arrow {
+    -fx-background-color: linear-gradient(to bottom, rgba(29, 107, 119, 1), rgba(0, 0, 0, 0.9));
+}

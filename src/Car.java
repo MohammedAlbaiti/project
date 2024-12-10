@@ -71,8 +71,8 @@ public class Car extends Vehicle {
     @Override
     public String toString() {
         return String.format(
-            "%-5s %-25s %-10s %-10.2f %-10s %-10.2f %-10.2f %-10s",  // Added timeTaken to the format
-            carID, carType, getDriverStyle(), getObjectSpeed(), getObjectDirection(), getTimeTaken(), getIdealTime(),isObjectPassed()   // Added timeTaken here
+            "%-5s %-25s %-10s %-10.2f %-10s %-10.2f %-10.2f %-10.2f %-10s %-10s",  // Added timeTaken to the format
+            carID, carType, getDriverStyle(), getObjectSpeed(), getObjectDirection(), getTimeTaken(), getIdealTime(),getTimeDifferance(),isObjectPassed(),getAccidentHappen()   // Added timeTaken here
         );
     }
     
