@@ -79,7 +79,7 @@ public class TrafficSimulation {
         passedPedestrianText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         timeRemainingText.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
         numberOfAccidents.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.REGULAR, 11));
-        Rectangle hideRctangle = new Rectangle(totalWidth, 200, Color.rgb(120, 126, 186));
+        Rectangle hideRctangle = new Rectangle(totalWidth, 200, Color.rgb(43, 123, 50));
         hideRctangle.setY(roadHeight);
         Pane dataContainer = new Pane();
         Rectangle bottomRect = new Rectangle(146, 100, Color.rgb(120, 126, 186));
