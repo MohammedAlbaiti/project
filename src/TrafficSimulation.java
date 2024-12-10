@@ -191,6 +191,7 @@ public class TrafficSimulation {
         road.getPedestrianBridge().getBridgeImageView().toFront();
         // bgImageView.toFront();
         makePedestrianInUpperLayer();
+        makeRectangleButtonsUpperLayer();
         
     }
     
