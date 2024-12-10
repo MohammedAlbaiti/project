@@ -189,7 +189,6 @@ public class TrafficSimulation {
         vehicles.add(newVehicle);
         mapContainer.getChildren().add(newVehicle.getVehicleView());
         road.getPedestrianBridge().getBridgeImageView().toFront();
-        // bgImageView.toFront();
         makePedestrianInUpperLayer();
         makeRectangleButtonsUpperLayer();
         

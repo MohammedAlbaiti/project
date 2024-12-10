@@ -469,6 +469,10 @@ submitButton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Incomplete Simulation");
             alert.setContentText("Please run both phases before comparing results.");
+            dialog = alert.getDialogPane();
+            dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
+            dialog.getStyleClass().add("dialog");
+
             alert.showAndWait();
             return;
         }

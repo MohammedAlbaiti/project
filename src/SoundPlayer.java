@@ -15,7 +15,7 @@ private static MediaPlayer mediaPlayer;
             Platform.runLater(() -> {
                 try {
                     // Ensure the file is properly located
-                    URL resource = SoundPlayer.class.getResource("/rGeneralRoadSounds.mp3");
+                    URL resource = SoundPlayer.class.getResource("/GeneralRoadSounds.mp3");
                     if (resource == null) {
                         System.out.println("Sound file not found.");
                         return;
