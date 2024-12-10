@@ -166,7 +166,7 @@ submitButton.setOnAction(e -> {
         alert.showAndWait(); // Wait for the user to acknowledge the error
     } catch (ArrayIndexOutOfBoundsException ex) {
     // Create a confirmation alert
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Road Width Exceeds Screen Width",ButtonType.YES,ButtonType.NO);
     alert.setTitle("Screen Width Issue");
     alert.setHeaderText("Road Width Exceeds Screen Width");
     alert.setContentText(
@@ -181,7 +181,7 @@ submitButton.setOnAction(e -> {
     // Wait for the user's response
     Optional<ButtonType> result = alert.showAndWait();
 
-    if (result.isPresent() && result.get() == ButtonType.OK) {
+    if (result.isPresent() && result.get() == ButtonType.YES) {
         showControlPanel(primaryStage); // Transition to the control panel for the simulation
         primaryStage.close(); // Close the current input form stage
     }
