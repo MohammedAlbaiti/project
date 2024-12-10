@@ -121,7 +121,6 @@ public class App extends Application {
     // Create tooltips for the checkboxes
     Tooltip vehiclesTooltip = new Tooltip("Automatically generate vehicles after each vehicle passed.");
     Tooltip pedestriansTooltip = new Tooltip("Automatically generate pedestrians after each pedestrian passed.");
-
     // Set the tooltips to the checkboxes
     vehiclesCheckBox.setTooltip(vehiclesTooltip);
     pedestrianCheckBox.setTooltip(pedestriansTooltip);

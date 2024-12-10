@@ -9,7 +9,7 @@
 /* Button Styling */
 .button {
     -fx-background-color: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(29, 107, 119, 1));
-    -fx-text-fill: linear-gradient(to bottom, #d9d9d9, rgba(29, 107, 119, 1));
+    -fx-text-fill: rgb(255, 255, 255);
     -fx-border-color: gray;
     -fx-border-width: 2px;
     -fx-border-radius: 15px;
@@ -106,7 +106,7 @@
 /* ComboBox Popup Items */
 .combo-box .list-cell {
     -fx-background-color: linear-gradient(to left, rgba(0, 0, 0, 1), rgba(29, 107, 119, 1));
-    -fx-text-fill: linear-gradient(to bottom, #d9d9d9, rgba(29, 107, 119, 1));
+    -fx-text-fill: white;
     -fx-padding: 8px;
 
     /* Animation Transition */
@@ -139,3 +139,23 @@
 .check-box {
     -fx-text-fill: white; /* Ensure the text is visible */
 }
+/* Tooltip Styling */
+.tooltip {
+    -fx-background-color: linear-gradient(to bottom, rgba(29, 107, 119, 1), rgba(0, 0, 0, 0.9));
+    -fx-text-fill: white; /* White text for visibility */
+    -fx-font-size: 16px; /* Adjust font size for better readability */
+    -fx-padding: 10px; /* Add padding for a clean look */
+    -fx-border-color: rgba(141, 238, 237, 0.8); /* Highlighted border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+
+    /* Shadow Effect */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0, 0);
+}
+
+/* Tooltip Arrow Styling */
+.tooltip:arrow {
+    -fx-background-color: linear-gradient(to bottom, rgba(29, 107, 119, 1), rgba(0, 0, 0, 0.9));
+}
+
