@@ -113,7 +113,7 @@ public class TrafficSimulation {
             Button laneButton = new Button("Add Vehicle");
             laneButton.getStyleClass().add("custom-button");
             laneButton.setLayoutX(laneX-15);
-            laneButton.setLayoutY(roadHeight+40); // Adjust Y position dynamically for each button
+            laneButton.setLayoutY(roadHeight+30); // Adjust Y position dynamically for each button
             laneButton.setOnAction(e -> createVehicleInLane(laneXCoordinates.indexOf(laneX), laneX, mapContainer));
             mapContainer.getChildren().add(laneButton);
             addVehicleButtons.add(laneButton);
