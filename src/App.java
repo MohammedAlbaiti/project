@@ -119,8 +119,8 @@ public class App extends Application {
 
     // Button to submit the form
     // Create tooltips for the checkboxes
-    Tooltip vehiclesTooltip = new Tooltip("Automatically generate vehicles during the simulation.");
-    Tooltip pedestriansTooltip = new Tooltip("Automatically generate pedestrians during the simulation.");
+    Tooltip vehiclesTooltip = new Tooltip("Automatically generate vehicles after each vehicle passed.");
+    Tooltip pedestriansTooltip = new Tooltip("Automatically generate pedestrians after each pedestrian passed.");
 
     // Set the tooltips to the checkboxes
     vehiclesCheckBox.setTooltip(vehiclesTooltip);
