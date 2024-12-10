@@ -5,12 +5,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -23,11 +26,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+
 import java.security.SecureRandom;
 import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 
 public class TrafficSimulation {
@@ -238,7 +244,7 @@ public class TrafficSimulation {
         Image icon = new Image("icon.jpg"); // Path to the icon file
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("Simulation Summary");
-
+        
         // Create TableView
         TableView<GeneralRules> tableView = new TableView<>();
 
@@ -350,13 +356,40 @@ public class TrafficSimulation {
             objecList.subList(1, objecList.size()) // Skipping the first element if needed
         );
         tableView.setItems(data);
+        // // Comprehensive approach to change TableView text color
+        // tableView.setStyle("-fx-control-inner-background: derive(-fx-base, -10%);" + 
+        //                 "-fx-accent: derive(-fx-control-inner-background, -40%);" + 
+        //                 "-fx-text-fill: white;");
 
+        // // Change column header color
+        // tableView.lookup(".column-header").setStyle("-fx-background-color: derive(-fx-base, -10%);" +
+        //                                             "-fx-text-fill: white;");
+
+        // Change individual column headers
+        for (TableColumn<?, ?> column : tableView.getColumns()) {
+            if(tableView.getColumns().indexOf(column)>4 &&tableView.getColumns().indexOf(column)!=8){
+                column.setPrefWidth(200);
+            }
+            else{
+                column.setPrefWidth(100);
+            }
+            
+        }
+        // Usage example
+        // setTableHeaderColor(tableView, Color.WHITE);
+        // Add CSS for more robust styling
+        tableView.getStylesheets().add(getClass().getResource("tableStyles.css").toExternalForm());
         // Create scene
-        VBox vbox = new VBox(tableView);
-        Scene scene = new Scene(vbox, 800, 400);
+        BorderPane root = new BorderPane();
+        root.setCenter(tableView); // Center the TableView to occupy all available space
+
+        Scene scene = new Scene(root, 1200, 400);
+        // scene.getStylesheets().add(getClass().getResource("tableStyles.css").toExternalForm());
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
+
     private void updateVehicles(Pane mapContainer) {
         Image accidentFlagImage = new Image("file:src/resources/accidentFlag.png");
         ImageView accidentFlagView = new ImageView(accidentFlagImage);
