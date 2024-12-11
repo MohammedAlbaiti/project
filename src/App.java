@@ -423,6 +423,9 @@ submitButton.setOnAction(e -> {
 
         // Create a new window for phase 1 simulation
         phase1Window = new Stage();
+        phase1Window.setOnCloseRequest(event -> {
+            SoundPlayer.stopGeneralSounds();
+        });
         phase1Window.setResizable(false);
         Image icon = new Image("icon.jpg"); // Path to the icon file
         phase1Window.getIcons().add(icon);
@@ -453,6 +456,9 @@ submitButton.setOnAction(e -> {
 
         // Create a new window for phase 2 simulation
         phase2Window = new Stage();
+        phase2Window.setOnCloseRequest(event -> {
+            SoundPlayer.stopGeneralSounds();
+        });
         phase2Window.setResizable(false);
         Image icon = new Image("icon.jpg"); // Path to the icon file
         phase2Window.getIcons().add(icon);

@@ -141,9 +141,13 @@ public class TrafficSimulation {
         stackPane.getChildren().add(scrollPane);
         stackPane.getChildren().add(dataContainer);
         StackPane.setAlignment(dataContainer, Pos.BOTTOM_CENTER);
+        updateMuteButton(muteButton);
         dataContainer.setPickOnBounds(false); // Only block clicks on actual elements, not the empty area
         startAnimation(mapContainer,simulationDuration);
         return new Scene(stackPane, totalWidth-10, road.getObjectHeight()+100);
+    }
+    private void updateMuteButton(Button muteButton){
+        muteButton.setText(isMuted ? "Unmute" : "Mute");
     }
     private void toggleMute(Button muteButton) {
         isMuted = !isMuted;
@@ -151,7 +155,7 @@ public class TrafficSimulation {
             SoundPlayer.stopGeneralSounds();
         }
         else{
-            SoundPlayer.playGeneralSounds(simulationDuration);
+            SoundPlayer.resumeSounds();
         }
         muteButton.setText(isMuted ? "Unmute" : "Mute");
     }

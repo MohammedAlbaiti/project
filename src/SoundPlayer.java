@@ -1,89 +1,61 @@
 import java.net.URL;
-import javafx.util.Duration;
-
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class SoundPlayer {
-
-private static MediaPlayer mediaPlayer;
-
+    private static final URL resource = SoundPlayer.class.getResource("/GeneralRoadSounds.mp3");
+    private static final URL resource1 = SoundPlayer.class.getResource("/CarCrash.mp3");
+    private static MediaPlayer generalSoundMediaPlayer;
+    private static MediaPlayer crashSoundMediaPlayer;
     public static void playGeneralSounds(int durationInSeconds) {
-        if(!TrafficSimulation.isMuted){
+        if (resource != null) {
+            generalSoundMediaPlayer = new MediaPlayer(new Media(resource.toString()));
+            if(!TrafficSimulation.isMuted ){
+                generalSoundMediaPlayer.setVolume(0.02);
+            }
+            else{
+                generalSoundMediaPlayer.setVolume(0);
+            }
             Platform.runLater(() -> {
-                try {
-                    // Ensure the file is properly located
-                    URL resource = SoundPlayer.class.getResource("/GeneralRoadSounds.mp3");
-                    if (resource == null) {
-                        System.out.println("Sound file not found.");
-                        return;
-                    }
-                    Media media = new Media(resource.toString());
-                    mediaPlayer = new MediaPlayer(media);
-    
-                    // Handle media readiness
-                    mediaPlayer.setOnReady(() -> {
-                        mediaPlayer.setVolume(0.02); // Set volume to 10% of the maximum
-                        mediaPlayer.play();
-    
-                        // Schedule stopping the media player after the specified duration
-                        PauseTransition delay = new PauseTransition(Duration.seconds(durationInSeconds));
-                        delay.setOnFinished(event -> stopGeneralSounds());
-                        delay.play();
-                    });
-    
-                    // Handle errors
-                    mediaPlayer.setOnError(() -> System.out.println("Error: " + mediaPlayer.getError()));
-    
-                } catch (Exception e) {
-                    System.out.println("An error occurred: " + e.getMessage());
-                }
+                 // Set volume to 2%
+                generalSoundMediaPlayer.setOnReady(() -> generalSoundMediaPlayer.play());
+
+                PauseTransition delay = new PauseTransition(Duration.seconds(durationInSeconds));
+                delay.setOnFinished(event -> generalSoundMediaPlayer.stop());
+                delay.play();
             });
+        } else {
+            System.out.println("GeneralRoadSounds.mp3 not found");
         }
     }
 
     public static void CarCrash(int durationInSeconds) {
-        if(!TrafficSimulation.isMuted){
+        if (resource1 != null) {
+            crashSoundMediaPlayer = new MediaPlayer(new Media(resource1.toString()));
+            if(!TrafficSimulation.isMuted ){
+                crashSoundMediaPlayer.setVolume(1);
+            }
+            else{
+                crashSoundMediaPlayer.setVolume(0);
+            }
             Platform.runLater(() -> {
-                try {
-                    // Ensure the file is properly located
-                    URL resource = SoundPlayer.class.getResource("/CarCrash.mp3");
-                    if (resource == null) {
-                        System.out.println("Sound file not found.");
-                        return;
-                    }
-    
-                    Media media = new Media(resource.toString());
-                    mediaPlayer = new MediaPlayer(media);
-    
-                    // Handle media readiness
-                    mediaPlayer.setOnReady(() -> {
-                        mediaPlayer.play();
-    
-                        // Schedule stopping the media player after the specified duration
-                        PauseTransition delay = new PauseTransition(Duration.seconds(durationInSeconds));
-                        delay.setOnFinished(event -> stopGeneralSounds());
-                        delay.play();
-                    });
-    
-                    // Handle errors
-                    mediaPlayer.setOnError(() -> System.out.println("Error: " + mediaPlayer.getError()));
-    
-                } catch (Exception e) {
-                    System.out.println("An error occurred: " + e.getMessage());
-                }
+                crashSoundMediaPlayer.setOnReady(() -> crashSoundMediaPlayer.play());
+
+                PauseTransition delay = new PauseTransition(Duration.seconds(durationInSeconds));
+                delay.setOnFinished(event -> crashSoundMediaPlayer.stop());
+                delay.play();
             });
-        }
+        } 
     }
 
     public static void stopGeneralSounds() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-            mediaPlayer = null;
-        }
+        generalSoundMediaPlayer.setVolume(0);
+    }
+
+    public static void resumeSounds() {
+        generalSoundMediaPlayer.setVolume(0.02);
     }
 }
-
