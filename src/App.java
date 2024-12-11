@@ -539,8 +539,15 @@ submitButton.setOnAction(e -> {
                                phase1Simulation.getAveragePedestrianDifferanceTime()) * 100;
             double vehicleDiffImprovement = -((double)(phase2Simulation.getAverageVehicleDifferanceTime() - phase1Simulation.getAverageVehicleDifferanceTime()) /
                                phase1Simulation.getAverageVehicleDifferanceTime()) * 100;
-            double accidnetImprovement = -((double)(phase2Simulation.getRoad().getNumberOfAccidents() - phase1Simulation.getRoad().getNumberOfAccidents()) /
-                               phase1Simulation.getRoad().getNumberOfAccidents()) * 100;
+            double accidnetImprovement;
+            if(phase1Simulation.getRoad().getNumberOfAccidents()==0){
+                accidnetImprovement = phase2Simulation.getRoad().getNumberOfAccidents()*100.00;
+            }
+            else{
+                accidnetImprovement = -((double)(phase2Simulation.getRoad().getNumberOfAccidents() - phase1Simulation.getRoad().getNumberOfAccidents()) /
+                phase1Simulation.getRoad().getNumberOfAccidents()) * 100;
+            }
+
             comparison.append(String.format("Improvements:\n" +
                 "Vehicles: %.1f%%\n" +
                 "Pedestrians: %.1f%%\n" +
