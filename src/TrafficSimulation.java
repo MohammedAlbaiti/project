@@ -58,6 +58,7 @@ public class TrafficSimulation {
     private double averageVehicleDifferanceTime;
     private ArrayList<Button> addVehicleButtons = new ArrayList<>();
     private Rectangle hideRectangle;
+    private boolean isWindowClosed = false;
     public TrafficSimulation(Road road, int numberOfVehicles, int numberOfPedestrian, int simulationDuration, boolean autoVehiclesGeneration, boolean autoPedestriansGeneration) {
         this.road = road;
         this.numberOfVehicles = numberOfVehicles;
@@ -485,8 +486,14 @@ public class TrafficSimulation {
                pedestrianY + pedestrian.getObjectHeight() > vehicleY + 15 &&
                pedestrianY < vehicleY + vehicle.getObjectHeight() - 15;
     }
+    public void windowClosed(){
+        isWindowClosed = true;
+        SoundPlayer.stopGeneralSounds();
+    }
     private void handleAccident(Vehicle vehicle, Pedestrian pedestrian, Pane mapContainer, ImageView accidentFlagView) {
-        SoundPlayer.CarCrash(4);
+        if(!isWindowClosed){
+            SoundPlayer.CarCrash(4);
+        }
         vehicle.setAccidentHappen(true);
         pedestrian.setAccidentHappen(true);
         road.increaseNumberOfAccidents(1);

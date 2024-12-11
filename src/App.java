@@ -423,16 +423,16 @@ submitButton.setOnAction(e -> {
 
         // Create a new window for phase 1 simulation
         phase1Window = new Stage();
-        phase1Window.setOnCloseRequest(event -> {
-            SoundPlayer.stopGeneralSounds();
-        });
+
         phase1Window.setResizable(false);
         Image icon = new Image("icon.jpg"); // Path to the icon file
         phase1Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
         road.getPedestrianBridge().disableBridge(); // Disable pedestrian bridge
         phase1Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
-        
+        phase1Window.setOnCloseRequest(event -> {
+            phase1Simulation.windowClosed();
+        });
         // Create and display the simulation scene
         Scene simulationScene = phase1Simulation.createSimulationScene();
         simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
@@ -456,15 +456,16 @@ submitButton.setOnAction(e -> {
 
         // Create a new window for phase 2 simulation
         phase2Window = new Stage();
-        phase2Window.setOnCloseRequest(event -> {
-            SoundPlayer.stopGeneralSounds();
-        });
+
         phase2Window.setResizable(false);
         Image icon = new Image("icon.jpg"); // Path to the icon file
         phase2Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "enhanced", 5000);
         road.getPedestrianBridge().enableBridge(); // Enable pedestrian bridge
         phase2Simulation = new TrafficSimulation(road, numberOfVehicles, numberOfPedestrian, simulationTime, autoVehiclesGeneration, autoPedestriansGeneration);
+        phase2Window.setOnCloseRequest(event -> {
+            phase2Simulation.windowClosed();
+        });
         Scene simulationScene = phase2Simulation.createSimulationScene();
         simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
 
