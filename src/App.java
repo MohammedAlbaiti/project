@@ -349,8 +349,12 @@ submitButton.setOnAction(e -> {
         phase1Button.setOnAction(e -> startPhase1Simulation());
         phase2Button.setOnAction(e -> startPhase2Simulation());
         compareButton.setOnAction(e -> compareResults());
-        back.setOnAction(e -> showInputForm(primStage));
-        // Add buttons to the control panel
+        back.setOnAction(e -> {
+            controlStage.close();
+            start(controlStage);
+
+        });
+                // Add buttons to the control panel
         controlPanel.getChildren().addAll(
             phase1Button,
             phase2Button,
