@@ -214,8 +214,8 @@ public class TrafficSimulation {
                         SoundPlayer.stopGeneralSounds();
                         stopSimulation();
                         isSimulationComplete = true;
-                        simulationSummary();
-                        simulationSamrary();
+                        simulationSummaryTable();
+                        simulationSummaryTerminal();
                         return;
                     }
                     // Update the remaining time on the UI
@@ -228,7 +228,7 @@ public class TrafficSimulation {
         };
         animationTimer.start();
     }
-    private void simulationSamrary(){
+    private void simulationSummaryTerminal(){
         System.out.println(objecList.get(0));
         System.out.println(String.format(
             "%-5s %-25s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s",
@@ -239,7 +239,7 @@ public class TrafficSimulation {
             System.out.println(objecList.get(i));
         }
     }
-    private void simulationSummary() {
+    private void simulationSummaryTable() {
         Stage primaryStage = new Stage();
         Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         primaryStage.getIcons().add(icon);

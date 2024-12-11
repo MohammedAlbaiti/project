@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "project-1_b55a7a32"
+        },
+        {
+            "type": "java",
             "name": "CustomTitleBar",
             "request": "launch",
             "mainClass": "CustomTitleBar",
