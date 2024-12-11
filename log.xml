@@ -15,10 +15,10 @@
   <manifest></manifest>
   <icon>C:\Users\t1234\Downloads\8a3c19d7\1-f051b54e.ico</icon>
   <jre>
-    <path>C:\Program Files\Java\jre1.8.0_202</path>
+    <path>C:\Users\t1234\Desktop\project-2\jre1.8.0_202</path>
     <requiresJdk>false</requiresJdk>
     <requires64Bit>false</requires64Bit>
-    <minVersion></minVersion>
+    <minVersion>1.8</minVersion>
     <maxVersion></maxVersion>
   </jre>
 </launch4jConfig>

@@ -719,7 +719,7 @@ public class TrafficSimulation {
         if(value<=50){  //50 %
             driverStyle="normal";
         }
-        else if(value<=51){ // 30 %
+        else if(value<=80){ // 30 %
             driverStyle="careful";
         }
         else{// 20 %
