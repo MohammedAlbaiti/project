@@ -1,0 +1,18 @@
+
+
+Version:	3.50
+CmdLine:	C:\Users\t1234\Desktop\project-2\MyApplication.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\t1234\Desktop\project-2\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	
+Java max ver:	
+JRE paths:	C:\Program Files\Java\jre1.8.0_202
+Check launcher:	C:\Program Files\Java\jre1.8.0_202\bin\javaw.exe (OK)
+Version string: 1.008.000_202 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\jre1.8.0_202\bin\javaw.exe
+Launcher args:	-jar "C:\Users\t1234\Desktop\project-2\MyApplication.exe"
+Args length:	57/32768 chars
+Exit code:	0
