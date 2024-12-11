@@ -241,7 +241,7 @@ public class TrafficSimulation {
     }
     private void simulationSummary() {
         Stage primaryStage = new Stage();
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("Simulation Summary");
         
@@ -370,7 +370,7 @@ public class TrafficSimulation {
         }
      
         // Add CSS for more robust styling
-        tableView.getStylesheets().add(getClass().getResource("tableStyles.css").toExternalForm());
+        tableView.getStylesheets().add(getClass().getResource("resources/tableStyles.css").toExternalForm());
         // Create scene
         BorderPane root = new BorderPane();
         root.setCenter(tableView); // Center the TableView to occupy all available space

@@ -164,10 +164,10 @@ submitButton.setOnAction(e -> {
         alert.setTitle("Invalid Input");
         alert.setContentText("Please enter valid positive numbers for all fields.");
         dialog = alert.getDialogPane();
-        dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
+        dialog.getStylesheets().add(getClass().getResource("resources/dialog.css").toString());
         dialog.getStyleClass().add("dialog");
         Stage dialogStage = (Stage) dialog.getScene().getWindow();
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         dialogStage.getIcons().add(icon);
         alert.showAndWait(); // Wait for the user to acknowledge the error
     } catch (ArrayIndexOutOfBoundsException ex) {
@@ -183,9 +183,9 @@ submitButton.setOnAction(e -> {
     );
     dialog = alert.getDialogPane();
     Stage dialogStage = (Stage) dialog.getScene().getWindow();
-    Image icon = new Image("icon.jpg"); // Path to the icon file
+    Image icon = new Image("resources/icon.jpg"); // Path to the icon file
     dialogStage.getIcons().add(icon);
-    dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
+    dialog.getStylesheets().add(getClass().getResource("resources/dialog.css").toString());
     dialog.getStyleClass().addAll("dialog");
     // Wait for the user's response
     Optional<ButtonType> result = alert.showAndWait();
@@ -207,13 +207,13 @@ submitButton.setOnAction(e -> {
 
     // Set up the scene for the input form and show it
     Scene scene = new Scene(inputForm, 400, 600);
-    scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
+    scene.getStylesheets().add(getClass().getResource("resources/traffic_styles.css").toExternalForm());
 
     // Set the window title and scene
     primaryStage.setTitle("Simulation Configuration");
     primaryStage.setScene(scene);
 
-    Image icon = new Image("icon.jpg");
+    Image icon = new Image("resources/icon.jpg");
     primaryStage.getIcons().add(icon);
 
     // Set the minimum size for the window (prevents shrinking too much)
@@ -329,7 +329,7 @@ submitButton.setOnAction(e -> {
     private void showControlPanel(Stage primStage) {
         Stage controlStage = new Stage();
         
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         controlStage.getIcons().add(icon);
         VBox controlPanel = new VBox(20);
         controlPanel.setPadding(new Insets(20));
@@ -360,7 +360,7 @@ submitButton.setOnAction(e -> {
     
         // Create the scene for the control panel
         Scene scene = new Scene(controlPanel, 250, 200);
-        scene.getStylesheets().add(getClass().getResource("traffic_styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("resources/traffic_styles.css").toExternalForm());
         controlStage.setTitle("Simulation Control Panel");
         controlStage.setScene(scene);
         
@@ -425,7 +425,7 @@ submitButton.setOnAction(e -> {
         phase1Window = new Stage();
 
         phase1Window.setResizable(false);
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         phase1Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "normal", 5000);
         road.getPedestrianBridge().disableBridge(); // Disable pedestrian bridge
@@ -435,7 +435,7 @@ submitButton.setOnAction(e -> {
         });
         // Create and display the simulation scene
         Scene simulationScene = phase1Simulation.createSimulationScene();
-        simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
+        simulationScene.getStylesheets().add(getClass().getResource("resources/mainWindowButton.css").toExternalForm());
         phase1Window.setTitle("Phase 1 Simulation");
         phase1Window.setScene(simulationScene);
         phase1Window.show();
@@ -458,7 +458,7 @@ submitButton.setOnAction(e -> {
         phase2Window = new Stage();
 
         phase2Window.setResizable(false);
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         phase2Window.getIcons().add(icon);
         Road road = new Road(numberOfPaths, numberOfLanes, "enhanced", 5000);
         road.getPedestrianBridge().enableBridge(); // Enable pedestrian bridge
@@ -467,7 +467,7 @@ submitButton.setOnAction(e -> {
             phase2Simulation.windowClosed();
         });
         Scene simulationScene = phase2Simulation.createSimulationScene();
-        simulationScene.getStylesheets().add(getClass().getResource("mainWindowButton.css").toExternalForm());
+        simulationScene.getStylesheets().add(getClass().getResource("resources/mainWindowButton.css").toExternalForm());
 
         // Display the simulation scene
         phase2Window.setTitle("Phase 2 Simulation");
@@ -486,10 +486,10 @@ submitButton.setOnAction(e -> {
             alert.setTitle("Incomplete Simulation");
             alert.setContentText("Please run both phases before comparing results.");
             dialog = alert.getDialogPane();
-            dialog.getStylesheets().add(getClass().getResource("dialog.css").toString());
+            dialog.getStylesheets().add(getClass().getResource("resources/dialog.css").toString());
             dialog.getStyleClass().add("dialog");
             Stage dialogStage = (Stage) dialog.getScene().getWindow();
-            Image icon = new Image("icon.jpg"); // Path to the icon file
+            Image icon = new Image("resources/icon.jpg"); // Path to the icon file
             dialogStage.getIcons().add(icon);
             alert.showAndWait();
             return;
@@ -497,7 +497,7 @@ submitButton.setOnAction(e -> {
         phase1Simulation.calculateAverdifferanceTime();
         phase2Simulation.calculateAverdifferanceTime();
         Stage compareStage = new Stage();
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         compareStage.getIcons().add(icon);
     
         VBox comparePanel = new VBox(10);
@@ -583,7 +583,7 @@ submitButton.setOnAction(e -> {
         stackPane.getChildren().addAll(background, comparePanel);
     
         Scene scene = new Scene(stackPane, 400, 500);
-        scene.getStylesheets().add(getClass().getResource("compareResultStyles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("resources/compareResultStyles.css").toExternalForm());
         compareStage.setTitle("Comparison Results");
         compareStage.setScene(scene);
         compareStage.show();
@@ -601,7 +601,7 @@ submitButton.setOnAction(e -> {
         // Create the BarChart
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
         barChart.setTitle("Phase 2 vs Phase 1 Improvement");
-        barChart.getStylesheets().add(getClass().getResource("chartStyle.css").toExternalForm());
+        barChart.getStylesheets().add(getClass().getResource("resources/chartStyle.css").toExternalForm());
         barChart.setLegendVisible(false);
         // Create a series of data for the chart
         XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -654,7 +654,7 @@ submitButton.setOnAction(e -> {
         javafx.stage.Stage stage = new javafx.stage.Stage();
         stage.setTitle("Improvement Chart");
         stage.setScene(scene);
-        Image icon = new Image("icon.jpg"); // Path to the icon file
+        Image icon = new Image("resources/icon.jpg"); // Path to the icon file
         stage.getIcons().add(icon);
         stage.show();
     }

@@ -6,8 +6,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 public class SoundPlayer {
-    private static final URL resource = SoundPlayer.class.getResource("/GeneralRoadSounds.mp3");
-    private static final URL resource1 = SoundPlayer.class.getResource("/CarCrash.mp3");
+    private static final URL resource = SoundPlayer.class.getResource("resources/GeneralRoadSounds.mp3");
+    private static final URL resource1 = SoundPlayer.class.getResource("resources/CarCrash.mp3");
     private static MediaPlayer generalSoundMediaPlayer;
     private static MediaPlayer crashSoundMediaPlayer;
     public static void playGeneralSounds(int durationInSeconds) {
